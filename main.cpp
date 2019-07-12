@@ -85,7 +85,9 @@ int main(int argc, char* argv[]){
     comm.barrier();
 
     mpi::GraphCommunicator gcomm = brain.createCommunicator();
-    // std::cout << gcomm;
+    app.lock();
+    std::cout << gcomm;
+    app.unlock();
 
     int rate;
     int areaIndex = rank / 2;
@@ -114,14 +116,67 @@ int main(int argc, char* argv[]){
         throw "unknown current layer";
     }
 
-    try {
-        app.lock();
-        app << "Current area: " << current_area << "\n";
-        app << "Current layer: " << current_layer << "\n";
-        app << "Rate: " << rate << "\n";
-        app << "\n";
-        app.unlock();
-    } catch (sys::exception& e){
-        std::cout << "[ERROR " << rank << "] " << e.what() << "\n";
+    comm.barrier();
+    app.lock();
+    app << "Current area: " << current_area << "\n";
+    app << "Current layer: " << current_layer << "\n";
+    app << "Rate: " << rate << "\n";
+    app << "\n";
+    app.unlock();
+
+    int received_rates[100];
+    gcomm.neighborAllGather(&rate, 1, MPI_INT, received_rates, 1, MPI_INT);
+    comm.barrier();
+    app.lock();
+    for (int i=0; i < gcomm.getSourceNumber(); i++){
+        app << received_rates[i] << " ";
     }
+    app << "\n";
+    app.unlock();
+
+    double sendweights[100];
+    for (int i=0; i < gcomm.getDestinationNumber(); i++){
+        int drank = gcomm.getDestinationList()[i];
+        int dareaIndex = drank / 2;
+        if (areaIndex == dareaIndex){
+            sendweights[i] = 200.0;
+        }
+        if (areaIndex == 1 && dareaIndex == 0){
+            sendweights[i] = 20.0;
+        }
+        if (areaIndex == 1 && dareaIndex == 2){
+            sendweights[i] = 0.05;
+        }
+        if (areaIndex == 0 && dareaIndex == 1){
+            sendweights[i] = 20.0;
+        }
+        if (areaIndex == 0 && dareaIndex == 2){
+            sendweights[i] = 0.5;
+        }
+        if (areaIndex == 2 && dareaIndex == 0){
+            sendweights[i] = 2000.0;
+        }
+    }
+
+    comm.barrier();
+    app.lock();
+    app << "Sending weights: ";
+    for (int i=0; i < gcomm.getDestinationNumber(); i++){
+        app << sendweights[i] << " ";
+    }
+    app << "\n";
+    app.unlock();
+
+    double recweights[100];
+    gcomm.neighborAllToAll(sendweights, 1, MPI_DOUBLE, recweights, 1, MPI_DOUBLE);
+
+    comm.barrier();
+    app.lock();
+    app << "Receiving weights: ";
+    for (int i=0; i < gcomm.getSourceNumber(); i++){
+        app << recweights[i] << " ";
+    }
+    app << "\n";
+    app.unlock();
+
 }

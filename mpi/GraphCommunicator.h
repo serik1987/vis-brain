@@ -92,13 +92,25 @@ namespace mpi {
          *
          * @return the number of source node
          */
-        int getSourceNumber(){ return sourceNumber; }
+        int getSourceNumber() const { return sourceNumber; }
+
+        /**
+         *
+         * @return a reference to the first source
+         */
+        const int* getSourceList() const { return sources; }
 
         /**
          *
          * @return the number of destination nodes
          */
-        int getDestinationNumber() { return destinationNumber; }
+        int getDestinationNumber() const { return destinationNumber; }
+
+        /**
+         *
+         * @return a reference to the destination node
+         */
+        const int* getDestinationList() const { return destinations; }
 
         /**
          *
@@ -106,12 +118,208 @@ namespace mpi {
          */
         bool isWeighted() { return weighted; }
 
+        /**
+         * Provides an output to a certain stream
+         *
+         * @param out a certain stream
+         * @param comm communicator
+         * @return e reference to out
+         */
         friend std::ostream& operator<<(std::ostream& out, GraphCommunicator& comm);
 
+        /**
+         * Sends the information from the process i to the process j if and only if (i, j) is an edge of the graph
+         *
+         * @param sendbuf reference to the information to send. The buffer shall be allocated for sendcount items
+         * The same information containing in sendbuf will transmit by all edges in the graph
+         * @param sendcount total number of items to send
+         * @param sendtype type of sending items
+         * @param recvbuf the buffer where receiving information will be placed. The information received from
+         * k-th source will be placed in the region starting from recvbuf + i * recvcount. The buffer shall be
+         * allocated for recvcount * n items where n is number of sources
+         * @param recvcounts total number of items to receive
+         * @param recvtype type of receiving items
+         */
         void neighborAllGather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
                 void* recvbuf, int recvcounts, MPI_Datatype recvtype){
             int errcode;
+            if ((errcode = MPI_Neighbor_allgather(sendbuf, sendcount, sendtype,
+                    recvbuf, recvcounts, recvtype, comm)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
 
+        /**
+         * The same as neighborAllGather but doesn't block the process
+         *
+         * @return request. See mpi::Request and mpi::Requests for detail
+         */
+        MPI_Request ineighborAllGather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                               void* recvbuf, int recvcounts, MPI_Datatype recvtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_Ineighbor_allgather(sendbuf, sendcount, sendtype,
+                    recvbuf, recvcounts, recvtype, comm, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+
+        /**
+         * Sends the information from the process i to the process j if and only if (i, j) is an edge of the graph
+         *
+         * @param sendbuf reference to the information to be send to the destination processes. The same information
+         * will be sent to all processes. The buffer shall be allocated for sendcount items
+         * @param sendcount total number of items to end
+         * @param sendtype datatype of sending items
+         * @param recvbuf buffer where all receiving information will be placed. the information received from
+         * the kth neighbor will be placed at rhe region starting from recvbuf + displs[k]
+         * @param recvcounts[k] total number of items expected to receive from k-th source
+         * @param displs[k] index of the first data received from k-th source and placed into
+         * @param recvtype type of all receiving items
+         */
+        void neighborAllGather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                void* recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype){
+            int errcode;
+            if ((errcode = MPI_Allgatherv(sendbuf, sendcount, sendtype,
+                    recvbuf, recvcounts, displs, recvtype, comm)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        /**
+         * The same as neighborAllGather but doesn't block the process
+         *
+         * @return request. See mpi::Request and mpi::Requests for detail
+         */
+        MPI_Request ineighborAllGather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                               void* recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_Ineighbor_allgatherv(sendbuf, sendcount, sendtype,
+                    recvbuf,recvcounts, displs, recvtype, comm, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+        /**
+         * Sends the information from the process i to the process j only if (, j) is an edge of the graph
+         *
+         * @param sendbuf buffer contasining the sending information. The information to send to the destination
+         * number k is located at a region starting from sendbuf + sendcount * k
+         * @param sendcount total number of items to send. The same number of items will send to all destinations
+         * @param sendtype type of the data to send
+         * @param recvbuf buffer where all receiving items will be placed. The information to receive from
+         * the source number k will be put to a region starting from recvbuf + recvcount * k
+         * @param recvcount total number of items to receive. The same numnber of items will be received from
+         * all sources
+         * @param recvtype datatype of the receiving data
+         */
+        void neighborAllToAll(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                void* recvbuf, int recvcount, MPI_Datatype recvtype){
+            int errcode;
+            if ((errcode = MPI_Neighbor_alltoall(sendbuf, sendcount, sendtype,
+                    recvbuf,recvcount, recvtype, comm)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        /**
+         * The same as neighborAllToAll but doesn't block the process
+         *
+         * @return request. See mpi::Request and mpi::Requests for detail
+         */
+        MPI_Request ineighborAllToAll(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+                              void* recvbuf, int recvcount, MPI_Datatype recvtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_Ineighbor_alltoall(sendbuf, sendcount, sendtype,
+                    recvbuf, recvcount, recvtype, comm, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+        /**
+         * Sends the information from the process i to the process j only if (, j) is an edge of the graph
+         *
+         * @param sendbuf buffer containing all data to send. The data to send to k-th destination is located at a
+         * region starting from sendbuf + sdispls[k]
+         * @param sendcounts[k] number of items to send to k-th destination
+         * @param sdispls see above
+         * @param sendtype type of the sending data
+         * @param recvbuf buffer where all received items will be put. The data received from k-th source will
+         * be put on region starting from recvbuf + rdispls[k]
+         * @param recvcounts[k] total number of items expected to receive from k-th source
+         * @param rdispls[k] (see above)
+         * @param recvtype type of the receiving data
+         */
+        void neighborAllToAll(const void* sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype,
+                void* recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype){
+            int errcode;
+            if ((errcode = MPI_Neighbor_alltoallv(sendbuf, sendcounts, sdispls, sendtype,
+                    recvbuf, recvcounts, rdispls, recvtype, comm)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        /**
+         * The same as neighborAllToAll but doesn't block the process
+         *
+         * @return request. See mpi::Request and mpi::Requests for detail
+         */
+        MPI_Request ineighborAllToAll(const void* sendbuf, const int sendcounts[], const int sdispls[], MPI_Datatype sendtype,
+                              void* recvbuf, const int recvcounts[], const int rdispls[], MPI_Datatype recvtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_Ineighbor_alltoallv(sendbuf, sendcounts, sdispls, sendtype,
+                    recvbuf, recvcounts, rdispls, recvtype, comm, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+        /**
+         * Sends the information from the process i to the process j only if (, j) is an edge of the graph
+         *
+         * @param sendbuf buffer containing all data to send. The data to send to k-th destination is located at a
+         * region starting from sendbuf + sdispls[k]
+         * @param sendcounts[k] number of items to send to k-th destination
+         * @param sdispls see above
+         * @param sendtypes[k] type of the data to send to k-th destination
+         * @param recvbuf buffer where all received items will be put. The data received from k-th source will
+         * be put on region starting from recvbuf + rdispls[k]
+         * @param recvcounts[k] total number of items expected to receive from k-th source
+         * @param rdispls[k] (see above)
+         * @param recvtype[k] type of the data to receive from k-th source
+         */
+        void neighborAllToAll(
+                const void* sendbuf, const int sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
+                void* recvbuf, const int recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[]){
+            int errcode;
+            if ((errcode = MPI_Neighbor_alltoallw(sendbuf, sendcounts,sdispls, sendtypes,
+                    recvbuf, recvcounts, rdispls, recvtypes, comm)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        /**
+         * The same as neighborAllToAll but doesn't block the process
+         *
+         * @return request. See mpi::Request and mpi::Requests for detail
+         */
+        MPI_Request ineighborAllToAll(
+                const void* sendbuf, const int sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
+                void* recvbuf, const int recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[]){
+            int errcode;
+            MPI_Request request;
+            if ((errcode = MPI_Ineighbor_alltoallw(sendbuf, sendcounts, sdispls, sendtypes,
+                    recvbuf, recvcounts, rdispls, recvtypes,comm, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
         }
     };
 

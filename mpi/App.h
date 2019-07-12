@@ -70,6 +70,7 @@ namespace mpi {
          *
          * @param argc pointer to argc argument in main(...) function
          * @param argv pointer to argv argument in main(...) function
+         * @param name name of the application. "TEST" is used by default
          * @param base_output (optional) the output of the data
          * @param base_input (optional) the input of the data
          */
