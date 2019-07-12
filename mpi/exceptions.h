@@ -15,110 +15,110 @@ namespace mpi{
 
     class already_initialized_exception: public exception{
     public:
-        const char* what(){
+        const char* what() const noexcept override{
             return "Application has already initialized";
         }
     };
 
     class not_initialized_exception: public exception{
     public:
-        const char* what() {
+        const char* what() const noexcept override{
             return "Application has not been initialized";
         }
     };
 
     class unknown_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Unfortunately, the exception occured was not recognized.";
         }
     };
 
     class communicator_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Bad or damaged Communicator instance: it refers to invalid communicator.";
         }
     };
 
     class datatype_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid datatype in the MPI_Datatype";
         }
     };
 
     class bad_pointer_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "The data pointer refers to the wrong object.";
         }
     };
 
     class root_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid process rank";
         }
     };
 
     class group_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "The group is invalid or has already destroyed";
         }
     };
 
     class internal_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Unable to allocate memory to complete this operation";
         }
     };
 
     class rank_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid rank";
         }
     };
 
     class operation_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid operation used during the reduction";
         }
     };
 
     class topology_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "No topology associated with communicator";
         }
     };
 
     class buffer_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid buffer or buffer is not attached";
         }
     };
 
     class request_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid request";
         }
     };
 
     class status_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "error in MPI status";
         }
     };
 
     class receive_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "the message was truncated during the receive";
         }
     };
 
     class pending_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "The operation was not completed";
         }
     };
 
     class keyval_error: public exception{
-        const char* what(){
+        const char* what() const noexcept override{
             return "Invalid keyval used";
         }
     };

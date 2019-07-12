@@ -12,6 +12,7 @@
 #include "mpi.h"
 #include "exceptions.h"
 #include "Communicator.h"
+#include "../sys/Semaphore.h"
 
 namespace mpi {
 
@@ -30,6 +31,8 @@ namespace mpi {
         double startTime;
         double localTime;
         double localDifference;
+
+        sys::Semaphore appSem;
 
         static App* instance;
         std::string appName;
@@ -70,13 +73,13 @@ namespace mpi {
          * @param base_output (optional) the output of the data
          * @param base_input (optional) the input of the data
          */
-        App(int *argc, char ***argv, std::ostream& base_output = std::cout, std::istream& base_input = std::cin):
-            out(base_output), in(base_input), comm(MPI_COMM_WORLD), appName("MPI2_SAMPLE_APP") {
-            /* Constructor. argc, argv are pointers to parameters in main() function */
-            /*
-             * 1. Initializes the MPI englne.
-             * 2. Starts the stopwatch.
-             */
+        App(int *argc, char ***argv,
+                std::string name = "TEST",
+                std::ostream& base_output = std::cout,
+                std::istream& base_input = std::cin):
+            out(base_output), in(base_input), comm(MPI_COMM_WORLD), appName(name),
+            appSem(name + "_APP_SEM")
+            {
             if (!initialized) {
                 int err_code = MPI_Init(argc, argv);
                 if (err_code != MPI_SUCCESS){
@@ -108,6 +111,7 @@ namespace mpi {
 
         ~App() {
             comm.~Communicator();
+            appSem.~Semaphore();
             MPI_Finalize();
             exit(EXIT_SUCCESS);
         }
@@ -185,6 +189,20 @@ namespace mpi {
         void abort(int errcode){
             MPI_Abort(*comm, errcode);
         }
+
+        /**
+         * Enters the critical section
+         */
+        void lock(){
+            appSem.wait();
+        }
+
+        /**
+         * Finishes the critical section
+         */
+         void unlock(){
+             appSem.post();
+         }
 
     };
 }

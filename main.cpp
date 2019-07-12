@@ -6,6 +6,7 @@
 #include "mpi/Graph.h"
 #include "mpi/GraphItem.h"
 #include "mpi/GraphCommunicator.h"
+#include "sys/Semaphore.h"
 
 void print_rank_info(mpi::AbstractGraphItem& info){
     mpi::Communicator& comm = mpi::App::getInstance()->getAppCommunicator();
@@ -112,11 +113,15 @@ int main(int argc, char* argv[]){
     } else {
         throw "unknown current layer";
     }
-    comm.barrier();
 
-    if (rank == 3) {
+    try {
+        app.lock();
         app << "Current area: " << current_area << "\n";
         app << "Current layer: " << current_layer << "\n";
         app << "Rate: " << rate << "\n";
+        app << "\n";
+        app.unlock();
+    } catch (sys::exception& e){
+        std::cout << "[ERROR " << rank << "] " << e.what() << "\n";
     }
 }
