@@ -79,12 +79,12 @@ int main(int argc, char* argv[]){
         node->assignRank(major + minor);
     }
 
-    brain.print();
+    // brain.print();
 
     comm.barrier();
 
     mpi::GraphCommunicator gcomm = brain.createCommunicator();
-    std::cout << gcomm;
+    // std::cout << gcomm;
 
     int rate;
     int areaIndex = rank / 2;
@@ -113,7 +113,10 @@ int main(int argc, char* argv[]){
         throw "unknown current layer";
     }
     comm.barrier();
-    app << "Current area: " << current_area << "\n";
-    app << "Current layer: " << current_layer << "\n";
-    app << "Rate: " << rate << "\n";
+
+    if (rank == 3) {
+        app << "Current area: " << current_area << "\n";
+        app << "Current layer: " << current_layer << "\n";
+        app << "Rate: " << rate << "\n";
+    }
 }

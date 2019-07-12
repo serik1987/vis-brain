@@ -32,6 +32,7 @@ namespace mpi {
         double localDifference;
 
         static App* instance;
+        std::string appName;
 
         std::ostringstream aux_out;
 
@@ -70,7 +71,7 @@ namespace mpi {
          * @param base_input (optional) the input of the data
          */
         App(int *argc, char ***argv, std::ostream& base_output = std::cout, std::istream& base_input = std::cin):
-            out(base_output), in(base_input), comm(MPI_COMM_WORLD) {
+            out(base_output), in(base_input), comm(MPI_COMM_WORLD), appName("MPI2_SAMPLE_APP") {
             /* Constructor. argc, argv are pointers to parameters in main() function */
             /*
              * 1. Initializes the MPI englne.
