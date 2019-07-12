@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 
 #include "mpi/App.h"
 #include "mpi/AbstractGraphItem.h"
@@ -80,6 +81,8 @@ int main(int argc, char* argv[]){
 
     brain.print();
 
+    comm.barrier();
+
     mpi::GraphCommunicator gcomm = brain.createCommunicator();
     std::cout << gcomm;
 
@@ -109,6 +112,7 @@ int main(int argc, char* argv[]){
     } else {
         throw "unknown current layer";
     }
+    comm.barrier();
     app << "Current area: " << current_area << "\n";
     app << "Current layer: " << current_layer << "\n";
     app << "Rate: " << rate << "\n";

@@ -504,8 +504,9 @@ namespace mpi {
 
         template <typename Q> void addField(Q& q){
             MPI_Aint displacement;
-            if (MPI_Get_address(&q, &displacement) != MPI_SUCCESS){
-                throw unknown_exception();
+            int errcode;
+            if ((errcode = MPI_Get_address(&q, &displacement)) != MPI_SUCCESS){
+                throw_exception(errcode);
             }
             if (current == 0){
                 base_displacement = displacement;
@@ -529,18 +530,10 @@ namespace mpi {
                     MPI_Datatype dtype  = datatype;
                     int errcode;
                     if ((errcode = MPI_Type_create_resized(dtype, 0, sizeof(T), &datatype)) != MPI_SUCCESS){
-                        if (errcode == MPI_ERR_TYPE){
-                            throw invalid_datatype_exception();
-                        } else {
-                            throw unknown_exception();
-                        }
+                        throw_exception(errcode);
                     }
                     if ((errcode = MPI_Type_free(&dtype)) != MPI_SUCCESS){
-                        switch (errcode){
-                            case MPI_ERR_TYPE: throw invalid_datatype_exception();
-                            case MPI_ERR_ARG: throw std::exception("in commit");
-                            default: throw unknown_exception();
-                        }
+                        throw_exception(errcode);
                     }
 
                 }

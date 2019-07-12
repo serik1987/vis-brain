@@ -108,16 +108,11 @@ namespace mpi {
 
         friend std::ostream& operator<<(std::ostream& out, GraphCommunicator& comm);
 
-        /*
         void neighborAllGather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
                 void* recvbuf, int recvcounts, MPI_Datatype recvtype){
             int errcode;
-            if ((errcode = MPI_Neighbor(sendbuf, sendcount, sendtype,
-                    recvbuf, recvcounts, recvtype, comm)) != MPI_SUCCESS){
-                throw_exception(errcode);
-            }
+
         }
-         */
     };
 
 }

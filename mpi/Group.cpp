@@ -2,6 +2,8 @@
 // Created by User on 02.07.2019.
 //
 
+#define GROUP_OBJECT_CODE
+
 #include "Group.h"
 
 #include <iostream>

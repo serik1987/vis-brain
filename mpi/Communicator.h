@@ -1338,12 +1338,7 @@ namespace mpi {
          * @param user_list - list of processes to exclude
          * @return the new communicator without the excluded processes
          */
-        template<typename V> Communicator exclude(V user_list) const{
-            if (comm == MPI_COMM_NULL) throw invalid_communicator_exception();
-            mpi::Group g0(this);
-            mpi::Group g1 = g0.exclude(user_list);
-            return g1.createCommunicator();
-        }
+        template<typename V> Communicator exclude(V user_list) const;
 
         /**
          * Excludes all processes belonging to the certain ranke
@@ -1355,11 +1350,6 @@ namespace mpi {
          */
         Communicator exclude(int start, int stop, int step = 1) const;
 
-        /* Returns a new communicator that contains all processes in the current communicator except the process n */
-        template<> Communicator exclude<>(int n) const{
-            return exclude(n, n+1);
-        }
-
         /**
          * Creates new communicator that contains only those processes that belong to the certain communicator
          *
@@ -1367,12 +1357,7 @@ namespace mpi {
          * @param proc_list - list of all processes
          * @return new communicator that contains ll processes mentioned in the list
          */
-        template<typename V> Communicator include(V proc_list) const{
-            if (comm == MPI_COMM_NULL) throw invalid_communicator_exception();
-            Group g0(this);
-            Group g1 = g0.include(proc_list);
-            return g1.createCommunicator();
-        }
+        template<typename V> Communicator include(V proc_list) const;
 
         /**
          * Creates new communicator that contains only processes belonging to the certain range
@@ -1439,6 +1424,26 @@ namespace mpi {
      * @return the number of elements
      */
     int get_count(MPI_Status& status, MPI_Datatype dtype);
+
+
+#ifndef GROUP_OBJECT_CODE
+
+    template<typename V> Communicator Communicator::exclude(V user_list) const {
+        if (comm == MPI_COMM_NULL) throw communicator_error();
+        mpi::Group g0(this);
+        mpi::Group g1 = g0.exclude(user_list);
+        return g1.createCommunicator();
+    }
+
+    template<typename V> Communicator Communicator::include(V proc_list) const{
+        if (comm == MPI_COMM_NULL) throw communicator_error();
+        Group g0(this);
+        Group g1 = g0.include(proc_list);
+        return g1.createCommunicator();
+    }
+
+
+#endif
 
 
 }

@@ -7,6 +7,7 @@
 
 #include <initializer_list>
 #include <vector>
+#include <cmath>
 
 #include "Communicator.h"
 #include "exceptions.h"
