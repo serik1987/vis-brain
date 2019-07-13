@@ -5,6 +5,7 @@
 #ifndef MPI2_EXCEPTIONS_H
 #define MPI2_EXCEPTIONS_H
 
+#include <exception>
 #include "mpi.h"
 
 class app_exception: public std::exception{};
@@ -123,32 +124,134 @@ namespace mpi{
         }
     };
 
-    inline void throw_exception(int errcode){
-        switch (errcode){
-            case MPI_ERR_BUFFER: throw buffer_error();
-            case MPI_ERR_COUNT: throw std::invalid_argument("invalid count in MPI routine");
-            case MPI_ERR_TYPE: throw datatype_error();
-            case MPI_ERR_TAG: throw std::invalid_argument("invalid tag in MPI routine");
-            case MPI_ERR_COMM: throw communicator_error();
-            case MPI_ERR_RANK: throw rank_error();
-            case MPI_ERR_REQUEST: throw request_error();
-            case MPI_ERR_ROOT: throw root_error();
-            case MPI_ERR_GROUP: throw group_error();
-            case MPI_ERR_OP: throw operation_error();
-            case MPI_ERR_TOPOLOGY: throw topology_error();
-            case MPI_ERR_DIMS: throw std::invalid_argument("invalid dimensions in MPI routine");
-            case MPI_ERR_ARG: throw std::invalid_argument("invalid argument was given to MPI routine");
-            case MPI_ERR_UNKNOWN: throw unknown_error();
-            case MPI_ERR_TRUNCATE: throw receive_error();
-            case MPI_ERR_OTHER: throw exception();
-            case MPI_ERR_INTERN: throw internal_error();
-            case MPI_ERR_IN_STATUS: throw status_error();
-            case MPI_ERR_PENDING: throw pending_error();
-            case MPI_KEYVAL_INVALID: throw keyval_error();
-            case MPI_ERR_LASTCODE: throw exception();
-            default: throw exception();
+    class access_denied: public exception{
+        const char* what() const noexcept override{
+            return "Access denied";
         }
-    }
+    };
+
+    class bad_file: public exception{
+        const char* what() const noexcept override{
+            return "invalid file name";
+        }
+    };
+
+    class dup_datarep_error: public exception{
+        const char* what() const noexcept override{
+            return "Conversion fulctions could not be registered becase a data representation "
+                   "hat has already defined was passed";
+        }
+    };
+
+    class file_exists_error: public exception{
+        const char* what() const noexcept override{
+            return "File exists";
+        }
+    };
+
+    class file_in_use_error: public exception{
+        const char* what() const noexcept override{
+            return "File operation could not be completed, as the file is currently opened by some process";
+        }
+    };
+
+    class file_error: public exception{
+        const char* what() const noexcept override{
+            return "Invalid file handler";
+        }
+    };
+
+    class io_error: public exception{
+        const char* what() const noexcept override{
+            return "I/O error";
+        }
+    };
+
+    class not_enough_space_error: public exception{
+        const char* what() const noexcept override{
+            return "Not enough space to write the file";
+        }
+    };
+
+    class file_not_found_error: public exception{
+        const char* what() const noexcept override{
+            return "File does not exist";
+        }
+    };
+
+    class read_only_error: public exception{
+        const char* what() const noexcept override{
+            return "Read only file or file system";
+        }
+    };
+
+    class unsupported_datarep: public exception{
+        const char* what() const noexcept override{
+            return "Unsupported datarep";
+        }
+    };
+
+    class info_error: public exception{
+        const char* what() const noexcept override{
+            return "Invalid MPI info passed";
+        }
+    };
+
+    class key_too_long_error: public exception{
+        const char* what() const noexcept override{
+            return "MPI key is too long";
+        }
+    };
+
+    class value_too_long_error: public exception{
+        const char* what() const noexcept override{
+            return "MPI value is too long";
+        }
+    };
+
+    class nokey_error: public exception{
+        const char* what() const noexcept override{
+            return "Invalid key passed";
+        }
+    };
+
+    class service_name_error: public exception{
+        const char* what() const noexcept override{
+            return "Invalid service name passed in MPI_LOOKUP_NAME";
+        }
+    };
+
+    class port_name_error: public exception{
+        const char* what() const noexcept override{
+            return "Invalid port name passed";
+        }
+    };
+
+    class quota_error: public exception{
+        const char* what() const noexcept override{
+            return "Quota exceeded";
+        }
+    };
+
+    class spawning_error: public exception{
+        const char* what() const noexcept override{
+            return "Spawning error";
+        }
+    };
+
+    class unsupported_operation_error: public exception{
+        const char*what() const noexcept override{
+            return "Operation unsupported";
+        }
+    };
+
+    class file_size_error: public exception{
+        const char* what() const noexcept override{
+            return "File size error";
+        }
+    };
+
+    void throw_exception(int errcode);
 }
 
 #endif //MPI2_EXCEPTIONS_H
