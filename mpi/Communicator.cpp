@@ -34,13 +34,4 @@ namespace mpi {
         return CartesianCommunicator(comm_cart, ndims, dims, periods);
     }
 
-    int get_count(MPI_Status& status, MPI_Datatype dtype){
-        int N;
-        int errcode;
-        if ((errcode = MPI_Get_count(&status, dtype, &N)) != MPI_SUCCESS){
-            throw_exception(errcode);
-        }
-        return N;
-    }
-
 }

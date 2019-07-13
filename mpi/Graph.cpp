@@ -5,6 +5,7 @@
 #include "Graph.h"
 #include "GraphItem.h"
 #include "App.h"
+#include "Status.h"
 
 #define MAX_SIZE 1024
 
@@ -133,7 +134,7 @@ namespace mpi{
             int rank = *rnk_it;
             if (rank == comm->getRank()){
                 char buffer[MAX_SIZE];
-                MPI_Status status = comm->recv(buffer, MAX_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0);
+                mpi::Status status = comm->recv(buffer, MAX_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0);
                 createNode(buffer, rank);
             }
         }

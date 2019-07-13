@@ -331,13 +331,13 @@ namespace mpi {
          * messages which were sent with the tag coincided with the argumemt
          * @return the information containing the message tag and rank of the source process
          */
-        MPI_Status recv(void* buf, int count, MPI_Datatype datatype, int source = MPI_ANY_SOURCE,
+        Status recv(void* buf, int count, MPI_Datatype datatype, int source = MPI_ANY_SOURCE,
                 int tag = MPI_ANY_TAG) const{
+            Status status;
             if (comm == MPI_COMM_NULL){
                 throw rank_error();
             }
             int errcode;
-            MPI_Status status;
             if ((errcode = MPI_Recv(buf, count, datatype, source, tag, comm, &status)) != MPI_SUCCESS){
                 throw_exception(errcode);
             }
@@ -403,12 +403,12 @@ namespace mpi {
          * @return information containing rank of the process which message has been received and tag of the received
          * message
          */
-        MPI_Status sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag,
+        Status sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int dest, int sendtag,
                       void* recvbuf, int recvcount, MPI_Datatype recvtype,
                       int source = MPI_ANY_SOURCE, int recvtag = MPI_ANY_TAG) const{
             if (comm == MPI_COMM_NULL) throw rank_error();
             int errcode;
-            MPI_Status status;
+            Status status;
             if ((errcode = MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype,
                     source, recvtag, comm, &status)) != MPI_SUCCESS){
                 throw_exception(errcode);
@@ -423,9 +423,9 @@ namespace mpi {
          * @param tag - tag of the message to check
          * @return the information about the message
          */
-        MPI_Status probe(int source = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const{
+        Status probe(int source = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const{
             int errcode;
-            MPI_Status status;
+            Status status;
             if ((errcode = MPI_Probe(source, tag, comm, &status)) != MPI_SUCCESS){
                 throw_exception(errcode);
             }
@@ -1415,16 +1415,6 @@ namespace mpi {
 
 
     };
-
-    /**
-     * Returns the number of elements in the status
-     *
-     * @param status the MPI_Staus
-     * @param dtype - the datatype
-     * @return the number of elements
-     */
-    int get_count(MPI_Status& status, MPI_Datatype dtype);
-
 
 #ifndef GROUP_OBJECT_CODE
 
