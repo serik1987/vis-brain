@@ -34,6 +34,10 @@ namespace mpi {
         MPI_Offset fileSize;
         bool fileSizeDefined = false;
     public:
+
+        enum Datarep {native, internal, external32};
+
+
         /**
          * Creates an empty object. An empty object can't be used for reading or writing
          * but it can be used for assigning the rvalue
@@ -97,7 +101,7 @@ namespace mpi {
         /**
          * Turns the file pointer to a certain position
          *
-         * @param offset pointer position in bytes
+         * @param offset pointer position
          * @param whence reference for the pointer position
          * MPI_SEEK_SET (default) offset is a position relatively to the beginning
          * MPI_SEEK_CUR           offset is a position relatively to the current position
@@ -123,6 +127,19 @@ namespace mpi {
                 fileSizeDefined = true;
             }
             return fileSize;
+        }
+
+        /**
+         *
+         * @return the current position of the file pointer
+         */
+        MPI_Offset getPosition(){
+            MPI_Offset position;
+            int errcode;
+            if ((errcode = MPI_File_get_position(handle, &position)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return position;
         }
 
         /**
@@ -166,7 +183,7 @@ namespace mpi {
          * @param buf information to write
          * @param count number of items to write
          * @param dtype datatype of written items
-         * @return
+         * @return mpi::Status object
          */
         mpi::Status write(const void* buf, int count, MPI_Datatype dtype){
             mpi::Status result;
@@ -193,6 +210,45 @@ namespace mpi {
                 throw_exception(errcode);
             }
             return status;
+        }
+
+
+
+        /**
+         * Sets the file view. This means that it sets the following options
+         *
+         * @param disp size of the beginning of the file that is unread by the process
+         * @param etype datatype used to calculate the item size. Please not the getPosition and seek deal with
+         * values expressed in terms of number of items. etype defines the type of such numbers
+         * @param filetype type that defines the scope of the file available to the read by this process
+         * @param datarep on of the following values:
+         * File::native - native implementation. No transformation will be occured. This will work properly
+         * on homogeneous clusters only
+         * File::internal - internal representation. The values were transformed to the format dependent on
+         * a certain MPI implementation.
+         * File::external32 - external representation. The values will be transformed to implementation-independent
+         * format
+         * @param info hints for the MPI implementation
+         */
+        void setView(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype,
+                Datarep datarep = native, MPI_Info info = MPI_INFO_NULL){
+            std::string datarep_name;
+            switch (datarep){
+                case native:
+                    datarep_name = "native";
+                    break;
+                case internal:
+                    datarep_name = "internal";
+                    break;
+                case external32:
+                    datarep_name = "external32";
+                    break;
+            }
+            int errcode;
+            if ((errcode = MPI_File_set_view(handle, disp, etype, filetype,
+                    datarep_name.c_str(), info)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
         }
     };
 

@@ -3,3 +3,9 @@
 //
 
 #include "Datatype.h"
+
+namespace mpi{
+
+    int autocommits = 0;
+
+}

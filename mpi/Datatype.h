@@ -14,6 +14,8 @@
 
 namespace mpi {
 
+    extern int autocommits;
+
 
     /**
      * The general class for the datatypes.
@@ -206,6 +208,7 @@ namespace mpi {
     protected:
         bool deletable = true;
         bool commited = false;
+        bool autocommit = true;
     public:
         /**
          * For internal usage only
@@ -258,14 +261,27 @@ namespace mpi {
         }
 
         /**
-         * Casting mpi::ComplexDatatype -> MPI_Datatype with autocommit
+         * Casting mpi::ComplexDatatype -> MPI_Datatype with autocommit if autocommit is not disabled
          *
          * @return
          */
         virtual operator MPI_Datatype() override{
-            if (!commited) commit();
+            if (!commited && autocommit){
+                ++autocommits;
+                commit();
+            }
             return datatype;
         }
+
+        /**
+         * Disables autocommit
+         */
+        void disableAutocommit() { autocommit = false; }
+
+        /**
+         * Enables autocommit
+         */
+        void enableAutocommit() { autocommit = true; }
 
         /**
          * Returns the total memory engaged by an instance of this datatype
@@ -541,6 +557,30 @@ namespace mpi {
             ComplexDatatype::commit();
         }
 
+    };
+
+
+
+    /**
+     * Single value of oldtype surrounded by data gaps
+     * lb - gap before the data belonging to the oldtype
+     * extent = gap before + data + gap after
+     * All gaps have values in bytes
+     */
+    class ResizedDatatype: public ComplexDatatype{
+    public:
+        ResizedDatatype() = delete;
+
+        ResizedDatatype(MPI_Datatype oldtype, MPI_Aint lb, MPI_Aint extent): ComplexDatatype(){
+            int errcode;
+            if ((errcode = MPI_Type_create_resized(oldtype, lb, extent, &datatype)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        const char* name(){
+            return "resuzed datatype";
+        }
     };
 
 

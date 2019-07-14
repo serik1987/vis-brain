@@ -14,6 +14,7 @@
 #include "Datatype.h"
 #include "Request.h"
 #include "Operation.h"
+#include "Status.h"
 
 
 namespace mpi {
