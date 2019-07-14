@@ -159,6 +159,29 @@ namespace mpi {
             return result;
         }
 
+
+
+        /**
+         *  Collective implementation of read(...). 'Collective' means that the program execution at this point
+         *  may be suspended in order to decline number of readouts
+         *
+         * @param buf see read(...) for details
+         * @param count see read(...) for details
+         * @param dtype see read(...) for details
+         * @return see read(...) for details
+         */
+        mpi::Status readAll(void* buf, int count, MPI_Datatype dtype){
+            mpi::Status result;
+            int errcode;
+            if ((errcode = MPI_File_read_all(handle, buf, count, dtype, &result)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return result;
+        }
+
+
+
+
         /**
          * Reads the data from the certain position
          *
@@ -177,6 +200,11 @@ namespace mpi {
             return status;
         }
 
+
+
+
+
+
         /**
          * Writes the data to the file
          *
@@ -193,6 +221,33 @@ namespace mpi {
             }
             return result;
         }
+
+
+
+
+
+        /**
+         * The same as write(...) but provides non-blocking option of it. 'Nonblocking" means that the function
+         * nay suspend the process execution at this line in order to decline total number of requests to the
+         * memory storage
+         *
+         * @param buf see write(...) for details
+         * @param count see write(...) for details
+         * @param dtype see write(...) for details
+         * @return see write(...) for details
+         */
+        mpi::Status writeAll(const void* buf, int count, MPI_Datatype dtype){
+            mpi::Status status;
+            int errcode;
+            if ((errcode = MPI_File_write_all(handle, buf, count, dtype, &status)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return status;
+        }
+
+
+
+
 
         /**
          * Wties the data to the file at a certain position
