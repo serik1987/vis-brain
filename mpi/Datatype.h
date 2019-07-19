@@ -639,6 +639,35 @@ namespace mpi {
     };
 
 
+    /**
+     * Creates a type that represents a slice for some matrix. The type can be used for copying the whole slice and
+     * its saving to the file (as file type)
+     *
+     * Constructor arguments:
+     * ndims - number of dimensions in the matrix
+     * globalSizes[k] - size of k-th dimension in the matrix
+     * localSizes[k] - size of k-th dimension in the slice
+     * startIndices[k] - start index of the k-th dimension
+     */
+    class SubarrayDatatype: public ComplexDatatype{
+    public:
+        SubarrayDatatype() = delete;
+
+        SubarrayDatatype(MPI_Datatype oldtype, int ndims, const int globalSizes[], const int localSizes[],
+                const int startIndices[], int order = MPI_ORDER_C){
+            int errcode;
+            if ((errcode = MPI_Type_create_subarray(ndims, globalSizes, localSizes, startIndices, order,
+                    oldtype, &datatype)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        const char* name(){
+            return "subarray datatype";
+        }
+    };
+
+
 
 
 }
