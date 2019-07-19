@@ -162,6 +162,62 @@ namespace mpi {
 
 
         /**
+         * The same as read(...) but does it non-blockingly
+         *
+         * @param buf the same as in read(...)
+         * @param count the same as in read(...)
+         * @param dtype the same as in read(...)
+         * @return substitution into mpi::Request and mpi::Requests
+         */
+        MPI_Request iread(void* buf, int count, MPI_Datatype dtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_File_iread(handle, buf, count, dtype, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+
+        /**
+         * The same as read(...) but moves the file pointer for all processes simultaneously while
+         * reading by the certain process
+         *
+         * @param buf the same as in read(...)
+         * @param count the same as in read(...)
+         * @param dtype the same as in read(...)
+         * @return the same as in read(...)
+         */
+        mpi::Status readShared(void* buf, int count, MPI_Datatype dtype){
+            mpi::Status status;
+            int errcode;
+            if ((errcode = MPI_File_read_shared(handle, buf, count, dtype, &status)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return status;
+        }
+
+
+        /**
+         * The same as readShared(...) but does it non-blockingly
+         *
+         * @param buf the same as readShared(...)
+         * @param count the same as readShared(...)
+         * @param dtype the same as readShared(...)
+         * @return the substitution into mpi::Request or mpi::Requests
+         */
+        MPI_Request ireadShared(void* buf, int count, MPI_Datatype dtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_File_iread_shared(handle, buf, count, dtype, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+
+
+        /**
          *  Collective implementation of read(...). 'Collective' means that the program execution at this point
          *  may be suspended in order to decline number of readouts
          *
@@ -180,6 +236,36 @@ namespace mpi {
         }
 
 
+        /**
+         * The same as readAll(...) but just starts the collective reading and prepares for this
+         *
+         * @param buf see readAll(...) for details
+         * @param count see readAll(...) for details
+         * @param dtype see readAll(...) for details
+         */
+        void readAllBegin(void* buf, int count, MPI_Datatype dtype){
+            int errcode;
+            if ((errcode = MPI_File_read_all_begin(handle, buf, count, dtype)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+
+        /**
+         * Finish the processes started by readAllBegin and may suspend the process execution for such
+         * a purpose
+         *
+         * @param buf the buffer passed during the readAllBegin(...) execution
+         * @return the mpi::Status object
+         */
+        Status readAllEnd(void* buf){
+            int errcode;
+            Status status;
+            if ((errcode = MPI_File_read_all_end(handle, buf, &status)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return status;
+        }
 
 
         /**
@@ -198,6 +284,28 @@ namespace mpi {
                 throw_exception(errcode);
             }
             return status;
+        }
+
+
+
+
+
+        /**
+         * The same as readAt(...) but does it non-blockingly
+         *
+         * @param offset the same as in readAt(...)
+         * @param buf the same as in readAt(...)
+         * @param count the same as in readAt(...)
+         * @param dtype the same as in readAt(...)
+         * @return substitution into mpi::Request or mpi::Requests
+         */
+        MPI_Request ireadAt(MPI_Offset offset, void* buf, int count, MPI_Datatype dtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_File_iread_at(handle, offset, buf, count, dtype, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
         }
 
 
@@ -227,6 +335,28 @@ namespace mpi {
 
 
         /**
+         * The same as write(...) but does it non-blockingly
+         *
+         * @param buf the same as in write(...)
+         * @param count the same as in write(...)
+         * @param dtype the same as in write(...)
+         * @return the data to be substituted into mpi::Request or mpi::Requests (see reference on these classes
+         * for details)
+         */
+        MPI_Request iwrite(const void* buf, int count, MPI_Datatype dtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_File_iwrite(handle, buf, count, dtype, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+
+
+
+
+        /**
          * The same as write(...) but provides non-blocking option of it. 'Nonblocking" means that the function
          * nay suspend the process execution at this line in order to decline total number of requests to the
          * memory storage
@@ -247,6 +377,38 @@ namespace mpi {
 
 
 
+        /**
+         * The same as writeAll(...) but just starts the job performed in parallel and doesn't suspend the process
+         *
+         * @param buf the same as in writeAll(...)
+         * @param count the same as in writeAll(...)
+         * @param dtype the same as in writeAll(...)
+         */
+        void writeAllBegin(const void* buf, int count, MPI_Datatype dtype){
+            int errcode;
+            if ((errcode = MPI_File_write_all_begin(handle, buf, count, dtype)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+
+
+        /**
+         * Finishes the process started by writeAllEnd
+         *
+         * @param buf the argument passed to writeAllBegin(...)
+         * @return the mpi::Status object
+         */
+        Status writeAllEnd(const void* buf){
+            Status status;
+            int errcode;
+            if ((errcode = MPI_File_write_all_end(handle, buf, &status)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return status;
+        }
+
+
 
 
         /**
@@ -265,6 +427,63 @@ namespace mpi {
                 throw_exception(errcode);
             }
             return status;
+        }
+
+
+        /**
+         * The same as writeAt(...) but does it non-blockingly
+         *
+         * @param offset the same as in writeAt(...)
+         * @param buf the same as in writeAt(...)
+         * @param count the same as in writeAt(...)
+         * @param dtype the same as in writeAt(...)
+         * @return the substitution into mpi::Request or mpi::Requests
+         */
+        MPI_Request iwriteAt(MPI_Offset offset, const void* buf, int count, MPI_Datatype dtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_File_iwrite_at(handle, offset, buf, count, dtype, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
+        }
+
+
+        /**
+         * the same as write but each new call to the file shifts the pointer by a certain value
+         *
+         * @param buf the same as in write(...)
+         * @param count the same as in write(...)
+         * @param dtype the same as in write(...)
+         * @return the same as in write(...)
+         */
+        mpi::Status writeShared(const void* buf, int count, MPI_Datatype dtype){
+            mpi::Status status;
+            int errcode;
+            if ((errcode = MPI_File_write_shared(handle, buf, count, dtype, &status)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return status;
+        }
+
+
+
+
+        /**
+         * the same as writeShared(...) but does it non-blockingly
+         *
+         * @param buf the same as writeShared(...)
+         * @param count the same as writeShared(...)
+         * @param dtype the same as writeShared(...)
+         * @return a substitution into mpi::Request or mpi::Requests
+         */
+        MPI_Request iwriteShared(const void* buf, int count, MPI_Datatype dtype){
+            MPI_Request request;
+            int errcode;
+            if ((errcode = MPI_File_iwrite_shared(handle, buf, count, dtype, &request)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+            return request;
         }
 
 
