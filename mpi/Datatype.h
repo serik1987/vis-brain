@@ -579,7 +579,62 @@ namespace mpi {
         }
 
         const char* name(){
-            return "resuzed datatype";
+            return "resized datatype";
+        }
+    };
+
+
+    /**
+     * The datatype is used for filetype to save n-dimensional distributed matrices as a file.
+     *
+     * In order to save n-dimensional matrix do the following steps:
+     * 1. Distribute it in the following way:
+     * +---------------+---------------+
+     * | Process 0 job | Process 1 job |
+     * +---------------+---------------+
+     * | Process 2 job | Process 3 job |
+     * +---------------+---------------+
+     *
+     * 2. define the following variables:
+     * size - total number of processes participated in writing the matrix.
+     * rank - rank of the current process
+     * ndims - number of dimensions in the matrix
+     * gsizes[k] - number of elements of dtype along k-th dimension
+     * distribs[k] - distribution of elements along k-th dimension
+     *      MPI_DISTRIBUTE_BLOCK - block distribution (first, items belonging to the first process go, then,
+     *      there are items belonging to the second process, then, to the third etc.)
+     *      MPI_DISTRIBUTE_CYCLIC - cyclic(M) distribution which means, that the first M values belong to the
+     *      first process, the next M values belong to the second process, ..., then again: first M values are for
+     *      first process, next M values are from the second, ...
+     * dargs[k] - for cyclic distribution, the value of M from the previous description, for block distribution
+     * always MPI_DISTRIBUTE_DFLT_ARGS
+     * psizes[k] - size of the process grid along each dimension
+     * order - use the default value if you create stand-alone C/C++ application
+     *
+     * 3. Create the file type:
+     * mpi::ArrayDatatype ftype(oldtype, size, rank, ndims, psizes, distribs, dargs, psizes);
+     *
+     * 4. Set an appropriate file view:
+     * file.setView(0, oldtype, ftype);
+     *
+     * 5. Write the array into the file:
+     * file.writeAll(matrix, local_size, oldtype);
+     */
+    class ArrayDatatype: public ComplexDatatype{
+    public:
+        ArrayDatatype() = delete;
+
+        ArrayDatatype(MPI_Datatype oldtype, int size, int rank, int ndims, const int gsizes[], const int distribs[],
+                const int dargs[], const int psizes[], int order = MPI_ORDER_C){
+            int errcode;
+            if ((errcode = MPI_Type_create_darray(size, rank, ndims, gsizes, distribs, dargs, psizes, order,
+                    oldtype, &datatype)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        const char* name(){
+            return "darray datatype";
         }
     };
 
