@@ -10,6 +10,7 @@
 #include "Communicator.h"
 #include "exceptions.h"
 #include "Status.h"
+#include "Info.h"
 
 
 namespace mpi {
@@ -523,6 +524,19 @@ namespace mpi {
                     datarep_name.c_str(), info)) != MPI_SUCCESS){
                 throw_exception(errcode);
             }
+        }
+
+        /**
+         *
+         * @return the info for the file
+         */
+        Info getInfo(){
+            Info info;
+            int errcode;
+            if ((errcode = MPI_File_get_info(handle, &info.getContent())) != MPI_SUCCESS){
+                return errcode;
+            }
+            return info;
         }
     };
 

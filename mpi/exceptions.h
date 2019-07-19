@@ -251,6 +251,12 @@ namespace mpi{
         }
     };
 
+    class mpi_info_key_not_found: public exception{
+        const char* what() const noexcept override{
+            return "Key in MPI info not found";
+        }
+    };
+
     void throw_exception(int errcode);
 }
 
