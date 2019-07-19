@@ -538,6 +538,28 @@ namespace mpi {
             }
             return info;
         }
+
+
+        /**
+         * Sets the file operation as 'atomic'. The operations are 'atomic' if the data written by some process
+         * are guaranteed to be read by another process
+         */
+        void setAtomic(){
+            int errcode;
+            if ((errcode = MPI_File_set_atomicity(handle, 1)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
+
+        /**
+         * Finishes all writing processes done by all files. Shall be overlapped by mpi::Communicator::barrier function
+         */
+        void sync(){
+            int errcode;
+            if ((errcode = MPI_File_sync(handle)) != MPI_SUCCESS){
+                throw_exception(errcode);
+            }
+        }
     };
 
 }
