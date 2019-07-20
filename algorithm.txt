@@ -1,0 +1,156 @@
+The order of loading parameters:
+-----------------------------------------------------------
+1) /usr/local/lib/vis-brain/lib.js
+Prototypes for all standard mechanisms
+
+2) ~/.vis-brain/lib.js
+Prototypes for all user-defined mechanisms
+
+3) ./.project.js
+Common parameters for the project. This script defines the world
+object. All network will be created after recursive parse of the
+world object.
+
+4) The file denoted after '--model' key
+Parameters for a certain task or a certain simulation stage
+
+5) The JS code denoted after '--set' key
+
+6) Then, the parameters will be recursively changed according to
+JSON object containing after '--update' key
+
+
+
+Loading mechanism machinery:
+--------------------------------------------------------------
+Each mechanism has name that looks like here:
+stimulus:stationary.gif
+stimulus - mechanism class
+stationary - mechanism subclass (each mechanism can have different subclasses)
+gif - mechanism name
+
+Mechanism name shall be written in its description placed in .js object; field 'name'
+
+Mechanism class is predefined by the program structure. The mechanisms belonging to unknown classes will not
+be taken into consideration.
+
+Defining the mechanism:
+1) The program will call the method Stimulus::createStimulus("stationary.gif"). This in turn call the method
+StationaryStimulus::createStimulus("gif") which in turn call the constructor GifStimulus()
+
+2) In case of failure to find "gif" stimulus in the set of the standard mechanisms the program will create the object
+ExternalStationaryStimulus("gif") which will in turn try to look for the file "stationary.gif.o"
+
+3) In case of failure to find "stationary" in the set of the standard mechanisms the program will create the object
+ExternalStimulus("stationary.gif") which will in turn try to look for the file "stationary.gif.o"
+
+
+
+
+
+
+Where the program will find stationary.gif.o:
+--------------------------------------------------------------
+1) as /usr/local/lib/vis-brain/mechanisms/stationary.gif.o
+2) as ~/.vis-brain/stationary.gif.o
+3) as ./.mechanisms/stationary.gif.o
+4) if this doesn't help to find this file the program will be terminated with error
+
+
+
+
+
+
+
+The order of loading the parameter description:
+------------------------------------------------------------
+The parameter description looks the same as parameter but each parameter contains object with the following key
+instead of the certain value:
+name - name of the parameter
+type - type of the widget that is responsible for the parameter
+refresh - true if one need to reload the parameters after their adding,
+false if adding the line to the script is necessary
+multiple - true for multiple values
+default - the default value
+description - detailed description of the parameter
+constraint - the JS expression. If present, the parameters will be set only
+when this expression returns true
+values - in case when type == "LIST" this is an object with the following items:
+item_1_id: item_1_name,
+item_2_id: item_2_name
+...
+The other types are:
+'string' - the string to input
+'int' - integer
+'float' - float number
+'checkbox' - the checkbox
+'file' - in case of stand-alone application the user need to select the file from
+the hard disk drive. In case of client/server architecture the file will be
+uploaded to the server and placed to the current folder
+'colorpicker' - the field to pick the color
+
+The description files influence only on the job of GUI. They are absolutely useless when starting the application
+alone. The parameter description will find in the following files:
+
+1) /usr/local/lib/vis-brain/description.js
+2) ~/.vis-brain/description.js
+3) ./.description.js
+
+In case of failure to find the scalar parameter the parameter is treated to be hidden. In case of failure to find
+the object parameter the object parameter is also treated as hidden.
+
+
+
+
+
+
+
+Stage # Stage description                                               Responsibility             process rank
+1       Preliminary interpretation of all JS scripts                    App                        0
+2       Restarting the program under mpirun management                  App                        0
+3       Final interpretation of all JS scripts                          App                        0
+4       Setting general application parameters                          App                        0
+5       Creating the logger and writing the first log                   Logger                     default communicator
+6       Creating the brain object and filling it by the parameters      Brain                      default communicator
+7       Creating the stimulus and attaching the stimulus to the brain   Stimulus                   input layer
+8       Creating the analyzers                                          Analyzer                   all attached comms
+9       Starting the simulation process                                 App                        graph communicator
+10      Analysis of the simulated data                                  AnalyzerManager            next communicator
+11      Closing the application at normal conditions and during errors  The system of destructors  default communicator
+
+
+Stages of assembling neural model
+------------------------------------------------
+1. create all children
+2. Adjust children parameters:
+2a. Create subchildren.
+2b. Adjust common parameters.
+2c. Compute the layer load
+2d. Adjust parameters of subchildren
+2e. Set the list of inputs and outputs
+3. Estimate the computational load for
+each matrix and for each connection
+4. Normalize the total computational
+load in such a way as their sum of total
+number of all processes
+5. Distribute the processes among the
+network and assign the load to each
+its element
+6. Create matrix communicator, assign
+each matrix communicator to the brain
+layer
+7. Split the nodes in each communication
+graph into subnodes.
+8. Join the nodes with the same rank
+9. Create the output buffer for each
+graph node
+10. Create input buffer for each graph node
+11. Create the input buffer for each graph node
+12. Create input and output for each layer
+13. Create the method (automatically creates
+the initial state)
+14. In the initial state, create all necessary
+equations according to the method
+15. Create the stimuli set and assign them to the layer
+16. Create the analyzers and attach them to the layers
+17. Simulate
