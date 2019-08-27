@@ -1,11 +1,3 @@
-/**
- * A sample model for the abstract layer
- *
- * @param type "layer" for the layer (have mechanisms instead of subnetworks)
- * @param type "network" for the network (have subnetworks instead of mechanisms)
- * @param stimuulus_acceptable true is the layer accepts the stimulus input, false otherwise
- * @param output properties of the output data: matrix width and height and resolution on X and Y
- */
 let lgn_on = {
     type: "layer",
     stimulus_acceptable: true,
@@ -46,6 +38,8 @@ let lgn_on_lagged = Object.create(lgn_on);
 let lgn_off_lagged = Object.create(lgn_off);
 lgn_on_lagged.latency = lgn_off_lagged.latency = 80;
 
+
+
 let lgn = {
     type: "network",
     networks: {
@@ -54,8 +48,7 @@ let lgn = {
     },
     input: [],
     output: ["on", "off"]
-}
-
+};
 
 let lgn_directional = {
     type: "network",
@@ -72,7 +65,6 @@ let lgn_directional = {
     input: [],
     output: ["lagged_on", "lagged_off", "non_lagged_on", "non_lagged_off"]
 };
-
 
 let cbrd_layer = {
     type: "layer",
@@ -149,92 +141,39 @@ let simulation_job = {
     type: "job",
     mechanism: "job:simulate",
     output_folder: "default_folder"
-}
+};
 
 
-
-
-/**
- * General properties of the stimulation process
- *
- * @param application the general properties of the application
- * @param brain properties of the brain
- * @param stimulus the stimulus properties
- * @param analysis the methods for the analysis
- * @param trainer (optional but required when application.reason == "training") the trainer
- */
 let world = {
 
-    /**
-     * Defines the general parameters of the simulation process
-     *
-     * @param parent name of the parent application ("mpirun" for mpich)
-     * @param configuration_mode 'simple' for running on the standalone computers, 'complex' for running on clusters
-     * @param process_number total number of all processes
-     * @param log the object responsible for the logging process
-     * @param reason the general reason for the simulation 'simulate' - run stand-alone simulation and save the results
-     * into the hard disk drive
-     */
     application: {
         type: "application",
         parent: "mpirun",
         configuration_mode: "simple",
         process_number: 4,
-        reason: "simulate",
 
-        /**
-         * Parameters of the logging process
-         */
         log: {
 
         }
     },
 
-    /**
-     * Properties of the network to simulate
-     *
-     * @param parameters (optional, but required for some types of the brain) global parameters of the brain
-     * @param networks all sub-networks containing in the netwoek
-     * @param connections represents the connections betwween the children
-     */
     brain: {
         type: "brain",
         networks: {
-            lgn: lgn_directional/*,
-            v1: v1_cbrd */
-        }/*,
-        connections: {
-            source: "lgn",
-            target: "v1",
-            weight: 10.0,
-            profile: {
-                mechanism: "connections:artificial.hubel-wiesel",
-                sigma_x: 200,
-                sigma_y: 20,
-                magnification_factor: 1.5
-            }
-        } */
+            lgn: lgn_directional
+        }
     },
 
-    /**
-     * Stimulation parameters
-     */
     stimulus: {
 
     },
 
-    /**
-     * The analyzer parameters
-     */
+
     analysis: {
 
     },
 
-    /**
-     * Information about the purpose of the simulation tasl
-     */
+
     job: simulation_job
-
-
 
 };

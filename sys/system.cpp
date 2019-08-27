@@ -10,10 +10,16 @@ namespace sys {
         switch (errno) {
             case EACCES:
                 throw access_error();
+            case EBADF:
+                throw bad_file_error();
             case EEXIST:
                 throw file_exists_error();
+            case EFAULT:
+                throw std::bad_alloc();
             case EINVAL:
                 throw invalid_argument();
+            case ELOOP:
+                throw too_many_symbolic_links();
             case ENFILE:
             case EMFILE:
                 throw too_many_open_files();
@@ -25,10 +31,13 @@ namespace sys {
                 throw insufficient_memory();
             case EINTR:
                 throw interrupted_error();
+            case ENOTDIR:
+                throw directory_not_exists();
             case ETIMEDOUT:
                 throw timeout_error();
             case EOVERFLOW:
                 throw overflow_error();
+
             default:
                 throw other_error();
         }

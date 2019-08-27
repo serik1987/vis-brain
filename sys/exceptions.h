@@ -18,6 +18,12 @@ namespace sys{
         }
     };
 
+    class bad_file_error: public exception{
+        const char* what() const noexcept override{
+            return "invalid file descriptor";
+        }
+    };
+
     class other_error: public exception{
         const char* what() const noexcept override{
             return "undocumented error on POSIX request";
@@ -39,6 +45,12 @@ namespace sys{
     class too_many_open_files: public exception{
         const char* what() const noexcept override{
             return "too many opened files";
+        }
+    };
+
+    class too_many_symbolic_links: public exception{
+        const char* what() const noexcept override{
+            return "too many symbolic links encountered while traversing the path";
         }
     };
 
@@ -75,6 +87,12 @@ namespace sys{
     class overflow_error: public exception{
         const char* what() const noexcept override{
             return "the value is too large or maximum limit exceeded";
+        }
+    };
+
+    class directory_not_exists: public exception{
+        const char* what() const noexcept override{
+            return "A component of the path prefix of pathname is not a directory";
         }
     };
 
