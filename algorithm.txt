@@ -6,7 +6,7 @@ Prototypes for all standard mechanisms
 2) ~/.vis-brain/lib.js
 Prototypes for all user-defined mechanisms
 
-3) ./.project.js
+3) ./project.js
 Common parameters for the project. This script defines the world
 object. All network will be created after recursive parse of the
 world object.

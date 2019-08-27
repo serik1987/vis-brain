@@ -96,6 +96,12 @@ namespace sys{
         }
     };
 
+    class invalid_file_path: public exception{
+        const char* what() const noexcept override{
+            return "Invalid file path";
+        }
+    };
+
     void create_exception();
 
 }

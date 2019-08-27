@@ -45,9 +45,7 @@ let lgn = {
     networks: {
         on: lgn_on,
         off: lgn_off
-    },
-    input: [],
-    output: ["on", "off"]
+    }
 };
 
 let lgn_directional = {

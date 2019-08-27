@@ -74,6 +74,14 @@ namespace sys {
 
         /**
          *
+         * @return true if the file is a directory
+         */
+        bool isDir(){
+            return S_ISDIR(info.st_mode);
+        }
+
+        /**
+         *
          * @return number of hard links
          */
         nlink_t getHardLinkNumber(){

@@ -76,6 +76,34 @@ public:
     }
 };
 
+class ModeError: public exception{
+private:
+    std::string message;
+public:
+    ModeError(const char* mode_name): exception(){
+        message = std::string("") + "Incorrect argument given: --" + mode_name + "\n";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
+class ModeArgumentError: public exception{
+private:
+    std::string message;
+public:
+    ModeArgumentError(const char* argument): exception(){
+        message = std::string("")
+                + "The following data can't be attributed to either argument or the argument parameter: " +
+                argument;
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
 }
 
 #endif //MPI2_EXCEPTIONS_H

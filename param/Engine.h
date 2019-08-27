@@ -39,8 +39,47 @@ namespace param {
         v8::Isolate::CreateParams createParams;
         v8::Isolate* isolate;
 
+        std::string auxiliary_script;
+        std::string auxiliary_code;
+        std::string auxiliary_data;
+        bool gui = false;
+        bool help = false;
+
+        /**
+         * Returns a concise help
+         */
+        void getHelp();
+
+        /**
+         * Executes all files needed for vis-brain. Runs automatically on engine creation
+         */
         void loadAll();
-        void executeFile(v8::Local<v8::Context>& context, std::string filename);
+
+        /**
+         * Parses all input parameters
+         *
+         * @param argc
+         * @param argv
+         */
+        void parseParameters(int argc, char* argv[]);
+
+        /**
+         * Executes a specified file
+         *
+         * @param context context where the file shall be executed
+         * @param filename name of the executed file
+         * @param create_if_not_exists true if create empty file and folder, false otherwise
+         */
+        void executeFile(v8::Local<v8::Context>& context, std::string filename, bool create_if_not_exists);
+
+        /**
+         * Executes an arbitrary JS code
+         *
+         * @param context context where the code shall be launched
+         * @param filename filename where the code belongs to (arbitrary string, influences on messages only, may be empty)
+         * @param code the JS code itself
+         * @return result of the code execution
+         */
         v8::Local<v8::Value> executeCode(v8::Local<v8::Context>& context, std::string filename, const char* code);
 
     };
