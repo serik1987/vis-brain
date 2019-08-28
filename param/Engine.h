@@ -8,6 +8,7 @@
 #include <v8.h>
 #include <libplatform/libplatform.h>
 #include "../compile_options.h"
+#include "Object.h"
 
 namespace param {
 
@@ -21,7 +22,7 @@ namespace param {
     public:
 
         /**
-         * Initialization: no parameters
+         * Initialization: handles to all command line parameters
          */
         Engine(int* argc, char*** argv);
         Engine(const Engine&) = delete;
@@ -30,6 +31,39 @@ namespace param {
          * Destruction
          */
         ~Engine();
+
+        /**
+         * Checks for GUI mode.
+         * The GUI mode is defined by --gui key. In this mode the simulation is not started. However,
+         * the application sends the simulation data to the output stream
+         *
+         * @return true for GUI mode
+         */
+        bool getGui() const { return gui; }
+
+        /**
+         *
+         * @return the root object that corresponds to the World Javascript object
+         */
+        const param::Object& getRoot() const {
+            return *root;
+        }
+
+        /**
+         *
+         * @return A single instance to this engine The method is valid only if the instance has not been destroyed
+         */
+        static Engine& getInstance(){
+            return *instance;
+        }
+
+        /**
+         *
+         * @return the context where all scripts were executed (for developmental use only)
+         */
+        v8::Persistent<v8::Context>& getContext(){
+            return *persistent_context;
+        }
 
 
 
@@ -44,6 +78,9 @@ namespace param {
         std::string auxiliary_data;
         bool gui = false;
         bool help = false;
+
+        param::Object* root = nullptr;
+        v8::Persistent<v8::Context>* persistent_context;
 
         /**
          * Returns a concise help

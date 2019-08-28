@@ -59,9 +59,7 @@ let lgn_directional = {
         lagged_off: lgn_off_lagged,
         non_lagged_on: lgn_on,
         non_lagged_off: lgn_off
-    },
-    input: [],
-    output: ["lagged_on", "lagged_off", "non_lagged_on", "non_lagged_off"]
+    }
 };
 
 let cbrd_layer = {
@@ -149,7 +147,6 @@ let world = {
         parent: "mpirun",
         configuration_mode: "simple",
         process_number: 4,
-
         log: {
 
         }

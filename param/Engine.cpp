@@ -31,6 +31,12 @@ Engine::Engine(int* argc, char*** argv){
     V8::Initialize();
     createParams.array_buffer_allocator = ArrayBuffer::Allocator::NewDefaultAllocator();
     isolate = Isolate::New(createParams);
+    Isolate::Scope isolate_scope(isolate);
+    HandleScope handle_scope(isolate);
+    auto global = ObjectTemplate::New(isolate);
+    auto context = Context::New(isolate, NULL, global);
+    Context::Scope context_scope(context);
+    persistent_context = new Persistent<Context>(isolate, context);
     std::cout << "V8 engine was loaded\n";
     loadAll();
 }
@@ -44,6 +50,12 @@ void Engine::getHelp() {
 }
 
 Engine::~Engine(){
+    if (persistent_context != nullptr){
+        delete persistent_context;
+    }
+    if (root != nullptr){
+        delete root;
+    }
     std::cout << "V8 engine was quited\n";
     isolate->Dispose();
     V8::Dispose();
@@ -53,7 +65,7 @@ Engine::~Engine(){
 
 void Engine::loadAll(){
     HandleScope handle_scope(isolate);
-    Local<Context> context = Context::New(isolate);
+    Local<Context> context(isolate->GetCurrentContext());
     Context::Scope context_scope(context);
     executeFile(context, std::string(APP_FOLDER) + std::string(STANDARD_JS_OPTIONS), false);
     executeFile(context, std::string(USER_FOLDER) + std::string(STANDARD_JS_OPTIONS), true);
@@ -68,15 +80,7 @@ void Engine::loadAll(){
         throw NoObjectError();
     }
     auto world = world_raw->ToObject(context).ToLocalChecked();
-    auto application_raw = world->Get(context,
-            String::NewFromUtf8(isolate, "application").ToLocalChecked()).ToLocalChecked();
-    std::cout << "Application info: " << application_raw->IsObject() << std::endl;
-    auto application = application_raw->ToObject(context).ToLocalChecked();
-    auto process_number_raw = application->Get(context, String::NewFromUtf8(isolate, "process_number").ToLocalChecked())
-            .ToLocalChecked();
-    auto process_number = process_number_raw->ToInteger(context).ToLocalChecked();
-    auto final_process_number = process_number->Int32Value(context).ToChecked();
-    std::cout << "Total number of processes: " << final_process_number << std::endl;
+    root = new param::Object(isolate, "world", world);
 }
 
 void Engine::executeFile(Local<Context>& context, std::string filename, bool create_if_not_exists){

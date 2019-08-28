@@ -104,6 +104,78 @@ public:
     }
 };
 
+class TypeError: public exception {};
+
+class IntegerTypeError: public TypeError{
+private:
+    std::string message;
+
+public:
+    IntegerTypeError(const std::string& object_name, const std::string& field_name): TypeError(){
+        message = "'" + field_name + "' is not a valid integer field of '" + object_name + "'";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
+class FloatTypeError: public TypeError{
+private:
+    std::string message;
+
+public:
+    FloatTypeError(const std::string& object_name, const std::string& field_name): TypeError(){
+        message = "'" + field_name + "' is not a valid float field of '" + object_name + "'";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
+class StringTypeError: public TypeError{
+private:
+    std::string message;
+
+public:
+    StringTypeError(const std::string& object_name, const std::string& field_name): TypeError() {
+        message = "'" + field_name + "' is not a valid string of '" + object_name + "'";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
+class ObjectTypeError: public TypeError{
+private:
+    std::string message;
+
+public:
+    ObjectTypeError(const std::string& object_name, const std::string& field_name): TypeError() {
+        message = "'" + field_name + "' is not a child object of '" + object_name + "'";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
+class BooleanTypeError: public TypeError{
+private:
+    std::string message;
+
+public:
+    BooleanTypeError(const std::string& object_name, const std::string& field_name): TypeError(){
+        message = "'" + field_name + "' is not a boolean value of '" + object_name + "'";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
 }
 
 #endif //MPI2_EXCEPTIONS_H
