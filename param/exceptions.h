@@ -2,8 +2,8 @@
 // Created by serik1987 on 26.08.19.
 //
 
-#ifndef MPI2_EXCEPTIONS_H
-#define MPI2_EXCEPTIONS_H
+#ifndef PARAM_EXCEPTIONS_H
+#define PARAM_EXCEPTIONS_H
 
 #include <exception>
 #include <v8.h>
@@ -173,6 +173,13 @@ public:
 
     const char* what() const noexcept override{
         return message.c_str();
+    }
+};
+
+class WrongObjectType: public TypeError{
+public:
+    const char* what() const noexcept override{
+        return "Object type given in JS doesn't correspond to the object type required by the parameter\n";
     }
 };
 

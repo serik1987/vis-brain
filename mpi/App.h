@@ -81,16 +81,21 @@ namespace mpi {
             out(base_output), in(base_input), comm(MPI_COMM_WORLD), appName(name),
             appSem(name + "_APP_SEM")
             {
-            if (!initialized) {
-                int err_code = MPI_Init(argc, argv);
-                if (err_code != MPI_SUCCESS){
-                    throw_exception(err_code);
+            try {
+                if (!initialized) {
+                    int err_code = MPI_Init(argc, argv);
+                    if (err_code != MPI_SUCCESS) {
+                        throw_exception(err_code);
+                    }
+                    initialized = true;
+                    instance = this;
+                    startTime = localTime = MPI_Wtime();
+                } else {
+                    throw already_initialized_exception();
                 }
-                initialized = true;
-                instance = this;
-                startTime = localTime = MPI_Wtime();
-            } else {
-                throw already_initialized_exception();
+            } catch (std::exception& e){
+                std::cerr << "\033[31mFATAL ERROR: \033[0mApplication engine was failed due to the following reasons: ";
+                std::cerr << e.what() << std::endl;
             }
         }
 
@@ -204,6 +209,30 @@ namespace mpi {
          void unlock(){
              appSem.post();
          }
+
+         /**
+          * Broadcasting a particular string
+          *
+          * @param sample the sample string
+          * @param root rank of the root process
+          */
+         void broadcastString(std::string& sample, int root);
+
+         /**
+          * Broadcasting a particular integer value
+          *
+          * @param data the value to broadcast
+          * @param root rank of the root process
+          */
+         void broadcastInteger(int& data, int root);
+
+         /**
+          * Broadcasting a particular boolean value
+          *
+          * @param value the value to broadcast
+          * @param root rank of the root process
+          */
+         void broadcastBoolean(bool& value, int root);
 
     };
 }

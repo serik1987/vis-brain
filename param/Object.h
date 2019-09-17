@@ -103,6 +103,12 @@ namespace param {
          */
         FieldType getFieldType(const std::string& name) const;
 
+        /**
+         *
+         * @return JSON representation of the root object (named 'world')
+         */
+        std::string stringify() const;
+
 
         /**
          * Provides iteration over all fields. Use it in the following way:

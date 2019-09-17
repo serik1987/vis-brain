@@ -12,7 +12,9 @@
 using namespace param;
 using namespace v8;
 
-Engine* Engine::instance = NULL;
+Engine* Engine::instance = nullptr;
+
+
 
 Engine::Engine(int* argc, char*** argv){
     if (instance != NULL){
@@ -37,7 +39,7 @@ Engine::Engine(int* argc, char*** argv){
     auto context = Context::New(isolate, NULL, global);
     Context::Scope context_scope(context);
     persistent_context = new Persistent<Context>(isolate, context);
-    std::cout << "V8 engine was loaded\n";
+    std::cerr << "V8 engine was loaded\n";
     loadAll();
 }
 
@@ -56,11 +58,12 @@ Engine::~Engine(){
     if (root != nullptr){
         delete root;
     }
-    std::cout << "V8 engine was quited\n";
     isolate->Dispose();
     V8::Dispose();
     V8::ShutdownPlatform();
     delete createParams.array_buffer_allocator;
+    instance = nullptr;
+    std::cerr << "V8 engine was quited\n";
 }
 
 void Engine::loadAll(){
@@ -89,7 +92,7 @@ void Engine::executeFile(Local<Context>& context, std::string filename, bool cre
     if (pos != std::string::npos){
         filename = filename.replace(0, 1, sys::get_home_directory());
     }
-    std::cout << "Executing " << filename << "...";
+    std::cerr << "Executing " << filename << "...";
     // try {
         off_t size;
         try {
@@ -107,7 +110,7 @@ void Engine::executeFile(Local<Context>& context, std::string filename, bool cre
             executeCode(context, filename, buffer);
             delete[] buffer;
         }
-        std::cout << "\033[32m\033[1mOK\033[0m\n";
+        std::cerr << "\033[32m\033[1mOK\033[0m\n";
         /*
     } catch (std::exception& e){
 
@@ -118,7 +121,7 @@ void Engine::executeFile(Local<Context>& context, std::string filename, bool cre
 
 Local<Value> Engine::executeCode(Local<Context>& context, std::string filename, const char* code){
     if (filename.empty() && strlen(code) != 0){
-        std::cout << "Executing {" << code << "}...";
+        std::cerr << "Executing {" << code << "}...";
     }
     EscapableHandleScope handle_scope(isolate);
     TryCatch try_catch(isolate);
@@ -134,7 +137,7 @@ Local<Value> Engine::executeCode(Local<Context>& context, std::string filename, 
     }
     Local<Value> final_result = result.ToLocalChecked();
     if (filename.empty() && strlen(code) != 0){
-        std::cout << "\033[32m\033[1mOK\033[0m\n";
+        std::cerr << "\033[32m\033[1mOK\033[0m\n";
     }
     return handle_scope.Escape(final_result);
 }
@@ -144,11 +147,11 @@ void Engine::parseParameters(int argc, char **argv) {
     for (int i=1; i < argc; i++){
         if (strncmp(argv[i], "--", 2) == 0){
             char* mode_name = argv[i]+2;
-            if (strcmp(mode_name, "model") == 0){
+            if (strcmp(mode_name, USER_DEFINED_MODEL_FILE_PARAMETER) == 0){
                 mode = mode_model;
-            } else if (strcmp(mode_name, "set") == 0){
+            } else if (strcmp(mode_name, USER_DEFINED_MODEL_CODE_PARAMETER) == 0){
                 mode = mode_set;
-            } else if (strcmp(mode_name, "update") == 0){
+            } else if (strcmp(mode_name, USER_DEFINED_MODEL_JSON_PARAMETER) == 0){
                 mode = mode_update;
             } else if (strcmp(mode_name, "help") == 0){
                 help = true;

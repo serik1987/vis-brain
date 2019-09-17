@@ -193,3 +193,18 @@ std::ostream& operator<<(std::ostream& out, const param::Object& obj){
     }
     return out;
 }
+
+
+std::string param::Object::stringify() const{
+    HandleScope handle_scope(isolate);
+    Persistent<Context>& persistent_context = Engine::getInstance().getContext();
+    Local<Context> context = Local<Context>::New(isolate, persistent_context);
+    Context::Scope context_scope(context);
+    TryCatch try_catch(isolate);
+    std::string raw_code = "JSON.stringify(world)";
+    Local<String> code = String::NewFromUtf8(isolate, raw_code.c_str()).ToLocalChecked();
+    Local<Script> script = Script::Compile(context, code).ToLocalChecked();
+    Local<Value> result = script->Run(context).ToLocalChecked();
+    String::Utf8Value value(isolate, result);
+    return *value;
+}
