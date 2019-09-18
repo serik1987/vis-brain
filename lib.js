@@ -26,7 +26,6 @@ let lgn_on = {
         E0: 0
     },
     L_spont: 10,
-    latency: 0,
     rf_type: "on",
     latency: 20
 };
@@ -132,6 +131,13 @@ let v1_cbrd = {
     ]
 };
 
+let brain_lgn_to_v1_connection_trial = {
+    type: "brain",
+    networks: {
+        lgn: lgn_directional
+    }
+}
+
 
 let simulation_job = {
     type: "job",
@@ -147,17 +153,10 @@ let world = {
         parent: "mpirun",
         configuration_mode: "simple",
         process_number: 4,
-        log: {
-
-        }
+        output_folder_prefix: "test"
     },
 
-    brain: {
-        type: "brain",
-        networks: {
-            lgn: lgn_directional
-        }
-    },
+    brain: brain_lgn_to_v1_connection_trial,
 
     stimulus: {
 

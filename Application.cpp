@@ -7,6 +7,7 @@
 #include "compile_options.h"
 #include "exceptions.h"
 #include "param/Engine.h"
+#include "sys/Folder.h"
 
 Application* Application::instance = nullptr;
 
@@ -22,7 +23,6 @@ Application::Application(int* argc, char ***argv):
 }
 
 Application::~Application(){
-    std::cerr << "application destructed\n";
 }
 
 
@@ -44,6 +44,7 @@ void Application::loadAllParameters() {
 
 
 void Application::loadParameterList(const param::Object &source) {
+    std::cerr << "Loading application parameters...";
     mpi::Communicator& comm = getAppCommunicator();
     parent = source.getStringField("parent");
     process_number = source.getIntegerField("process_number");
@@ -60,7 +61,15 @@ void Application::loadParameterList(const param::Object &source) {
         fillCmd();
     }
     if (process_number != comm.getProcessorNumber() || is_gui) return;
-    std::cout << "CONTINUE LOADING CONFIGURATION\n";
+    setOutputFolder(source.getStringField("output_folder_prefix"));
+    std::cerr << "\033[32;1mOK\033[0m\n";
+}
+
+void Application::setOutputFolder(const std::string &folder_prefix) {
+    output_folder = folder_prefix;
+    for (auto info: sys::Folder(".")){
+        std::cout << info.d_name << std::endl;
+    }
 }
 
 void Application::broadcastParameterList(){
@@ -80,7 +89,7 @@ void Application::broadcastParameterList(){
             throw UnknownMpiConfiguration();
     }
     if (process_number != getAppCommunicator().getProcessorNumber() || is_gui) return;
-    std::cout << "CONTINUE BROADCASTING PARAMETERS\n";
+    // std::cout << "CONTINUE BROADCASTING PARAMETERS\n";
     application_ready = true;
 }
 
@@ -89,10 +98,10 @@ void Application::fillCmd() {
     buf << parent << " ";
     switch (configuration_mode){
         case Simple:
-            buf << "-n " << process_number << " vis-brain";
+            buf << "-n " << process_number << " " << APP_NAME;
             break;
         case External:
-            buf << "-n " << process_number << " -f " << host_configuration_file << " vis-brain";
+            buf << "-n " << process_number << " -f " << host_configuration_file << " " << APP_NAME;
             break;
         default:
             throw UnknownMpiConfiguration();

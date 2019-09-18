@@ -88,6 +88,15 @@ public:
         return cmd;
     }
 
+
+    /**
+     *
+     * @return the directory where simulation data were located
+     */
+    const std::string& getOutputFolder() const{
+        return output_folder;
+    }
+
 private:
     static Application* instance;
     bool application_ready = false;
@@ -106,7 +115,10 @@ private:
     std::string cmd;
     int argument_number;
     char** argument_pointer;
+    std::string output_folder;
 
+
+    void setOutputFolder(const std::string& folder_prefix);
 
 };
 
