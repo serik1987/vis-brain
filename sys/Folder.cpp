@@ -28,14 +28,12 @@ namespace sys{
 
 
     void Folder::open(){
-        std::cout << "Directory initialization...\n";
         if ((dir = opendir(name.c_str())) == NULL){
             create_exception();
         }
     }
 
     void Folder::close(){
-        std::cout << "directory destruction\n";
         if (closedir(dir) == -1){
             create_exception();
         }

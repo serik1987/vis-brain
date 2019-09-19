@@ -119,6 +119,7 @@ private:
 
 
     void setOutputFolder(const std::string& folder_prefix);
+    std::string getDate();
 
 };
 

@@ -3,11 +3,13 @@
 //
 
 #include <sstream>
+#include <iomanip>
 #include "Application.h"
 #include "compile_options.h"
 #include "exceptions.h"
 #include "param/Engine.h"
 #include "sys/Folder.h"
+#include "sys/auxiliary.h"
 
 Application* Application::instance = nullptr;
 
@@ -60,16 +62,44 @@ void Application::loadParameterList(const param::Object &source) {
     if (process_number != comm.getProcessorNumber() && comm.getRank() == 0 && !is_gui){
         fillCmd();
     }
+    std::cerr << "\033[32;1mOK\033[0m\n";
     if (process_number != comm.getProcessorNumber() || is_gui) return;
     setOutputFolder(source.getStringField("output_folder_prefix"));
-    std::cerr << "\033[32;1mOK\033[0m\n";
 }
 
 void Application::setOutputFolder(const std::string &folder_prefix) {
+    using std::string;
     output_folder = folder_prefix;
+    int folder_number = 0;
+    string name_start = folder_prefix + "_";
     for (auto info: sys::Folder(".")){
-        std::cout << info.d_name << std::endl;
+        if (info.d_type == DT_DIR){
+            string dir_name = info.d_name;
+            if (dir_name.find(name_start) == 0){
+                int iStart = name_start.length();
+                int iFinish = dir_name.find("_", iStart);
+                string simulation_number = dir_name.substr(iStart, iFinish - iStart);
+                int current_folder_number = atoi(simulation_number.c_str());
+                if (current_folder_number >= folder_number){
+                    folder_number = current_folder_number + 1;
+                }
+            }
+        }
     }
+    std::ostringstream output_folder_stream;
+    output_folder_stream << name_start << std::setw(3) << std::setfill('0') << folder_number << "_" << getDate();
+    output_folder = output_folder_stream.str();
+    sys::create_empty_dir(output_folder);
+    std::cerr << "Output folder: " << output_folder << std::endl;
+}
+
+std::string Application::getDate(){
+    time_t now = ::time(0);
+    tm* t = localtime(&now);
+    std::ostringstream s;
+    s << t->tm_year+1900 << std::setw(2) << std::setfill('0') << t->tm_mon+1 <<
+        std::setw(2) << std::setfill('0') << t->tm_mday;
+    return s.str();
 }
 
 void Application::broadcastParameterList(){
