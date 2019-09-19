@@ -54,7 +54,7 @@ public:
      *
      * @return an instance to the application.
      */
-    const Application& getInstance(){
+    static Application& getInstance(){
         return *instance;
     }
 
