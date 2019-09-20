@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <unistd.h>
 #include "Engine.h"
 #include "exceptions.h"
 #include "../Application.h"
@@ -49,16 +50,16 @@ namespace logging{
 
 
     void Engine::hideNotification() const {
-        std::cout << "\033[2K\033[0G";
+        std::cerr << "\033[2K\033[0G";
     }
 
     void Engine::showNotification() const {
         hideNotification();
-        std::cout << notice_message << "...";
+        std::cerr << notice_message << "...";
         if (steps_completed == steps_total){
-            std::cout << green << "OK" << reset << std::endl;
+            std::cerr << green << "OK" << reset << std::endl;
         } else {
-            std::cout << steps_completed << "/" << steps_total;
+            std::cerr << steps_completed << "/" << steps_total;
         }
     }
 
@@ -85,6 +86,39 @@ namespace logging{
         ss << steps_completed << ":" << steps_total << ":" << notice_message;
         noticeLogger->writeLog(ss.str(), Logger::Notice, false, false);
         systemLogger->writeLog(ss.str(), Logger::Notice, false, false);
+    }
+
+    void Engine::enterLog() {
+        int x;
+        Application::getInstance().time();
+        Application::getInstance().getAppCommunicator().barrier();
+        Application::getInstance().getAppCommunicator().broadcast(&x, 1, MPI_INTEGER, 0);
+        if (Application::getInstance().getAppCommunicator().getRank() == 0) {
+            hideNotification();
+        }
+        Application::getInstance().lock();
+    }
+
+    void Engine::debug(const std::string &msg) {
+        std::cerr << Logger::makeString(msg, Logger::Debug, false, true);
+        publicDebugLogger->writeLog(msg, Logger::Debug, false, true);
+        privateDebugLogger->writeLog(msg, Logger::Debug, false, true);
+        systemLogger->writeLog(msg, Logger::Debug, false, true);
+    }
+
+    void Engine::exitLog() {
+        int* x = new int[Application::getInstance().getAppCommunicator().getProcessorNumber()];
+        int y;
+        Application::getInstance().unlock();
+        std::cerr.flush();
+        Application::getInstance().getAppCommunicator().barrier();
+        Application::getInstance().getAppCommunicator().gather(&y, 1, MPI_INTEGER, x, 1, MPI_INTEGER, 0);
+        if (Application::getInstance().getAppCommunicator().getRank() == 0){
+            sleep(0.05);
+            showNotification();
+        }
+        delete [] x;
+
     }
 
 }

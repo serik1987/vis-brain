@@ -29,6 +29,29 @@ namespace logging{
     void progress(int completed, int total, const std::string& message){
         Application::getInstance().getLoggingEngine().progress(completed, total, message);
     }
+
+    /**
+     * The function shall be put before call of a set of debug()/warning() routines
+     */
+    void enter(){
+        Application::getInstance().getLoggingEngine().enterLog();
+    }
+
+    /**
+     * The function shall be put after call of a set of debug()/warning() routines
+     */
+    void exit(){
+        Application::getInstance().getLoggingEngine().exitLog();
+    }
+
+    /**
+     * Prints the debugging message
+     *
+     * @param msg The debugging message itself
+     */
+    void debug(const std::string& msg){
+        Application::getInstance().getLoggingEngine().debug(msg);
+    }
 }
 
 #endif //MPI2_OUTPUT_H

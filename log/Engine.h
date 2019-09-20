@@ -79,6 +79,28 @@ namespace logging {
          * @param total total number of steps
          */
         void progress(int completed, int total);
+
+
+        /**
+         * Prints the debug message
+         * The function will print the debug message correctly when you can enterLog() method before and
+         * exitDLog() method after. You can call several debug(...) methods enveloped by enterDebug() and exitDebug()
+         * Also, don't forget to insert #if DEBUG==1 line before and #endif line after if you want your application
+         * to be compiled successfully
+         *
+         * @param msg Message to print
+         */
+        void debug(const std::string& msg);
+
+        /**
+         * Shall be run before printing the debug messages
+         */
+        void enterLog();
+
+        /**
+         * Shall be run after printing the debug messages
+         */
+        void exitLog();
     };
 
 }

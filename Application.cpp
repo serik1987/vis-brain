@@ -184,6 +184,14 @@ void Application::simulate(){
             } else {
                 logging::progress(k / 2, 10);
             }
+        } else {
+#if DEBUG==1
+            logging::enter();
+            logging::debug("Message 1");
+            logging::debug("Message 2");
+            logging::debug("Message 3");
+            logging::exit();
+#endif
         }
     }
 }

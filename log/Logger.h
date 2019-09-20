@@ -61,8 +61,7 @@ namespace logging {
         virtual void writeLog(const std::string &msg, Priority priority, bool print_priority,
                 bool print_timestamp) = 0;
 
-    protected:
-        std::string makeString(const std::string &msg, Priority priority, bool print_priority,
+        static std::string makeString(const std::string &msg, Priority priority, bool print_priority,
                                bool print_timestamp);
     };
 
