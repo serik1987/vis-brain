@@ -9,6 +9,7 @@
 #include "SystemLogger.h"
 #include "../compile_options.h"
 #include "UserLogger.h"
+#include "exceptions.h"
 
 namespace logging {
 
@@ -46,6 +47,7 @@ namespace logging {
         UserLogger* warningLogger;
 
         bool enveloped;
+        bool simulation_failed = false;
 
     public:
 
@@ -113,6 +115,23 @@ namespace logging {
          * @param print_as_root true if the log shall be printed by the root process only
          */
         void warning(const std::string& msg, bool print_as_root = true);
+
+        /**
+         * Prints the simulation error (magenta alarm level)
+         * The routine has effect only on process with rank = 0
+         *
+         * @param exc exception generated during the error
+         */
+        void error(const simulation_exception& exc);
+
+        /**
+         * Prints fatal error (error that terminates the program execution)
+         * The function has effect only for a process with rank = 0
+         * Doesn't print error on the screen. main(int, char**) function is expected to do this
+         *
+         * @param e exception thrown during the error
+         */
+        void fail(const std::exception& e);
 
         /**
          * Shall be run before printing the debug messages

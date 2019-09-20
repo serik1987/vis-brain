@@ -65,8 +65,9 @@ namespace logging{
 
     void Engine::progress(int completed, int total, const std::string &message) {
         if (Application::getInstance().getAppCommunicator().getRank() == 0) {
-            if (notice_message != "") {
+            if (notice_message != "" && !simulation_failed) {
                 showNotification(steps_total, steps_total);
+                simulation_failed = false;
             }
             showNotification(completed, total, message);
             logProgress();
@@ -102,6 +103,9 @@ namespace logging{
 
 #if DEBUG==1
     void Engine::debug(const std::string &msg) {
+        if (!enveloped){
+            throw debug_logger_not_enveloped();
+        }
         std::cerr << Logger::makeString(msg, Logger::Debug, false, true);
         publicDebugLogger->writeLog(msg, Logger::Debug, false, true);
         privateDebugLogger->writeLog(msg, Logger::Debug, false, true);
@@ -126,7 +130,32 @@ namespace logging{
             warningLogger->writeLog(msg, Logger::Warning, true, false);
             systemLogger->writeLog(msg, Logger::Warning, true, false);
         }
+    }
 
+    void Engine::error(const simulation_exception& exc){
+        if (Application::getInstance().getAppCommunicator().getRank() == 0){
+            hideNotification();
+            std::cerr << notice_message << "..." << magenta << "FAILED" << reset << std::endl;
+            std::cerr << magenta << "ERROR: " << reset << exc.what() << std::endl;
+            simulation_failed = true;
+            infoLogger->writeLog(exc.what(), Logger::Error, true, false);
+            warningLogger->writeLog(exc.what(), Logger::Error, true, false);
+            systemLogger->writeLog(exc.what(), Logger::Error, true, false);
+        }
+    }
+
+    void Engine::fail(const std::exception &e) {
+        UserLogger failLogger(Application::getInstance().getOutputFolder() + FAIL_LOG_FILE);
+        if (Application::getInstance().getAppCommunicator().getRank() == 0){
+            hideNotification();
+            std::cerr << notice_message << "..." << red << "FAILED\n";
+            std::cerr << "FATAL ERROR: " << reset << e.what() << std::endl;
+            std::cerr << red << "The program was suddenly terminated during the error\n" << reset;
+            infoLogger->writeLog(e.what(), Logger::Failed, true, false);
+            warningLogger->writeLog(e.what(), Logger::Failed, true, false);
+            systemLogger->writeLog(e.what(), Logger::Failed, true, false);
+            failLogger.writeLog(e.what(), Logger::Failed, false, false);
+        }
     }
 
     void Engine::exitLog() {

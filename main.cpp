@@ -27,8 +27,10 @@ int main(int argc, char* argv[]) {
             }
         }
     } catch (std::exception& e){
-        std::cerr << "\033[31m\033[1mFAILED\nFATAL ERROR: \033[0m";
-        std::cerr << e.what() << std::endl;
+        if (application.getAppCommunicator().getRank() == 0) {
+            std::cerr << "\033[31m\033[1mFAILED\nFATAL ERROR: \033[0m";
+            std::cerr << e.what() << std::endl;
+        }
     }
 
     return 0;

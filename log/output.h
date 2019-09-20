@@ -91,6 +91,17 @@ namespace logging{
     void warning(const std::string& msg, bool print_as_root = true){
         Application::getInstance().getLoggingEngine().warning(msg, print_as_root);
     }
+
+
+    /**
+     * Generates error message
+     * The routine has effect only for a process with rank = 0
+     *
+     * @param e an exception thrown
+     */
+    void error(const simulation_exception& e){
+        Application::getInstance().getLoggingEngine().error(e);
+    }
 }
 
 #endif //MPI2_OUTPUT_H
