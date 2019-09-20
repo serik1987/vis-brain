@@ -45,6 +45,8 @@ namespace logging {
         UserLogger* noticeLogger;
         UserLogger* warningLogger;
 
+        bool enveloped;
+
     public:
 
         /**
@@ -81,6 +83,7 @@ namespace logging {
         void progress(int completed, int total);
 
 
+#if DEBUG==1
         /**
          * Prints the debug message
          * The function will print the debug message correctly when you can enterLog() method before and
@@ -91,6 +94,25 @@ namespace logging {
          * @param msg Message to print
          */
         void debug(const std::string& msg);
+#endif
+
+        /**
+         * Prints information about the model parameters
+         *
+         * @param msg message containing information about the model parameters
+         */
+        void info(const std::string& msg);
+
+
+        /**
+         * Prints warning. When the warning(...) function is not enveloped by enterLog(...) and exitLog(...) the
+         * warning will be printed into the log file. When the function is enveloped the warnings will be printed
+         * both to the log file and to the screen
+         *
+         * @param msg the warning message itself.
+         * @param print_as_root true if the log shall be printed by the root process only
+         */
+        void warning(const std::string& msg, bool print_as_root = true);
 
         /**
          * Shall be run before printing the debug messages

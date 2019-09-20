@@ -5,9 +5,7 @@
 #include <sstream>
 #include <iomanip>
 #include "compile_options.h"
-#if DEBUG==1
 #include <unistd.h>
-#endif
 #include "Application.h"
 #include "log/output.h"
 #include "compile_options.h"
@@ -175,6 +173,8 @@ void Application::fillCmd() {
 
 
 void Application::simulate(){
+    logging::info("C = 1");
+    logging::info("g_tot = 4e-9");
     logging::progress(0, 10, "Simulation immitation");
     for (int k=1; k <= 20; k++){
         sleep(2);
@@ -192,6 +192,10 @@ void Application::simulate(){
             logging::debug("Message 3");
             logging::exit();
 #endif
+        }
+
+        if (k == 12){
+            logging::warning("Simulation under these parameters will be inaccurate", false);
         }
     }
 }

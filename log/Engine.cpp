@@ -97,16 +97,40 @@ namespace logging{
             hideNotification();
         }
         Application::getInstance().lock();
+        enveloped = true;
     }
 
+#if DEBUG==1
     void Engine::debug(const std::string &msg) {
         std::cerr << Logger::makeString(msg, Logger::Debug, false, true);
         publicDebugLogger->writeLog(msg, Logger::Debug, false, true);
         privateDebugLogger->writeLog(msg, Logger::Debug, false, true);
         systemLogger->writeLog(msg, Logger::Debug, false, true);
     }
+#endif
+
+    void Engine::info(const std::string& msg){
+        if (Application::getInstance().getAppCommunicator().getRank() == 0){
+            infoLogger->writeLog(msg, Logger::Info, false, false);
+            systemLogger->writeLog(msg, Logger::Info, false, false);
+        }
+    }
+
+    void Engine::warning(const std::string &msg, bool print_as_root) {
+        int rank = Application::getInstance().getAppCommunicator().getRank();
+        if (!print_as_root || rank == 0){
+            if (enveloped){
+                std::cerr << yellow << Logger::makeString(msg, Logger::Warning, true, false) << reset;
+            }
+            infoLogger->writeLog(msg, Logger::Warning, true, false);
+            warningLogger->writeLog(msg, Logger::Warning, true, false);
+            systemLogger->writeLog(msg, Logger::Warning, true, false);
+        }
+
+    }
 
     void Engine::exitLog() {
+        enveloped = false;
         int* x = new int[Application::getInstance().getAppCommunicator().getProcessorNumber()];
         int y;
         Application::getInstance().unlock();
@@ -114,7 +138,7 @@ namespace logging{
         Application::getInstance().getAppCommunicator().barrier();
         Application::getInstance().getAppCommunicator().gather(&y, 1, MPI_INTEGER, x, 1, MPI_INTEGER, 0);
         if (Application::getInstance().getAppCommunicator().getRank() == 0){
-            sleep(0.05);
+            sleep(0.1);
             showNotification();
         }
         delete [] x;
