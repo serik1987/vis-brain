@@ -11,6 +11,7 @@
 #include "param/Object.h"
 #include "log/Engine.h"
 #include "param/Engine.h"
+#include "exceptions.h"
 
 
 /**
@@ -113,6 +114,19 @@ public:
      */
     const std::string& getOutputFolder() const{
         return output_folder;
+    }
+
+
+    /**
+     *
+     * @return current logging engine
+     * @throws logging_engine_is_not_ready when the logging engine has not been created yet
+     */
+    logging::Engine& getLoggingEngine(){
+        if (log == nullptr){
+            throw logging_engine_is_not_ready();
+        }
+        return *log;
     }
 
 private:

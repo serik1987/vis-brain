@@ -30,7 +30,6 @@ namespace logging{
         infoLogger = new UserLogger(output_folder + MODEL_DESCRIPTION_LOG_FILE);
         noticeLogger = new UserLogger(output_folder + NOTICE_LOG_FILE);
         warningLogger = new UserLogger(output_folder + WARNING_LOG_FILE);
-        std::cout << "logging engine was created\n";
     }
 
     Engine::~Engine(){
@@ -46,7 +45,6 @@ namespace logging{
         }
         delete noticeLogger;
         delete warningLogger;
-        std::cout << "logging engine was quitted\n";
     }
 
 
@@ -55,12 +53,38 @@ namespace logging{
     }
 
     void Engine::showNotification() const {
+        hideNotification();
         std::cout << notice_message << "...";
         if (steps_completed == steps_total){
             std::cout << green << "OK" << reset << std::endl;
         } else {
             std::cout << steps_completed << "/" << steps_total;
         }
+    }
+
+    void Engine::progress(int completed, int total, const std::string &message) {
+        if (Application::getInstance().getAppCommunicator().getRank() == 0) {
+            if (notice_message != "") {
+                showNotification(steps_total, steps_total);
+            }
+            showNotification(completed, total, message);
+            logProgress();
+        }
+    }
+
+    void Engine::progress(int completed, int total){
+        if (Application::getInstance().getAppCommunicator().getRank() == 0) {
+            hideNotification();
+            showNotification(completed, total);
+            logProgress();
+        }
+    }
+
+    void Engine::logProgress(){
+        std::ostringstream ss;
+        ss << steps_completed << ":" << steps_total << ":" << notice_message;
+        noticeLogger->writeLog(ss.str(), Logger::Notice, false, false);
+        systemLogger->writeLog(ss.str(), Logger::Notice, false, false);
     }
 
 }

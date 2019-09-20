@@ -23,4 +23,11 @@ public:
     }
 };
 
+class logging_engine_is_not_ready: public ApplicationError{
+public:
+    const char* what() const noexcept override{
+        return "Logging engine was not created. The method is unsuitable for this simulation stage. Use more trivial ones\n";
+    }
+};
+
 #endif //EXCEPTIONS_H

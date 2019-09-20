@@ -33,6 +33,8 @@ namespace logging {
         };
         void showNotification() const;
 
+        void logProgress();
+
 
         SystemLogger* systemLogger;
 #if DEBUG == 1
@@ -59,6 +61,24 @@ namespace logging {
         static char magenta[];
         static char red[];
         static char reset[];
+
+
+        /**
+         * Prints new progress bar on the screen and writes logs about the progress
+         *
+         * @param completed number of completed steps
+         * @param total total number of steps
+         * @param message Message to show
+         */
+        void progress(int completed, int total, const std::string& message);
+
+        /**
+         * Updates current progress bar on the screen and writes logs about the progress
+         *
+         * @param completed number of completed steps
+         * @param total total number of steps
+         */
+        void progress(int completed, int total);
     };
 
 }

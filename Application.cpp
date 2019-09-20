@@ -4,8 +4,12 @@
 
 #include <sstream>
 #include <iomanip>
+#include "compile_options.h"
+#if DEBUG==1
 #include <unistd.h>
+#endif
 #include "Application.h"
+#include "log/output.h"
 #include "compile_options.h"
 #include "exceptions.h"
 #include "param/Engine.h"
@@ -171,6 +175,15 @@ void Application::fillCmd() {
 
 
 void Application::simulate(){
-    // deleteV8Engine();
-    sleep(10);
+    logging::progress(0, 10, "Simulation immitation");
+    for (int k=1; k <= 20; k++){
+        sleep(2);
+        if (k%2 == 0){
+            if (k/2 == 5){
+                logging::progress(k/2, 10, "Simulation2 immitation");
+            } else {
+                logging::progress(k / 2, 10);
+            }
+        }
+    }
 }
