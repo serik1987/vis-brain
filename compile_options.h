@@ -15,4 +15,11 @@
 #define USER_DEFINED_MODEL_JSON_PARAMETER "update"
 #define DEBUG 1
 
+#define PUBLIC_DEBUG_LOG_FILE "debug.log"
+#define PRIVATE_DEBUG_LOG_FILE "/debug.log"
+#define MODEL_DESCRIPTION_LOG_FILE "/model-description.log"
+#define NOTICE_LOG_FILE "/simulation.log"
+#define WARNING_LOG_FILE "/warnings.log"
+#define FAIL_LOG_FILE "/failed.log"
+
 #endif //MPI2_COMPILE_OPTIONS_H

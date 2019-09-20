@@ -9,6 +9,8 @@
 #include "mpi/App.h"
 #include "param/Loadable.h"
 #include "param/Object.h"
+#include "log/Engine.h"
+#include "param/Engine.h"
 
 
 /**
@@ -46,6 +48,22 @@ public:
      * @throws exception when there is an error in the JS code
      */
     void loadAllParameters();
+
+    /**
+     * Clears logging engine and V8 engine
+     */
+    void clearEngines();
+
+
+    /**
+     * Starts the simulation process
+     */
+    void simulate();
+
+    /**
+     * Clears V8 engine
+     */
+    void deleteV8Engine();
 
     /**
      * A single application instance is created during execution of the main() function in main.cpp file
@@ -116,6 +134,10 @@ private:
     int argument_number;
     char** argument_pointer;
     std::string output_folder;
+
+
+    param::Engine* engine = nullptr;
+    logging::Engine* log = nullptr;
 
 
     void setOutputFolder(const std::string& folder_prefix);

@@ -10,7 +10,9 @@
 
 namespace logging {
 
-
+    /**
+     * Prints logs to the user file using MPI facilities
+     */
     class UserLogger: public Logger {
     private:
         mpi::File* file;

@@ -2,8 +2,8 @@
 // Created by serik1987 on 26.08.19.
 //
 
-#ifndef MPI2_ENGINE_H
-#define MPI2_ENGINE_H
+#ifndef MPI2_PARAMENGINE_H
+#define MPI2_PARAMENGINE_H
 
 #include <v8.h>
 #include <libplatform/libplatform.h>
@@ -124,4 +124,4 @@ namespace param {
 }
 
 
-#endif //MPI2_ENGINE_H
+#endif //MPI2_PARAMENGINE_H

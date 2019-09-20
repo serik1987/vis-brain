@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <unistd.h>
 #include "Application.h"
 #include "compile_options.h"
 #include "exceptions.h"
@@ -24,16 +25,32 @@ Application::Application(int* argc, char ***argv):
     argument_pointer = *argv;
 }
 
+void Application::deleteV8Engine() {
+    if (engine != nullptr){
+        delete engine;
+        engine = nullptr;
+    }
+}
+
+void Application::clearEngines(){
+    if (log != nullptr){
+        delete log;
+        log = nullptr;
+    }
+    deleteV8Engine();
+}
+
 Application::~Application(){
+    clearEngines();
 }
 
 
 void Application::loadAllParameters() {
     mpi::Communicator& comm = getAppCommunicator();
     if (comm.getRank() == 0){
-        param::Engine engine(&argument_number, &argument_pointer);
-        const param::Object& world = engine.getRoot();
-        is_gui = engine.getGui();
+        engine = new param::Engine(&argument_number, &argument_pointer);
+        const param::Object& world = engine->getRoot();
+        is_gui = engine->getGui();
         loadParameters(world.getObjectField("application"));
         if (is_gui){
             std::cout << world.stringify() << std::endl;
@@ -41,7 +58,14 @@ void Application::loadAllParameters() {
         }
     }
     broadcastParameterList();
-
+    if (process_number == comm.getProcessorNumber() && !is_gui){
+        log = new logging::Engine(output_folder);
+    }
+    /*
+    if (comm.getRank() == 0){
+        delete engine;
+    }
+     */
 }
 
 
@@ -119,7 +143,7 @@ void Application::broadcastParameterList(){
             throw UnknownMpiConfiguration();
     }
     if (process_number != getAppCommunicator().getProcessorNumber() || is_gui) return;
-    // std::cout << "CONTINUE BROADCASTING PARAMETERS\n";
+    broadcastString(output_folder, 0);
     application_ready = true;
 }
 
@@ -140,4 +164,13 @@ void Application::fillCmd() {
         buf << " \"" << argument_pointer[i] << "\"";
     }
     cmd = buf.str();
+}
+
+
+
+
+
+void Application::simulate(){
+    // deleteV8Engine();
+    sleep(10);
 }

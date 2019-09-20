@@ -10,6 +10,9 @@
 namespace logging {
 
 
+    /**
+     * Prints logs using syslogd facilities
+     */
     class SystemLogger: public Logger {
     private:
         static bool logger_exists;

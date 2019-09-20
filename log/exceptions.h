@@ -2,8 +2,8 @@
 // Created by serik1987 on 20.09.19.
 //
 
-#ifndef MPI2_EXCEPTIONS_H
-#define MPI2_EXCEPTIONS_H
+#ifndef MPI2_LOGEXCEPTIONS_H
+#define MPI2_LOGEXCEPTIONS_H
 
 #include <exception>
 
@@ -15,4 +15,4 @@ class system_logger_already_exists: public log_exception{
     }
 };
 
-#endif //MPI2_EXCEPTIONS_H
+#endif //MPI2_LOGEXCEPTIONS_H

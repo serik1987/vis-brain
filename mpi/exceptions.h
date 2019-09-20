@@ -2,8 +2,8 @@
 // Created by User on 30.06.2019.
 //
 
-#ifndef MPI2_EXCEPTIONS_H
-#define MPI2_EXCEPTIONS_H
+#ifndef MPI2_MPIEXCEPTIONS_H
+#define MPI2_MPIEXCEPTIONS_H
 
 #include <exception>
 #include "mpi.h"
@@ -260,4 +260,4 @@ namespace mpi{
     void throw_exception(int errcode);
 }
 
-#endif //MPI2_EXCEPTIONS_H
+#endif //MPI2_MPIEXCEPTIONS_H
