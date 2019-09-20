@@ -10,6 +10,9 @@
 
 namespace logging {
 
+    /**
+     * Base class for any logger
+     */
     class Logger {
 
     public:
