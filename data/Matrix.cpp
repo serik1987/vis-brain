@@ -21,7 +21,8 @@ namespace data{
         }
     }
 
-    void Matrix::printLocal(){
+#if DEBUG==1
+    void Matrix::printLocal() const{
         using namespace std;
 
         for (int i=0; i < height; i++){
@@ -37,5 +38,6 @@ namespace data{
         }
         Application::getInstance().getLoggingEngine().debug("");
     }
+#endif
 
 }

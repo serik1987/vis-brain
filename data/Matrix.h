@@ -7,6 +7,7 @@
 
 
 #include "../mpi/Communicator.h"
+#include "../compile_options.h"
 
 namespace data {
 
@@ -117,7 +118,8 @@ namespace data {
          * @param index index of such an element
          * @return alias for the element value
          */
-        virtual double& operator[](int index)=0;
+        virtual double& operator[](int index) = 0;
+        virtual double operator[](int index) const = 0;
 
         /**
          * An alias for operator[]
@@ -127,6 +129,8 @@ namespace data {
          */
         double& getValue(int index) { return operator[](index); }
 
+        double getValue(int index) const{ return operator[](index); }
+
         /**
          * Returns an item with a certain 2D index
          *
@@ -135,6 +139,10 @@ namespace data {
          * @return
          */
         double& getValue(int i, int j){
+            return getValue(i * width + j);
+        }
+
+        double getValue(int i, int j) const{
             return getValue(i * width + j);
         }
 
@@ -155,11 +163,13 @@ namespace data {
         virtual void synchronize(int root) = 0;
 
 
+#if DEBUG==1
         /**
          * Prints the matrix locally. Please, be sure that call of the function is enveloped by logging::enter()
          * and logging::exit()
          */
-        void printLocal();
+        void printLocal() const;
+#endif
     };
 
 }

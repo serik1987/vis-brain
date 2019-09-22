@@ -15,7 +15,7 @@ namespace logging{
      * @param completed number of completed steps
      * @param total number of total steps
      */
-    void progress(int completed, int total){
+    inline void progress(int completed, int total){
         Application::getInstance().getLoggingEngine().progress(completed, total);
     }
 
@@ -26,7 +26,7 @@ namespace logging{
      * @param total number of total steps
      * @param message message to be printed on the progress bar
      */
-    void progress(int completed, int total, const std::string& message){
+    inline void progress(int completed, int total, const std::string& message){
         Application::getInstance().getLoggingEngine().progress(completed, total, message);
     }
 
@@ -34,7 +34,7 @@ namespace logging{
      * The function shall be put before call of a set of debug()/warning() routines
      * Collective routine
      */
-    void enter(){
+    inline void enter(){
         Application::getInstance().getLoggingEngine().enterLog();
     }
 
@@ -42,7 +42,7 @@ namespace logging{
      * The function shall be put after call of a set of debug()/warning() routines
      * Collective routine
      */
-    void exit(){
+    inline void exit(){
         Application::getInstance().getLoggingEngine().exitLog();
     }
 
@@ -53,7 +53,7 @@ namespace logging{
      *
      * @param msg The debugging message itself
      */
-    void debug(const std::string& msg){
+    inline void debug(const std::string& msg){
         Application::getInstance().getLoggingEngine().debug(msg);
     }
 #endif
@@ -64,7 +64,7 @@ namespace logging{
      *
      * @param msg string containing such information
      */
-    void info(const std::string& msg){
+    inline void info(const std::string& msg){
         Application::getInstance().getLoggingEngine().info(msg);
     }
 
@@ -88,7 +88,7 @@ namespace logging{
      * @param msg Message to warn
      * @param print_as_root true if the message shall be printed by the process with rank 0, false otherwise
      */
-    void warning(const std::string& msg, bool print_as_root = true){
+    inline void warning(const std::string& msg, bool print_as_root = true){
         Application::getInstance().getLoggingEngine().warning(msg, print_as_root);
     }
 
@@ -99,7 +99,7 @@ namespace logging{
      *
      * @param e an exception thrown
      */
-    void error(const simulation_exception& e){
+    inline void error(const simulation_exception& e){
         Application::getInstance().getLoggingEngine().error(e);
     }
 }

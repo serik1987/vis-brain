@@ -30,6 +30,13 @@ namespace data{
         }
     };
 
+    class matrix_move_error: public simulation_exception{
+    public:
+        const char* what() const noexcept override{
+            return "Can't move the matrix working under different communicator";
+        }
+    };
+
 }
 
 #endif //MPI2_EXCEPTIONS_H

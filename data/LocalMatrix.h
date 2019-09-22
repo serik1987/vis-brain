@@ -11,13 +11,24 @@
 namespace data {
 
     /**
-     * Matrix that contains only those data that will be processed by the certain process An instance of this
-     * class allocates width*height*8/N bytes of memory for each process where width, heights are matrix dimensions
-     * and N is current number of processes within the communicator. The matrix is separated into
-     * several parts (so called zones of responsibility. Any process has reading or writing access only to such a
-     * piece. Trying to access items without zone responsibily will cause a simulation error
+     * The local matrix. In the local matrix any process has no access to the data calculated by another processes
+     *
+     * For instance, if you try to call localMatrix[j] the result depends whether j-th item of the mattrix is calculated
+     * by the certain process or by another process. If this is calculated by another process an exception will be
+     * generated
+     *
+     * Positives:
+     * The matrix requires small amount of memory (N*8/n per process, N*8 per application where N is total number
+     * of items in the matrix and n is number of processes).
+     *
+     * Negatives:
+     * Any operations requiring the whole data in the matrix (e.g., transformation, nultiplication etc.) will generate
+     * an exception within the local matrix
      */
     class LocalMatrix: public Matrix {
+    private:
+        void copyData(const LocalMatrix& other);
+
     public:
 
         /**
@@ -33,6 +44,13 @@ namespace data {
         LocalMatrix(mpi::Communicator& comm, int width, int height, double widthUm, double heightUm,
                 double filler = 0);
 
+        /**
+         * Copy constructor
+         *
+         * @param other the source matrix
+         */
+        LocalMatrix(const LocalMatrix& other);
+
         ~LocalMatrix();
 
         /**
@@ -42,6 +60,22 @@ namespace data {
          * @return alias to the element value
          */
         double& operator[](int index) override{
+            if (index >= iStart && index < iFinish){
+                return data[index - iStart];
+            } else if (index >= 0 && index < size){
+                throw missed_data_error();
+            } else {
+                throw out_of_range_error();
+            }
+        }
+
+        /**
+         * Provides an access to the matrix element
+         *
+         * @param index index of the element
+         * @return alias to the element value
+         */
+        double operator[](int index) const override{
             if (index >= iStart && index < iFinish){
                 return data[index - iStart];
             } else if (index >= 0 && index < size){
@@ -66,6 +100,9 @@ namespace data {
         void synchronize(int root){
             throw synchronization_error();
         }
+
+        LocalMatrix& operator=(const LocalMatrix& other);
+        LocalMatrix& operator=(LocalMatrix&& other);
     };
 
 }

@@ -44,6 +44,9 @@ namespace data {
         double* synchronizationBuffer;
 
         int allocatorSize;
+
+        void createBuffers();
+        void deleteBuffers();
     public:
 
         /**
@@ -60,6 +63,8 @@ namespace data {
                 double filler = 0.0);
         ~ContiguousMatrix();
 
+        ContiguousMatrix(const ContiguousMatrix& other);
+
         /**
          * Provides an access to the matrix element with a specified index
          *
@@ -74,10 +79,26 @@ namespace data {
             }
         }
 
+        double operator[](int index) const{
+            if (index >= 0 && index < size) {
+                return bigData[index];
+            } else {
+                throw out_of_range_error();
+            }
+        }
+
+        ContiguousMatrix& operator=(const ContiguousMatrix& other);
+        ContiguousMatrix& operator=(ContiguousMatrix&& other);
+
+
+
         /**
          * Synchronization. Synchronization sends the last version of the data from all processes to the root process.
          * After application of this function the root processes has the last version of the data everywhere within
          * the matrix while all other processes have the last version of the data only within their responsibility area
+         *
+         * WARNING. Synchronization make all iterators incorrect
+         * Collective routine
          *
          * @param root rank of the root process in the communicator used for the matrix creation
          */
@@ -87,6 +108,9 @@ namespace data {
         /**
          * Synchronization. Synchronization sends the recent version of all matrix data to all processes responsible
          * for the matrix
+         *
+         * WARNING. Synchronization makes all iterators incorrect
+         * Collective routine
          */
         void synchronize();
     };
