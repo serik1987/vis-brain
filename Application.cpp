@@ -14,6 +14,10 @@
 #include "sys/Folder.h"
 #include "sys/auxiliary.h"
 
+#if DEBUG==1
+#include "test_main.cpp"
+#endif
+
 Application* Application::instance = nullptr;
 
 Application::Application(int* argc, char ***argv):
@@ -174,38 +178,9 @@ void Application::fillCmd() {
 
 void Application::simulate() {
     try {
-        logging::info("C = 1");
-        logging::info("g_tot = 4e-9");
-        logging::progress(0, 10, "Simulation immitation");
-        for (int k = 1; k <= 20; k++) {
-            sleep(2);
-            if (k % 2 == 0) {
-                if (k / 2 == 5) {
-                    logging::progress(k / 2, 10, "Simulation2 immitation");
-                } else {
-                    logging::progress(k / 2, 10);
-                }
-            } else {
-#if DEBUG == 1
-                // logging::enter();
-                logging::debug("Message 1");
-                logging::debug("Message 2");
-                logging::debug("Message 3");
-                // logging::exit();
+#if DEBUG==1
+        test_main();
 #endif
-            }
-
-            if (k == 12) {
-                logging::warning("Simulation under these parameters will be inaccurate", false);
-            }
-
-            if (k == 15) {
-                default_exception exc;
-                logging::error(exc);
-                k = 18;
-                logging::progress(9, 10, "Simulation3 immitation");
-            }
-        }
     } catch (std::exception& e){
         log->fail(e);
     }

@@ -152,7 +152,7 @@ let world = {
         type: "application",
         parent: "mpirun",
         configuration_mode: "simple",
-        process_number: 4,
+        process_number: 6,
         output_folder_prefix: "test"
     },
 
