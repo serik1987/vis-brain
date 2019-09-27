@@ -102,7 +102,115 @@ namespace data {
         }
 
         LocalMatrix& operator=(const LocalMatrix& other);
-        LocalMatrix& operator=(LocalMatrix&& other);
+        LocalMatrix& operator=(LocalMatrix&& other) noexcept;
+
+
+
+
+
+        /**
+         * List of all iterators
+         */
+
+
+        /**
+         * Parent for all iterators
+         */
+        class AbstractIterator: public virtual Matrix::AbstractIterator{
+        public:
+            /**
+             * Initialization
+             *
+             * @param index index of the element to refer to
+             */
+            AbstractIterator(int index): Matrix::AbstractIterator(index) {}
+        };
+
+
+        /**
+         * Read and write iterator
+         */
+        class Iterator: public AbstractIterator, public Matrix::Iterator{
+        public:
+            /**
+             * single-index initiailization
+             *
+             * @param matrix reference to the matrix
+             * @param index index of the element to refer to
+             */
+            Iterator(LocalMatrix& matrix, int index): AbstractIterator(index), Matrix::Iterator(matrix, index),
+                Matrix::AbstractIterator(index) {
+                LocalMatrix* p = static_cast<LocalMatrix*>(parent);
+                pointer = p->data + index - p->iStart;
+            }
+
+            /**
+             * double-index initialization
+             *
+             * @param matrix reference to the matrix
+             * @param row horizontal index
+             * @param col vertical index
+             */
+            Iterator(LocalMatrix& matrix, int row, int col): Iterator(matrix, row * matrix.width + col) {}
+
+            /**
+             * Default initialization: iterator points to the beginning of the responsibility area
+             *
+             * @param matrix iterable matrix
+             */
+            Iterator(LocalMatrix& matrix): Iterator(matrix, matrix.iStart) {}
+
+            /**
+             * Copy constructor
+             *
+             * @param other reference to the source iterator
+             */
+            Iterator(const Iterator& other):
+                Iterator(*static_cast<LocalMatrix*>(other.parent), other.index) {}
+        };
+
+        /**
+         * Read only iterator
+         */
+        class ConstantIterator: public AbstractIterator, public Matrix::ConstantIterator{
+        public:
+            /**
+             * single-index initialization
+             *
+             * @param matrix reference to the matrix
+             * @param index single index
+             */
+            ConstantIterator(const LocalMatrix& matrix, int index): AbstractIterator(index),
+                Matrix::ConstantIterator(matrix, index), Matrix::AbstractIterator(index) {
+                const LocalMatrix* p = static_cast<const LocalMatrix*>(parent);
+                pointer = p->data + index - p->iStart;
+            }
+
+            /**
+             * double-index initialization
+             *
+             * @param matrix reference to the matrix
+             * @param row horizontal index
+             * @param col vertical index
+             */
+            ConstantIterator(const LocalMatrix& matrix, int row, int col):
+                ConstantIterator(matrix, row * matrix.width + col) {}
+
+            /**
+             * Default initialization (iterator points to the beginning of the responsibility area
+             *
+             * @param matrix reference to the matrix
+             */
+            ConstantIterator(const LocalMatrix& matrix): ConstantIterator(matrix, matrix.iStart) {}
+
+            /**
+             * Copy constructor
+             *
+             * @param other reference to another iterator
+             */
+            ConstantIterator(const ConstantIterator& other):
+                ConstantIterator(*static_cast<const LocalMatrix*>(other.parent), other.index) {}
+        };
     };
 
 }

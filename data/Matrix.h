@@ -8,6 +8,7 @@
 
 #include "../mpi/Communicator.h"
 #include "../compile_options.h"
+#include "../log/output.h"
 
 namespace data {
 
@@ -170,6 +171,255 @@ namespace data {
          */
         void printLocal() const;
 #endif
+
+
+
+
+
+
+
+
+
+        /**
+         * Matrix iterators
+         */
+
+        /**
+         * Parent for all iterators in the matrix
+         */
+        class AbstractIterator{
+        protected:
+            int index = -1;
+        public:
+
+            /**
+             * Single-value constructor
+             *
+             * @param idx index for the matrix
+             */
+            AbstractIterator(int idx): index(idx) {};
+
+            /**
+             *
+             * @return current index of the iterator
+             */
+            int getIndex() const { return index;}
+
+            /**
+             *
+             * @return current row for the matrix
+             */
+            virtual int getRow() const = 0;
+
+            /**
+             *
+             * @return current column for the matrix
+             */
+            virtual int getColumn() const = 0;
+
+            /**
+             *
+             * @return current row for the matrix in um or any other suitable units
+             */
+            virtual double getRowUm() const = 0;
+
+            /**
+             *
+             * @return current column for the matrix in um or any other suitable units
+             */
+            virtual double getColumnUm() const = 0;
+        };
+
+        /**
+         * Common parent for all read-and-write iterators
+         */
+        class Iterator: public virtual AbstractIterator{
+        protected:
+            Matrix* parent;
+            double* pointer;
+        public:
+            /**
+             * Single-value constructor
+             *
+             * @param matrix alias to the matrix which iterator shall be taken into consideration
+             * @param index index for the item
+             */
+            Iterator(Matrix& matrix, int index): AbstractIterator(index){
+                parent = &matrix;
+                pointer = &parent->data[index];
+            }
+
+            /**
+             *
+             * @return current row
+             */
+            virtual int getRow() const override{
+                return index / parent->width;
+            }
+
+            /**
+             *
+             * @return current column for the matrix
+             */
+            virtual int getColumn() const override{
+                return index % parent->width;
+            }
+
+            /**
+             *
+             * @return current row for the matrix in um or any other suitable units
+             */
+            virtual double getRowUm() const override{
+                return (parent->height/2 - getRow()) * parent->heightUm / (parent->height - 1);
+            }
+
+            /**
+             *
+             * @return current column for the matrix in um or any other suitable units
+             */
+            virtual double getColumnUm() const override{
+                return (getColumn() - parent->width/2) * parent->widthUm / (parent->width - 1);
+            };
+
+            Iterator& operator=(const Iterator& other){
+                index = other.index;
+                parent = other.parent;
+                pointer = other.pointer;
+                return *this;
+            }
+
+            bool operator==(const Iterator& other) const{
+                return pointer == other.pointer;
+            }
+
+            bool operator!=(const Iterator& other) const{
+                return pointer != other.pointer;
+            }
+
+            double& operator*() const{ return *pointer; }
+
+            Iterator& operator++() {
+                ++index;
+                ++pointer;
+                return *this;
+            }
+
+            Iterator operator++(int){
+                Iterator it = *this;
+                ++index;
+                ++pointer;
+                return it;
+            }
+
+            Iterator& operator--() {
+                --index;
+                --pointer;
+                return *this;
+            }
+
+            Iterator operator--(int){
+                Iterator it = *this;
+                --index;
+                --pointer;
+                return it;
+            }
+        };
+
+        /**
+         * Common parent for all read-only iterators
+         */
+         class ConstantIterator: public virtual AbstractIterator{
+         protected:
+             const Matrix* parent;
+             const double* pointer;
+         public:
+
+             /**
+              * Single-value constructor
+              *
+              * @param matrix matrix alias to the matrix which iterator shall be taken into consideration
+              * @param index index for the item
+              */
+             ConstantIterator(const Matrix& matrix, int index): AbstractIterator(index){
+                parent = &matrix;
+                pointer = &parent->data[index];
+             }
+
+             /**
+              *
+              * @return current row
+              */
+             virtual int getRow() const override {
+                 return index / parent->width;
+             }
+
+             /**
+              *
+              * @return
+              */
+             virtual int getColumn() const override {
+                 return index % parent->width;
+             }
+
+             /**
+             *
+             * @return current row for the matrix in um or any other suitable units
+             */
+             virtual double getRowUm() const override{
+                 return (parent->height/2 - getRow()) * parent->heightUm / (parent->height - 1);
+             }
+
+             /**
+             *
+             * @return current column for the matrix in um or any other suitable units
+             */
+             virtual double getColumnUm() const override{
+                 return (getColumn() - parent->width/2) * parent->widthUm / (parent->width - 1);
+             };
+
+             ConstantIterator& operator=(const ConstantIterator& other){
+                 index = other.index;
+                 parent = other.parent;
+                 pointer = other.pointer;
+                 return *this;
+             }
+
+             bool operator==(const ConstantIterator& other) const{
+                 return pointer == other.pointer;
+             }
+
+             bool operator!=(const ConstantIterator& other) const{
+                 return pointer != other.pointer;
+             }
+
+             double operator*() const{ return *pointer; }
+
+             ConstantIterator& operator++(){
+                 ++index;
+                 ++pointer;
+                 return *this;
+             }
+
+             ConstantIterator operator++(int){
+                 ConstantIterator it = *this;
+                 ++index;
+                 ++pointer;
+                 return it;
+             }
+
+             ConstantIterator& operator--(){
+                 --index;
+                 --pointer;
+                 return *this;
+             }
+
+             ConstantIterator operator--(int){
+                 ConstantIterator it = *this;
+                 --index;
+                 --pointer;
+                 return it;
+             }
+         };
     };
 
 }

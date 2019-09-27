@@ -40,7 +40,7 @@ namespace data{
         return *this;
     }
 
-    LocalMatrix& LocalMatrix::operator=(LocalMatrix&& other){
+    LocalMatrix& LocalMatrix::operator=(LocalMatrix&& other) noexcept{
         size = other.size;
         localSize = other.localSize;
         iStart = other.iStart;

@@ -117,6 +117,7 @@ namespace data{
         other.bigData = nullptr;
         synchronizationBuffer = other.synchronizationBuffer;
         other.synchronizationBuffer = nullptr;
+        return *this;
     }
 
 }

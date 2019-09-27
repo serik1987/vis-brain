@@ -113,6 +113,101 @@ namespace data {
          * Collective routine
          */
         void synchronize();
+
+
+
+
+        /**
+         * Common parent for all iterator for the contiguous matrix
+         */
+        class AbstractIterator: public virtual Matrix::AbstractIterator{
+        public:
+            /**
+             * Single-index initialization
+             *
+             * @param index index for the matrix item
+             */
+            AbstractIterator(int index): Matrix::AbstractIterator(index) {}
+        };
+
+        /**
+         * Iterator for the contiguous matrix. You can change the matrix through this iterator
+         */
+        class Iterator: public AbstractIterator, public Matrix::Iterator{
+        public:
+            /**
+             * Single-index initialization
+             *
+             * @param matrix reference to the matrix
+             * @param index single index
+             */
+            Iterator(ContiguousMatrix& matrix, int index): Matrix::Iterator(matrix, index), AbstractIterator(index),
+                Matrix::AbstractIterator(index){
+                pointer = matrix.bigData + index;
+            }
+
+                /**
+                 * Double-index initialization
+                 *
+                 * @param matrix reference to the matrix
+                 * @param row the row index
+                 * @param column the column index
+                 */
+            Iterator(ContiguousMatrix& matrix, int row, int column):
+                Iterator(matrix, row * matrix.width + column) {}
+
+            /**
+             * Default initialization (the iterator points to the beginning of the responsibility area)
+             *
+             * @param matrix reference to the matrix
+             */
+            Iterator(ContiguousMatrix& matrix): Iterator(matrix, matrix.iStart) {}
+
+            /**
+             * Copy constructor
+             *
+             * @param other reference to the source iterator
+             */
+            Iterator(const Iterator& other):
+                Iterator(*static_cast<ContiguousMatrix*>(other.parent), other.index) {}
+        };
+
+        /**
+         * Iterator for the contiguous matrix. You may access but not change the matrix through this iterator
+         */
+        class ConstantIterator: public AbstractIterator, public Matrix::ConstantIterator{
+        public:
+            /**
+             * Single-index initialization
+             *
+             * @param matrix reference to the matrix
+             * @param index the single index
+             */
+            ConstantIterator(const ContiguousMatrix& matrix, int index):
+                Matrix::ConstantIterator(matrix, index), AbstractIterator(index), Matrix::AbstractIterator(index){
+                pointer = matrix.bigData + index;
+            }
+
+                /**
+                 * Double-index initialization
+                 *
+                 * @param matrix reference to the matrix
+                 * @param row horizontal index
+                 * @param col vertical index
+                 */
+            ConstantIterator(const ContiguousMatrix& matrix, int row, int col):
+                ConstantIterator(matrix, row * matrix.width + col) {}
+
+            /**
+             * Default initialization (the iterator refers to the beginning of the responsibility area
+             *
+             * @param matrix reference to the matrix
+             */
+            ConstantIterator(const ContiguousMatrix& matrix): ConstantIterator(matrix, matrix.iStart) {}
+
+            ConstantIterator(const ConstantIterator& other):
+                ConstantIterator(*static_cast<const ContiguousMatrix*>(other.parent), other.index) {}
+        };
     };
 
 }
