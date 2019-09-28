@@ -333,6 +333,260 @@ void test_main(){
     logging::debug("");
     logging::exit();
 
+    logging::progress(0, 1, "Addition test");
+    logging::enter();
+    logging::debug("*(a+2) = " + to_string(*(a+2)));
+    logging::debug("*(b+2) = " + to_string(*(b+2)));
+    logging::debug("*(c+2) = " + to_string(*(c+2)));
+    logging::debug("*(d+2) = " + to_string(*(d+2)));
+    logging::debug("*(2+aa) = " + to_string(*(2+aa)));
+    logging::debug("*(2+bb) = " + to_string(*(2+bb)));
+    logging::debug("*(2+cc) = " + to_string(*(2+cc)));
+    logging::debug("*(2+dd) = " + to_string(*(2+dd)));
+    logging::debug("After addition: ");
+    logging::debug("*a = " + to_string(*a));
+    logging::debug("*b = " + to_string(*b));
+    logging::debug("*c = " + to_string(*c));
+    logging::debug("*d = " + to_string(*d));
+    logging::debug("*aa = " + to_string(*aa));
+    logging::debug("*bb = " + to_string(*bb));
+    logging::debug("*cc = " + to_string(*cc));
+    logging::debug("*dd = " + to_string(*dd));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Substraction test");
+    logging::enter();
+    logging::debug("*(a-2) = " + to_string(*(a-2)));
+    logging::debug("*(b-2) = " + to_string(*(b-2)));
+    logging::debug("*(c-2) = " + to_string(*(c-2)));
+    logging::debug("*(d-2) = " + to_string(*(d-2)));
+    logging::debug("a-aa = " + to_string(a-aa));
+    logging::debug("b-bb = " + to_string(b-bb));
+    logging::debug("c-cc = " + to_string(c-cc));
+    logging::debug("d-dd = " + to_string(d-dd));
+    logging::debug("After substraction:");
+    logging::debug("*a = " + to_string(*a));
+    logging::debug("*b = " + to_string(*b));
+    logging::debug("*c = " + to_string(*c));
+    logging::debug("*d = " + to_string(*d));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Less operator");
+    logging::enter();
+    logging::debug("\ta\tb\tc\td\t");
+    logging::debug("a\t" + to_string(a<a) + "\t" + to_string(a<b) + "\t" + to_string(a<c) + "\t" + to_string(a<d));
+    logging::debug("b\t" + to_string(b<a) + "\t" + to_string(b<b) + "\t" + to_string(b<c) + "\t" + to_string(b<d));
+    logging::debug("c\t" + to_string(c<a) + "\t" + to_string(c<b) + "\t" + to_string(c<c) + "\t" + to_string(c<d));
+    logging::debug("d\t" + to_string(d<a) + "\t" + to_string(d<b) + "\t" + to_string(d<c) + "\t" + to_string(d<d));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Less or equal operator");
+    logging::enter();
+    logging::debug("\ta\tb\tc\td\t");
+    logging::debug("a\t" + to_string(a<=a) + "\t" + to_string(a<=b) + "\t" + to_string(a<=c) + "\t" + to_string(a<=d));
+    logging::debug("b\t" + to_string(b<=a) + "\t" + to_string(b<=b) + "\t" + to_string(b<=c) + "\t" + to_string(b<=d));
+    logging::debug("c\t" + to_string(c<=a) + "\t" + to_string(c<=b) + "\t" + to_string(c<=c) + "\t" + to_string(c<=d));
+    logging::debug("d\t" + to_string(d<=a) + "\t" + to_string(d<=b) + "\t" + to_string(d<=c) + "\t" + to_string(d<=d));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Greater operator");
+    logging::enter();
+    logging::debug("\ta\tb\tc\td\t");
+    logging::debug("a\t" + to_string(a>a) + "\t" + to_string(a>b) + "\t" + to_string(a>c) + "\t" + to_string(a>d));
+    logging::debug("b\t" + to_string(b>a) + "\t" + to_string(b>b) + "\t" + to_string(b>c) + "\t" + to_string(b>d));
+    logging::debug("c\t" + to_string(c>a) + "\t" + to_string(c>b) + "\t" + to_string(c>c) + "\t" + to_string(c>d));
+    logging::debug("d\t" + to_string(d>a) + "\t" + to_string(d>b) + "\t" + to_string(d>c) + "\t" + to_string(d>d));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Greater operator");
+    logging::enter();
+    logging::debug("\ta\tb\tc\td\t");
+    logging::debug("a\t" + to_string(a>=a) + "\t" + to_string(a>=b) + "\t" + to_string(a>=c) + "\t" + to_string(a>=d));
+    logging::debug("b\t" + to_string(b>=a) + "\t" + to_string(b>=b) + "\t" + to_string(b>=c) + "\t" + to_string(b>=d));
+    logging::debug("c\t" + to_string(c>=a) + "\t" + to_string(c>=b) + "\t" + to_string(c>=c) + "\t" + to_string(c>=d));
+    logging::debug("d\t" + to_string(d>=a) + "\t" + to_string(d>=b) + "\t" + to_string(d>=c) + "\t" + to_string(d>=d));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Compound operator test");
+    logging::enter();
+    logging::debug("Before application:");
+    logging::debug("*a = " + to_string(*a));
+    logging::debug("*b = " + to_string(*b));
+    logging::debug("*c = " + to_string(*c));
+    logging::debug("*d = " + to_string(*d));
+    logging::debug("Assignment result:");
+    logging::debug("*(a+=2) = " + to_string(*(a+=2)));
+    logging::debug("*(b+=2) = " + to_string(*(b+=2)));
+    logging::debug("*(c+=2) = " + to_string(*(c+=2)));
+    logging::debug("*(d+=2) = " + to_string(*(d+=2)));
+    logging::debug("After assignment:");
+    logging::debug("*a = " + to_string(*a));
+    logging::debug("*b = " + to_string(*b));
+    logging::debug("*c = " + to_string(*c));
+    logging::debug("*d = " + to_string(*d));
+    logging::exit();
+
+    logging::progress(0, 1, "Compound operator test");
+    logging::enter();
+    logging::debug("Before assignment:");
+    logging::debug("*aa = " + to_string(*aa));
+    logging::debug("*bb = " + to_string(*bb));
+    logging::debug("*cc = " + to_string(*cc));
+    logging::debug("*dd = " + to_string(*dd));
+    logging::debug("Assignment result:");
+    logging::debug("*(aa-=2) = " + to_string(*(aa-=2)));
+    logging::debug("*(bb-=2) = " + to_string(*(bb-=2)));
+    logging::debug("*(cc-=2) = " + to_string(*(cc-=2)));
+    logging::debug("*(dd-=2) = " + to_string(*(dd-=2)));
+    logging::debug("After assignment:");
+    logging::debug("*aa = " + to_string(*aa));
+    logging::debug("*bb = " + to_string(*bb));
+    logging::debug("*cc = " + to_string(*cc));
+    logging::debug("*dd = " + to_string(*dd));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Random access test (rvalue)");
+    logging::enter();
+    logging::debug("aa[4] = " + to_string(aa[4]));
+    logging::debug("bb[4] = " + to_string(bb[4]));
+    logging::debug("cc[4] = " + to_string(cc[4]));
+    logging::debug("dd[4] = " + to_string(dd[4]));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Random access test (lvalue)");
+    aa[4] = 0.0;
+    // bb[4] = 0.0; Compilation error
+    cc[4] = 0.0;
+    // dd[4] = 0.0; Compilation error
+    logging::enter();
+    logging::debug("Matrix A");
+    A.printLocal();
+    logging::debug("Matrix B");
+    B.printLocal();
+    logging::exit();
+
+    logging::progress(0, 1, "val(...) test (rvalue)");
+    logging::enter();
+    logging::debug("aa[2, 3] = " + to_string(aa.val(2, 3)));
+    logging::debug("bb[2, 3] = " + to_string(bb.val(2, 3)));
+    logging::debug("cc[2, 3] = " + to_string(cc.val(2, 3)));
+    logging::debug("dd[2, 3] = " + to_string(dd.val(2, 3)));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "val(...) test (lvalue)");
+    aa.val(-1, -5) = 0.8;
+    // bb.val(-1, -5) = 0.8; Compilation error
+    cc.val(-1, -5) = 0.8;
+    // dd.val(-1, -5) = 0.8; Compilation error
+    logging::enter();
+    logging::debug("Matrix A");
+    A.printLocal();
+    logging::debug("Matrix B");
+    B.printLocal();
+    logging::exit();
+
+    logging::progress(0, 1, "SWAP test");
+    logging::enter();
+    logging::debug("Before swap:");
+    logging::debug("*aa = " + to_string(*aa));
+    logging::debug("*bb = " + to_string(*bb));
+    logging::debug("*cc = " + to_string(*cc));
+    logging::debug("*dd = " + to_string(*dd));
+    // swap(aa, bb); Compilation error
+    // swap(cc, dd); Compilation error
+    swap(aa, cc);
+    logging::debug("After swap:");
+    logging::debug("*aa = " + to_string(*aa));
+    logging::debug("*bb = " + to_string(*bb));
+    logging::debug("*cc = " + to_string(*cc));
+    logging::debug("*dd = " + to_string(*dd));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Standard iterators test (reading)");
+    logging::enter();
+    logging::debug("Test on LocalMatrix");
+    logging::debug("begin: " + to_string(*A.begin()));
+    logging::debug("cbegin: " + to_string(*A.cbegin()));
+    logging::debug("end: " + to_string(*(A.end()-1)));
+    logging::debug("cend: " + to_string(*(A.cend()-1)));
+    logging::debug("Test on Matrix:");
+    logging::debug("begin: " + to_string(*B.begin()));
+    logging::debug("cbegin: " + to_string(*B.cbegin()));
+    logging::debug("end: " + to_string(*(B.end()-1)));
+    logging::debug("cend: " + to_string(*(B.end()-1)));
+    logging::debug("");
+    logging::exit();
+
+    logging::progress(0, 1, "Looping test (reading)");
+    logging::enter();
+    logging::debug("Test on LocalMatrix, r/w iterator");
+    for (auto a = A.begin(); a != A.end(); ++a){
+        logging::debug("A[" + to_string(a.getRow()) + "," + to_string(a.getColumn()) + "] = " + to_string(*a));
+    }
+    logging::debug("");
+    logging::exit();
+    logging::enter();
+    logging::debug("Test on LocalMatrix, r/o iterator");
+    for (auto a = A.cbegin(); a != A.cend(); ++a){
+        logging::debug("A[" + to_string(a.getRow()) + "," + to_string(a.getColumn()) + "] = " + to_string(*a));
+    }
+    logging::debug("");
+    logging::exit();
+    logging::enter();
+    logging::debug("Test on ContinuousMatrix, r/w iterator");
+    for (auto a = B.begin(); a != B.end(); ++a){
+        logging::debug("B[" + to_string(a.getRow()) + "," + to_string(a.getColumn()) + "] = " + to_string(*a));
+    }
+    logging::debug("");
+    logging::exit();
+    logging::enter();
+    logging::debug("Test on ContinuousMatrix, r/o iterator");
+    for (auto a = B.cbegin(); a != B.cend(); ++a){
+        logging::debug("B[" + to_string(a.getRow()) + "," + to_string(a.getColumn()) + "] = " + to_string(*a));
+    }
+    logging::debug("");
+    logging::exit();
+
+    double x = 0.0;
+    for (auto a = A.begin(); a != A.end(); ++a){
+        *a = ++x;
+    }
+
+    /* Compilation error
+    for (auto a = A.cbegin(); a != A.cend(); ++a){
+        *a = ++x;
+    }
+     */
+
+    for (auto b = B.begin(); b != B.end(); ++b){
+        *b = ++x;
+    }
+
+    /* Compilation error
+    for (auto b = B.cbegin(); b != B.cend(); ++b){
+        *b = ++x;
+    }
+     */
+
+    logging::enter();
+    logging::debug("Matrix A, after second initialization");
+    A.printLocal();
+    logging::debug("");
+    logging::debug("Matrix B, after second initialization");
+    B.printLocal();
+    logging::debug("");
+    logging::exit();
+
 
     logging::progress(1, 1);
 }

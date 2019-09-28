@@ -211,6 +211,22 @@ namespace data {
             ConstantIterator(const ConstantIterator& other):
                 ConstantIterator(*static_cast<const LocalMatrix*>(other.parent), other.index) {}
         };
+
+        Iterator begin(){
+            return Iterator(*this);
+        }
+
+        ConstantIterator cbegin() const{
+            return ConstantIterator(*this);
+        }
+
+        Iterator end(){
+            return Iterator(*this, iFinish);
+        }
+
+        ConstantIterator cend() const{
+            return ConstantIterator(*this, iFinish);
+        }
     };
 
 }

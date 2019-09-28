@@ -228,6 +228,11 @@ namespace data {
              * @return current column for the matrix in um or any other suitable units
              */
             virtual double getColumnUm() const = 0;
+
+            bool operator<(const AbstractIterator& other){ return index < other.index; }
+            bool operator<=(const AbstractIterator& other){ return index <= other.index; }
+            bool operator>(const AbstractIterator& other){ return index > other.index; }
+            bool operator>=(const AbstractIterator& other){ return index >= other.index; }
         };
 
         /**
@@ -322,6 +327,61 @@ namespace data {
                 --index;
                 --pointer;
                 return it;
+            }
+
+            Iterator operator+(int n) const{
+                Iterator it = *this;
+                it.index += n;
+                it.pointer += n;
+                return it;
+            }
+
+            friend Iterator operator+(int n, const Iterator& other){
+                return other + n;
+            }
+
+            Iterator operator-(int n) const{
+                Iterator result = *this;
+                result.index -= n;
+                result.pointer -= n;
+                return result;
+            }
+
+            int operator-(const Iterator& other) const{
+                return index - other.index;
+            }
+
+            Iterator& operator+=(int n){
+                index += n;
+                pointer += n;
+                return *this;
+            }
+
+            Iterator& operator-=(int n){
+                index -= n;
+                pointer -= n;
+                return *this;
+            }
+
+            double& operator[](int n) const{
+                return *(pointer + n);
+            }
+
+            /**
+             * Access to the element by means of its relative address (no checking) when the iterator is valid
+             *
+             * @param i relative index of the row (the iterator points to an item with relative index equal to 0)
+             * @param j relative index of the column (the iterator points to an item with relative index equal to 0)
+             * @return reference to the value
+             */
+            double& val(int i, int j){
+                return *(pointer + parent->width * i + j);
+            }
+
+            friend void swap(const Iterator& a, const Iterator& b){
+                double x = *a.pointer;
+                *a.pointer = *b.pointer;
+                *b.pointer = x;
             }
         };
 
@@ -418,6 +478,56 @@ namespace data {
                  --index;
                  --pointer;
                  return it;
+             }
+
+             ConstantIterator operator+(int n) const{
+                 ConstantIterator it = *this;
+                 it.index += n;
+                 it.pointer += n;
+                 return it;
+             }
+
+             friend ConstantIterator operator+(int n, const ConstantIterator& other){
+                 return other + n;
+             }
+
+             ConstantIterator operator-(int n) const{
+                 ConstantIterator x = *this;
+                 x.index -= n;
+                 x.pointer -= n;
+                 return x;
+             }
+
+             int operator-(const ConstantIterator& other) const{
+                 return index - other.index;
+             }
+
+             ConstantIterator& operator+=(int n){
+                 index += n;
+                 pointer += n;
+                 return *this;
+             }
+
+             ConstantIterator& operator-=(int n){
+                 index -= n;
+                 pointer -= n;
+                 return *this;
+             }
+
+             double operator[](int n) const{
+                 return *(pointer + n);
+             }
+
+             /**
+              * returns value with a certain relative index when the iterator is valid
+              *
+              * @param i relative index of the row
+              * @param j relative index of the column
+              * The iterator points to a row and a column which relative indexes are zero
+              * @return a copy of the value
+              */
+             double val(int i, int j){
+                return *(pointer + parent->width * i + j);
              }
          };
     };
