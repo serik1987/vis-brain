@@ -59,9 +59,42 @@ void test_main(){
     A.getValue(5, 4) = 18;
     A.getValue(5, 5) = 11;
 
+    logging::enter();
+    logging::debug("Matrix A, after initialization");
+    A.printLocal();
+    logging::debug("");
+    logging::exit();
+
+    logging::enter();
+    logging::debug("Matrix transpose test");
+    A.transpose().printLocal();
+    logging::debug("");
+    logging::debug("After transpose");
+    A.printLocal();
+    logging::debug("");
+    logging::debug("After synchronize");
+    logging::exit();
     A.synchronize();
-    B.transpose(A);
+    logging::enter();
+    A.printLocal();
+    logging::debug("");
+    logging::exit();
+
+    logging::enter();
+    logging::debug("Matrix transpose test # 2");
+    B.transpose(A).printLocal();
+    logging::debug("");
+    logging::debug("After transpose:");
+    B.printLocal();
+    logging::debug("");
+    logging::exit();
+
     B.synchronize();
+    logging::enter();
+    logging::debug("Matrix B, after synchronize");
+    B.printLocal();
+    logging::debug("");
+    logging::exit();
 
 
 

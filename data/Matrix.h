@@ -22,6 +22,8 @@ void swap(data::Matrix& A, data::Matrix& B);
 
 namespace data {
 
+    class ContiguousMatrix;
+
 /**
  * A base class for all matrices shared among all processes
  * Minimum total size of each matrix is 8*width*height bytes
@@ -536,7 +538,7 @@ namespace data {
               * The iterator points to a row and a column which relative indexes are zero
               * @return a copy of the value
               */
-             double val(int i, int j){
+             double val(int i, int j) const{
                 return *(pointer + parent->width * i + j);
              }
          };
@@ -788,6 +790,15 @@ namespace data {
           * @return reference to the result
           */
          Matrix& div(double x, const Matrix& A);
+
+        /**
+         * transposes matrix A and writes transposition result to the current matrix
+         * Warning: the function will work correctly only when matrix A is contiguous and synchronized
+         *
+         * @param A source matrix
+         * @return reference to the result
+         */
+        virtual Matrix& transpose(const ContiguousMatrix& A);
     };
 
 }

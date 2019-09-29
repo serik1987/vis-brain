@@ -128,4 +128,14 @@ namespace data{
         return B;
     }
 
+    ContiguousMatrix& ContiguousMatrix::transpose(){
+        Iterator b(*this, 0, 0);
+        for (auto a = begin(); a != end(); ++a){
+            int i = a.getRow();
+            int j = a.getColumn();
+            *a = b.val(j, i);
+        }
+        return *this;
+    }
+
 }

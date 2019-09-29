@@ -4,6 +4,7 @@
 
 #include "Matrix.h"
 #include "../Application.h"
+#include "ContiguousMatrix.h"
 
 namespace data{
 
@@ -202,6 +203,15 @@ namespace data{
             return x / *a;
         });
         return *this;
+    }
+
+    Matrix& Matrix::transpose(const ContiguousMatrix& A){
+        data::ContiguousMatrix::ConstantIterator a(A, 0);
+        for (auto b = begin(); b != end(); ++b){
+            int i = b.getRow();
+            int j = b.getColumn();
+            *b = a.val(j, i);
+        }
     }
 
 

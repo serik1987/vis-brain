@@ -226,6 +226,19 @@ namespace data {
         }
 
         ContiguousMatrix operator-() const;
+
+        /**
+         * Transposes the matrix and writes the result to itself
+         * Precaution # 1. The matrix shall be synchronized before the function call
+         * Precaution # 2. The function transposes cells only belonging to the current process. In order to transpose
+         * full set of the data please, synchronize the matrix after the function call. See synchronize() method
+         * for details
+         *
+         * @return reference to the result
+         */
+        ContiguousMatrix& transpose();
+
+        Matrix& transpose(const ContiguousMatrix& A) override { return Matrix::transpose(A); }
     };
 
 }
