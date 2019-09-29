@@ -92,7 +92,7 @@ namespace mpi {
           * A pointer to the datatype given to the MPI collective computation routine
           * (i.e., MPI_Reduce, MPI_Allreduce, MPI_Scan, or MPI_Reduce_scatter) is also
           * passed to the user-specified routine.s
-          * @param commute - true if the operation is commutable (a op b = b op a
+          * @param commute - true if the operation is commutable (a op b = b op a)
           */
          ComplexOperation(MPI_User_function* func, bool commute): Operation(){
              int c = commute;

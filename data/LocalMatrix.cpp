@@ -66,4 +66,14 @@ namespace data{
         }
     }
 
+    LocalMatrix LocalMatrix::operator-() const{
+        LocalMatrix B(communicator, width, height, widthUm, heightUm);
+        B.calculate(*this, [](Matrix::ConstantIterator& a){
+            return -*a;
+        });
+        return B;
+    }
+
+
+
 }

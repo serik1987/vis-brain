@@ -48,6 +48,94 @@ namespace data{
         }
     }
 
+    Matrix& Matrix::operator++(){
+        for (auto a = begin(); a != end(); ++a){
+            ++*a;
+        }
+        return *this;
+    }
+
+    Matrix& Matrix::operator--(){
+        for (auto a = begin(); a != end(); ++a){
+            --*a;
+        }
+        return *this;
+    }
+
+    Matrix& Matrix::operator+=(const Matrix& other){
+        auto a = begin();
+        auto b = other.cbegin();
+        for (; a != end(); ++a, ++b){
+            *a += *b;
+        }
+        return *this;
+    }
+
+    Matrix& Matrix::operator-=(const Matrix& other){
+        auto a = begin();
+        auto b = other.cbegin();
+        for (; a != end(); ++a, ++b){
+            *a -= *b;
+        }
+        return *this;
+    }
+
+    Matrix& Matrix::operator+=(double x){
+        for (auto a = begin(); a != end(); ++a){
+            *a += x;
+        }
+        return *this;
+    }
+
+    Matrix& Matrix::operator-=(double x){
+        for (auto a = begin(); a != end(); ++a){
+            *a -= x;
+        }
+        return *this;
+    }
+
+    Matrix& Matrix::add(const Matrix& A, const Matrix& B){
+        calculate(A, B, [](ConstantIterator& a, ConstantIterator& b){
+            return *a + *b;
+        });
+        return *this;
+    }
+
+    Matrix& Matrix::sub(const Matrix& A, const Matrix& B){
+        calculate(A, B, [](ConstantIterator& a, ConstantIterator& b){
+            return *a - *b;
+        });
+        return *this;
+    }
+
+    Matrix& Matrix::add(const Matrix& A, double x){
+        calculate(A, [&x](ConstantIterator& a){
+            return *a + x;
+        });
+        return *this;
+    }
+
+    Matrix& Matrix::sub(const Matrix& A, double x){
+        calculate(A, [&x](ConstantIterator& a){
+            return *a - x;
+        });
+        return *this;
+    }
+
+
+    Matrix& Matrix::sub(double x, const Matrix& A){
+        calculate(A, [&x](ConstantIterator& a){
+            return x - *a;
+        });
+        return *this;
+    }
+
+    Matrix& Matrix::neg(const Matrix& A){
+        calculate(A, [](ConstantIterator& a){
+            return -*a;
+        });
+        return *this;
+    }
 
 
 }

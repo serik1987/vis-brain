@@ -605,6 +605,103 @@ namespace data {
             }
          }
 
+         /**
+          * reduces all matrix items to a single value using some reduction function.
+          * This is a collective routine
+          *
+          * @tparam F some functor like: void (*F)(double& x, double y)
+          * @param x0 initial value
+          * @param op MPI_Op instance shall correspond to the functor
+          * @param f the reduction function. The reduction will be organized in the following way:
+          * s = x0;
+          * f(s, A[0, 0])
+          * f(s, A[0, 1])
+          * f(s, A[0, 2])
+          * ...
+          */
+         template<typename F> double reduce(double x0, MPI_Op op, F f) const{
+             double result = 0.0;
+             for (auto a = cbegin(); a != cend(); ++a){
+                 f(result, *a);
+             }
+             double global_result = 0.0;
+             communicator.allReduce(&result, &global_result, 1, MPI_DOUBLE, op);
+             f(global_result, x0);
+             return global_result;
+         }
+
+         Matrix& operator++();
+         Matrix& operator--();
+         Matrix& operator+=(const Matrix& other);
+         Matrix& operator+=(double x);
+         Matrix& operator-=(const Matrix& other);
+         Matrix& operator-=(double x);
+
+
+         /**
+          * Performs addition of A and B. The result will be put to the current matrix
+          *
+          * @param A the first matrix
+          * @param B the second matrix
+          * @return reference to the current matrix
+          */
+         Matrix& add(const Matrix& A, const Matrix& B);
+
+         /**
+          * Performs A-B. The result will be put to the current matrix
+          *
+          * @param A the first matrix
+          * @param B the second matrix
+          * @return reference to the current matrix
+          */
+         Matrix& sub(const Matrix& A, const Matrix& B);
+
+         /**
+          * Performs A+x and puts the result to the current matrix
+          *
+          * @param A the matrix
+          * @param x the number
+          * @return reference to this matrix
+          */
+         Matrix& add(const Matrix& A, double x);
+
+         /**
+          * Performs x+A. The result will be put to the current matrix
+          *
+          * @param x the number
+          * @param A the matrix
+          * @return reference to the result
+          */
+         Matrix& add(double x, const Matrix& A) { return add(A, x); }
+
+
+         /**
+          * Provides A-x operation and puts the result to the current matrix
+          *
+          * @param A the matrix itself
+          * @param x substracting number
+          * @return reference to the result
+          */
+         Matrix& sub(const Matrix& A, double x);
+
+         /**
+          * Provides x-A operation and puts the result to the current matrix
+          *
+          * @param x the number
+          * @param A the matrix
+          * @return reference to the result
+          */
+         Matrix& sub(double x, const Matrix& A);
+
+         /**
+          * Performs -A and puts the result to the current matrix
+          *
+          * @param A the matrix to negotiate
+          * @return reference to the negotiation result
+          */
+         Matrix& neg(const Matrix& A);
+
+
     };
 
 }

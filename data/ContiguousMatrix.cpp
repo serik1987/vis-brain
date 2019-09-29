@@ -120,4 +120,12 @@ namespace data{
         return *this;
     }
 
+    ContiguousMatrix ContiguousMatrix::operator-() const{
+        ContiguousMatrix B(communicator, width, height, widthUm, heightUm);
+        B.calculate(*this, [](Matrix::ConstantIterator& a){
+            return -*a;
+        });
+        return B;
+    }
+
 }

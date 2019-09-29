@@ -227,6 +227,8 @@ namespace data {
         Matrix::ConstantIterator cend() const{
             return ConstantIterator(*this, iFinish);
         }
+
+        LocalMatrix operator-() const;
     };
 
 }

@@ -224,6 +224,8 @@ namespace data {
         Matrix::ConstantIterator cend() const{
             return ConstantIterator(*this, iFinish);
         }
+
+        ContiguousMatrix operator-() const;
     };
 
 }

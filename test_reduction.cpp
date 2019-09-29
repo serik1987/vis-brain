@@ -14,27 +14,26 @@ void test_main(){
 
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
     data::LocalMatrix A(comm, 21, 21, 1.0, 1.0);
-    data::ContiguousMatrix B(comm, 21, 21, 1.0, 1.0);
-    data::LocalMatrix C(comm, 21, 21, 1.0, 1,0);
 
     A.fill([](data::Matrix::Iterator a){
-        return a.getRowUm() * 21;
-    });
-
-    B.fill([](data::Matrix::Iterator b){
-        return b.getColumnUm() * 21;
+        return a.getIndex();
     });
 
     logging::enter();
-    logging::debug("Matrix A, after initialization");
+    logging::debug("Matrix A, initialized");
     A.printLocal();
-    logging::debug("");
-    logging::debug("Matrix B, after initialization");
-    B.printLocal();
     logging::debug("");
     logging::exit();
 
+    logging::progress(0, 1, "Type I reduction");
 
+    double s = A.reduce(0, MPI_SUM, [](double& x, double y){
+        x += y;
+    });
+
+    logging::enter();
+    logging::debug("Tyoe I reduction: " + to_string(s));
+    logging::exit();
 
     logging::progress(1, 1);
 }
