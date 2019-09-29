@@ -40,6 +40,16 @@ namespace data{
     }
 #endif
 
+
+
+    void Matrix::fill(double x){
+        for (auto a = begin(); a != end(); ++a){
+            *a = x;
+        }
+    }
+
+
+
 }
 
 void swap(data::Matrix& A, data::Matrix& B){

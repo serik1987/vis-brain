@@ -554,6 +554,13 @@ namespace data {
           */
          friend void ::swap(Matrix& A, Matrix& B);
 
+         /**
+          * Fills all matrix data by a certain value
+          *
+          * @param x
+          */
+         void fill(double x);
+
     };
 
 }
