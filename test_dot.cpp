@@ -63,16 +63,6 @@ void test_main(){
     B.transpose(A);
     B.synchronize();
 
-    logging::enter();
-    logging::debug("Simple matrix production");
-    C.dot(A, B).printLocal();
-    logging::debug("");
-    logging::debug("Matrix C after operation");
-    C.printLocal();
-    logging::debug("");
-    logging::exit();
-
-
 
     logging::progress(1, 1);
 }

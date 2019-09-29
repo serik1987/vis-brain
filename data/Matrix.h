@@ -794,11 +794,28 @@ namespace data {
         /**
          * transposes matrix A and writes transposition result to the current matrix
          * Warning: the function will work correctly only when matrix A is contiguous and synchronized
+         * Warning2: if nxm is size of the current matrix, the matrix A shall have size mxn for calculations to be
+         * performed correctly
+         * This is an unsafe method
          *
          * @param A source matrix
          * @return reference to the result
          */
         virtual Matrix& transpose(const ContiguousMatrix& A);
+
+        /**
+         * Products two matrices. In contrast to mul(...) method, it provides true matrix production, onot
+         * item-by-item production. Matrix order makes sense.
+         * Warning # 1. Both A and B are contiguous synchronized matrices
+         * Warning # 2. Real matrix will not be synchronized after accomplishment of this method
+         * Warning # 3. Please, be sure that matrix sizes correspond to each other. Otherwise, the results may
+         * be incorrect or the program will fail
+         *
+         * @param A the first matrix
+         * @param B the second matrix
+         * @return reference to the result
+         */
+        Matrix& dot(const ContiguousMatrix& A, const ContiguousMatrix& B);
     };
 
 }

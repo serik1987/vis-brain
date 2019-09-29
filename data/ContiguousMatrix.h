@@ -233,12 +233,22 @@ namespace data {
          * Precaution # 2. The function transposes cells only belonging to the current process. In order to transpose
          * full set of the data please, synchronize the matrix after the function call. See synchronize() method
          * for details
+         * Precaution # 3. Matrix A shall be squared. In another case, the calculations will be performed incorrectly
+         * This is an unsafe method
          *
          * @return reference to the result
          */
         ContiguousMatrix& transpose();
 
+        /**
+         * See Matrix::transpose for details
+         *
+         * @param A
+         * @return
+         */
         Matrix& transpose(const ContiguousMatrix& A) override { return Matrix::transpose(A); }
+
+
     };
 
 }

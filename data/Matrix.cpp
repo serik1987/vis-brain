@@ -214,6 +214,20 @@ namespace data{
         }
     }
 
+    Matrix& Matrix::dot(const ContiguousMatrix& A, const ContiguousMatrix& B){
+        data::ContiguousMatrix::ConstantIterator a(A, 0);
+        data::ContiguousMatrix::ConstantIterator b(B, 0);
+        for (auto c = begin(); c != end(); ++c){
+            int i = c.getRow();
+            int j = c.getColumn();
+            *c = 0.0;
+            for (int k=0; k < A.getWidth(); ++k){
+                *c += a.val(i, k) * b.val(k, j);
+            }
+        }
+        return *this;
+    }
+
 
 }
 
