@@ -10,6 +10,16 @@
 #include "../compile_options.h"
 #include "../log/output.h"
 
+namespace data{ class Matrix; }
+
+/**
+          * Exchanges values between the matrices
+          *
+          * @param A the first matrix
+          * @param B the second matrix
+          */
+void swap(data::Matrix& A, data::Matrix& B);
+
 namespace data {
 
 /**
@@ -530,6 +540,20 @@ namespace data {
                 return *(pointer + parent->width * i + j);
              }
          };
+
+         virtual Iterator begin() = 0;
+         virtual Iterator end() = 0;
+         virtual ConstantIterator cbegin() const = 0;
+         virtual ConstantIterator cend() const = 0;
+
+         /**
+          * Exchanges values between the matrices
+          *
+          * @param A the first matrix
+          * @param B the second matrix
+          */
+         friend void ::swap(Matrix& A, Matrix& B);
+
     };
 
 }

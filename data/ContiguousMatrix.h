@@ -209,19 +209,19 @@ namespace data {
                 ConstantIterator(*static_cast<const ContiguousMatrix*>(other.parent), other.index) {}
         };
 
-        Iterator begin(){
+        Matrix::Iterator begin(){
             return Iterator(*this);
         }
 
-        ConstantIterator cbegin() const{
+        Matrix::ConstantIterator cbegin() const{
             return ConstantIterator(*this);
         }
 
-        Iterator end(){
+        Matrix::Iterator end(){
             return Iterator(*this, iFinish);
         }
 
-        ConstantIterator cend() const{
+        Matrix::ConstantIterator cend() const{
             return ConstantIterator(*this, iFinish);
         }
     };

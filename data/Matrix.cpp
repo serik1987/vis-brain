@@ -41,3 +41,13 @@ namespace data{
 #endif
 
 }
+
+void swap(data::Matrix& A, data::Matrix& B){
+    {
+        for (auto a = A.begin(), b = B.begin(); a != A.end(); ++a, ++b){
+            double temp = *a;
+            *a = *b;
+            *b = temp;
+        }
+    }
+}
