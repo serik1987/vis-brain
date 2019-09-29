@@ -561,6 +561,12 @@ namespace data {
           */
          void fill(double x);
 
+         template<typename F> void fill(F f){
+             for (auto a = begin(); a != end(); ++a){
+                 *a = f(a);
+             }
+         };
+
     };
 
 }

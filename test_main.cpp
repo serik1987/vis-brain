@@ -12,6 +12,10 @@ void test_main(){
 
     logging::progress(0, 1, "Matrix initialization");
 
+    mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
+    data::LocalMatrix A(comm, 21, 21, 1.0, 1.0);
+    data::ContiguousMatrix B(comm, 21, 21, 1.0, 1.0);
+
 
 
     logging::progress(1, 1);
