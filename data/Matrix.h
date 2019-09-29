@@ -701,7 +701,93 @@ namespace data {
           */
          Matrix& neg(const Matrix& A);
 
+         /**
+          * Provides item-by-item multiplication. The results will be returned to the same matrix.
+          *
+          * @param other the other multiplication term
+          * @return reference to the result
+          */
+         Matrix& operator*=(const Matrix& other);
 
+         /**
+          * Multiplies all items in the matrix by the value x
+          *
+          * @param x the value
+          * @return reference to the result
+          */
+         Matrix& operator*=(double x);
+
+         /**
+          * Provides item-by-item division. The results will be returned to the same matrix
+          *
+          * @param other the other multiplication term
+          * @return reference to the result
+          */
+         Matrix& operator/=(const Matrix& other);
+
+         /**
+          * Divides all matrix items by the same value x
+          *
+          * @param x the value itself
+          * @return reference to the result
+          */
+         Matrix& operator/=(double x);
+
+
+         /**
+          * Provides item-by-item multiplication. Results will be put to the current matrix
+          *
+          * @param A the first matrix
+          * @param B the second matrix
+          * @return reference to the result
+          */
+         Matrix& mul(const Matrix& A, const Matrix& B);
+
+
+         /**
+          * Provides item-by-item division. Rresults will be put to the current matrix
+          *
+          * @param A The first term
+          * @param B The second term
+          * @return reference to the result
+          */
+         Matrix& div(const Matrix& A, const Matrix& B);
+
+         /**
+          * Multiplies all items on the matrix A by the same number x and put the results to the current matrix
+          *
+          * @param A source matrix
+          * @param x source number
+          * @return reference to the result
+          */
+         Matrix& mul(const Matrix& A, double x);
+
+         /**
+          * Divides all items on the matrix by the same number x and put the results to the current matrix
+          *
+          * @param A source matrix
+          * @param x source number
+          * @return reference to the result
+          */
+         Matrix& div(const Matrix& A, double x);
+
+         /**
+          * Multiplies all values of the matrix A by the same value x and puts the results to the current matrix
+          *
+          * @param x source number
+          * @param A  source matrix
+          * @return reference to the result
+          */
+         Matrix& mul(double x, const Matrix& A) { return mul(A, x); }
+
+         /**
+          * Divides the value x by all items for the matrix A and puts the results to the current matrix
+          *
+          * @param x source number
+          * @param A source matrix
+          * @return reference to the result
+          */
+         Matrix& div(double x, const Matrix& A);
     };
 
 }
