@@ -561,11 +561,49 @@ namespace data {
           */
          void fill(double x);
 
+         /**
+          * Fills matrix by means of predefined values
+          *
+          * @tparam F some functor like double (*F)(data::Matrix::Iterator)
+          * @param f the functor instance
+          */
          template<typename F> void fill(F f){
              for (auto a = begin(); a != end(); ++a){
                  *a = f(a);
              }
          };
+
+         /**
+          * applies some function to the matrix B and puts the results into matrix A
+          *
+          * @tparam F some functor like double (*F)(const data::Matrix::Iterator&)
+          * @param B another matrix
+          * @param f instance of the function
+          */
+         template<typename F> void calculate(const Matrix& B, F f){
+            auto a = begin();
+            auto b = B.cbegin();
+            for (;a != end(); ++a, ++b){
+                *a = f(b);
+            }
+         }
+
+         /**
+          * applies some function to matrices B and C and puts the results into current matrix
+          *
+          * @tparam F some functor like double (*F)(const Iterator&, const Iterator&)
+          * @param B the second matrix
+          * @param C the third matrix
+          * @param f instance of the functor
+          */
+         template<typename F> void calculate(const Matrix& B, const Matrix& C, F f){
+            auto a = begin();
+            auto b = B.cbegin();
+            auto c = C.cbegin();
+            for (; a != end(); ++a, ++b, ++c){
+                *a = f(b, c);
+            }
+         }
 
     };
 
