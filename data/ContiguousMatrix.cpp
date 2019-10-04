@@ -138,4 +138,43 @@ namespace data{
         return *this;
     }
 
+#if DEBUG==1
+    ContiguousMatrix ContiguousMatrix::magic(mpi::Communicator& comm, int n){
+        if (n % 2 == 0){
+            throw std::runtime_error("The method was not implemented for even matrix sizes");
+        }
+
+        ContiguousMatrix A(comm, n, n, 1.0, 1.0);
+        Iterator a(A, 0, 0);
+        int i = n/2;
+        int j = n-1;
+        for (double value = 1; value <= n*n; ++value){
+            a.val(i, j) = value;
+
+            /* First rule: */
+            --i, ++j;
+
+            /* Third rule: */
+            if (i == -1 && j == n){
+                i = 0, j = n-2;
+            }
+
+            /* Ensure that all indices are valid */
+            if (i<0) i = n-1;
+            if (j>=n) j = 0;
+
+            /* Second rule */
+            if (a.val(i, j) != 0.0){
+                ++i, j-=2;
+            }
+
+            /* Ensure again that all indices are valid */
+            if (i>=n) i = 0;
+            if (j<0) j += n;
+        }
+        return A;
+    }
+#endif
+
+
 }

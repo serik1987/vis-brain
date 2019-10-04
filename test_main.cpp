@@ -6,71 +6,94 @@
 #include "data/Matrix.h"
 #include "data/LocalMatrix.h"
 #include "data/ContiguousMatrix.h"
+#include "data/LuDecomposer.h"
 
 void test_main(){
     using namespace std;
 
-    logging::progress(0, 1, "Matrix initialization");
+    logging::progress(0, 1, "Magic matrix: calculating");
 
+    const int n = 2001;
+    double sum = 0;
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
-    data::ContiguousMatrix A(comm, 6, 6, 1.0, 1.0);
-    data::ContiguousMatrix B(comm, 6, 6, 1.0, 1.0);
-    data::LocalMatrix C(comm, 6, 6, 1.0, 1,0);
+    data::ContiguousMatrix A = data::ContiguousMatrix::magic(comm, n);
 
-    A.getValue(0, 0) = 35;
-    A.getValue(0, 1) = 1;
-    A.getValue(0, 2) = 6;
-    A.getValue(0, 3) = 26;
-    A.getValue(0, 4) = 19;
-    A.getValue(0, 5) = 24;
+    {
+        logging::progress(0, 1, "Magic matrix: column check");
+        data::ContiguousMatrix::Iterator a(A, 0);
+        for (int i = 0; i < n; ++i) {
+            double local_sum = 0;
+            for (int j = 0; j < n; ++j) {
+                local_sum += a.val(i, j);
+                if (a.val(i, j) == 0.0) {
+                    throw std::runtime_error("Value is not filled");
+                }
+            }
+            if (sum != local_sum && sum != 0) {
+                throw std::runtime_error("Column sum inconsistency");
+            }
+            sum = local_sum;
+        }
 
-    A.getValue(1, 0) = 3;
-    A.getValue(1, 1) = 32;
-    A.getValue(1, 2) = 7;
-    A.getValue(1, 3) = 21;
-    A.getValue(1, 4) = 23;
-    A.getValue(1, 5) = 25;
+        logging::progress(0, 1, "Magic matrix: row check");
 
-    A.getValue(2, 0) = 31;
-    A.getValue(2, 1) = 9;
-    A.getValue(2, 2) = 2;
-    A.getValue(2, 3) = 22;
-    A.getValue(2, 4) = 27;
-    A.getValue(2, 5) = 20;
+        for (int j = 0; j < n; ++j) {
+            double local_sum = 0;
+            for (int i = 0; i < n; ++i) {
+                local_sum += a.val(i, j);
+            }
+            if (sum != local_sum) {
+                throw std::runtime_error("Row sum inconsistency");
+            }
+        }
 
-    A.getValue(3, 0) = 8;
-    A.getValue(3, 1) = 28;
-    A.getValue(3, 2) = 33;
-    A.getValue(3, 3) = 17;
-    A.getValue(3, 4) = 10;
-    A.getValue(3, 5) = 15;
+        logging::progress(0, 1, "check diagonals");
 
-    A.getValue(4, 0) = 30;
-    A.getValue(4, 1) = 5;
-    A.getValue(4, 2) = 34;
-    A.getValue(4, 3) = 12;
-    A.getValue(4, 4) = 14;
-    A.getValue(4, 5) = 16;
+        double local_sum = 0;
+        for (int i = 0, j = 0; i < n; ++i, ++j) {
+            local_sum += a.val(i, j);
+        }
+        if (sum != local_sum) {
+            throw std::runtime_error("Main diagonal inconsistency");
+        }
 
-    A.getValue(5, 0) = 4;
-    A.getValue(5, 1) = 36;
-    A.getValue(5, 2) = 29;
-    A.getValue(5, 3) = 13;
-    A.getValue(5, 4) = 18;
-    A.getValue(5, 5) = 11;
-
-    A.synchronize();
-    B.transpose(A);
-    B.synchronize();
+        local_sum = 0;
+        for (int i = 0, j = n - 1; i < n; ++i, --j) {
+            local_sum += a.val(i, j);
+        }
+    }
 
     logging::enter();
-    logging::debug("Simple matrix production");
-    C.dot(A, B).printLocal();
-    logging::debug("");
-    logging::debug("Matrix C after operation");
-    C.printLocal();
-    logging::debug("");
+    if (comm.getRank() == 0) {
+        logging::debug("Matrix A");
+        logging::debug("Magic sum: " + to_string(sum));
+        logging::debug("n = " + to_string(n));
+    }
     logging::exit();
+
+    data::LuDecomposer decomposer(A, "LU decomposition", 50);
+    decomposer.printDebugInformation();
+
+    logging::progress(0, 1, "Checking decomnposed information");
+    for (int i=0; i < n; ++i){
+        for (int j = 0; j < n; ++j){
+            double PA_real = decomposer.PA(i, j);
+            double PA_decomposed = 0.0;
+            for (int k = 0; k < n; ++k){
+                PA_decomposed += decomposer.L(i, k) * decomposer.U(k, j);
+            }
+            if (abs(PA_real - PA_decomposed) > 1e-8) {
+                logging::enter();
+                if (comm.getRank() == 0) {
+                    logging::debug("i = " + std::to_string(i) + "; j = "
+                                   + std::to_string(j) + "; PA_real = " + std::to_string(PA_real) +
+                                   "; PA_decomposed = " + std::to_string(PA_decomposed));
+                }
+                logging::exit();
+                throw std::runtime_error("Decomposition test failed");
+            }
+        }
+    }
 
 
 

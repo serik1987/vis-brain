@@ -177,6 +177,7 @@ void Application::fillCmd() {
 
 
 void Application::simulate() {
+    deleteV8Engine();
     try {
 #if DEBUG==1
         test_main();

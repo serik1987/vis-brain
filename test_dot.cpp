@@ -13,9 +13,9 @@ void test_main(){
     logging::progress(0, 1, "Matrix initialization");
 
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
-    data::ContiguousMatrix A(comm, 6, 6, 1.0, 1.0);
-    data::ContiguousMatrix B(comm, 6, 6, 1.0, 1.0);
-    data::LocalMatrix C(comm, 6, 6, 1.0, 1,0);
+    data::ContiguousMatrix A6(comm, 6, 6, 1.0, 1.0);
+    data::ContiguousMatrix L6(comm, 6, 6, 1.0, 1.0);
+    data::LocalMatrix U6(comm, 6, 6, 1.0, 1,0);
 
     A.getValue(0, 0) = 35;
     A.getValue(0, 1) = 1;
@@ -59,9 +59,7 @@ void test_main(){
     A.getValue(5, 4) = 18;
     A.getValue(5, 5) = 11;
 
-    A.synchronize();
-    B.transpose(A);
-    B.synchronize();
+    
 
 
     logging::progress(1, 1);

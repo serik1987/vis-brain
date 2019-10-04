@@ -37,6 +37,20 @@ namespace data{
         }
     };
 
+    class square_matrix_required: public simulation_exception{
+    public:
+        const char* what() const noexcept override{
+            return "Square matrix is required to complete the current simulation but rectangular matrix was passed";
+        }
+    };
+
+    class matrix_dimensions_mismatch: public simulation_exception{
+    public:
+        const char* what() const noexcept override{
+            return "Dimensions of different input matrices in the equation are not mismatched";
+        }
+    };
+
 }
 
 #endif //MPI2_EXCEPTIONS_H

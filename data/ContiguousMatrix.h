@@ -47,6 +47,7 @@ namespace data {
 
         void createBuffers();
         void deleteBuffers();
+
     public:
 
         /**
@@ -247,6 +248,22 @@ namespace data {
          * @return
          */
         Matrix& transpose(const ContiguousMatrix& A) override { return Matrix::transpose(A); }
+
+
+
+#if DEBUG==1
+        /**
+         * Returns the magic square.
+         * Static routine
+         * Collective routine
+         * Not parallelized. Adding new kernels will not make effective computation
+         *
+         * @param comm communicator among the processes
+         * @param n number of sides in the magic square
+         * @return ContiguousMatrix object
+         */
+        static ContiguousMatrix magic(mpi::Communicator& comm, int n);
+#endif
 
 
     };

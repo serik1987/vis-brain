@@ -28,6 +28,7 @@ namespace data{
 
         for (int i=0; i < height; i++){
             ostringstream ss;
+            ss << "\t";
             for (int j=0; j < width; j++){
                 try {
                     ss << getValue(i, j) << "\t";
