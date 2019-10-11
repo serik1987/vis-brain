@@ -1,5 +1,6 @@
 //
-// Created by serik1987 on 03.10.19.
+// (C) Sergei Kozhukhov, 2019
+// (C) the Institute of Higher Nervous Activity and Neurophysiology, Russian Academy of Sciences, 2019
 //
 
 #include "LuDecomposer.h"
@@ -380,6 +381,257 @@ namespace data {
             ++displ;
         }
         checkTransmissionTime();
+    }
+
+    ContiguousMatrix LuDecomposer::getLowerTriangle() const{
+        ContiguousMatrix Result(comm, N, N, A.getWidthUm(), A.getHeightUm());
+        ContiguousMatrix::Iterator result(Result, 0);
+
+        for (int i=0; i < N; ++i){
+            for (int j=0; j < i; ++j){
+                result.val(i, j) = l(i, j);
+            }
+            result.val(i, i) = 1.0;
+            for (int j = i+1; j < N; ++j){
+                result.val(i, j) = 0.0;
+            }
+        }
+
+        return Result;
+    }
+
+    ContiguousMatrix LuDecomposer::getUpperTriangle() const{
+        ContiguousMatrix Result(comm, N, N, A.getWidthUm(), A.getHeightUm());
+        ContiguousMatrix::Iterator result(Result, 0);
+
+        for (int i=0; i < N; ++i){
+            for (int j=0; j < i; ++j) {
+                result.val(i, j) = 0.0;
+            }
+            for (int j=i; j < N; ++j){
+                result.val(i, j) = u(i, j);
+            }
+        }
+
+        return Result;
+    }
+
+    ContiguousMatrix LuDecomposer::getPermutationMatrix() const {
+        ContiguousMatrix Result(comm, N, N, A.getWidthUm(), A.getHeightUm());
+        ContiguousMatrix::Iterator result(Result, 0);
+
+        for (int i=0; i < N; ++i){
+            for (int j=0; j < N; ++j){
+                result.val(i, j) = (double)(P[i] == j);
+            }
+        }
+
+        return Result;
+    }
+
+    void LuDecomposer::solve(data::ContiguousMatrix &x, const data::ContiguousMatrix &b, int root, double *buf) const {
+        if (comm.getRank() == root){
+            if (b.getHeight() != N || b.getWidth() != 1 || x.getHeight() != N || x.getWidth() != 1){
+                throw matrix_dimensions_mismatch();
+            }
+            bool buffer_not_created = false;
+            if (buf == nullptr){
+                buf = new double[N];
+                buffer_not_created = true;
+            }
+            solve_lowerTriangle(buf, b);
+            solve_upperTriangle(x, buf);
+            if (buffer_not_created){
+                delete [] buf;
+            }
+
+        }
+    }
+
+    void LuDecomposer::solve_lowerTriangle(double* buf, const ContiguousMatrix& b) const {
+        ContiguousMatrix::ConstantIterator it(b, 0);
+        for (int i=0; i < N; ++i){
+            buf[i] = it[P[i]];
+            for (int j = i-1; j >=0; --j){
+                buf[i] -= l(i, j) * buf[j];
+            }
+        }
+    }
+
+    void LuDecomposer::solve_upperTriangle(data::ContiguousMatrix &x, const double *buf) const {
+        ContiguousMatrix::Iterator x_it(x, 0);
+        for (int i = N-1; i >= 0; --i){
+            x_it[i] = buf[i];
+            for (int j = i+1; j < N; ++j){
+                x_it[i] -= u(i, j) * x_it[j];
+            }
+            x_it[i] /= u(i, i);
+        }
+    }
+
+    void LuDecomposer::divide(data::ContiguousMatrix &X, const data::ContiguousMatrix &B, double *buffer_local,
+                              double *result_local, double *external_result) {
+        divide_checkMatrices(X, B);
+        divide_init(B);
+        divide_initBuffers(B, buffer_local, result_local, external_result);
+        divide_lowerTriangle(B);
+        divide_upperTriangle();
+        divide_gather(resultLocal, result);
+        divide_setResult(X, result);
+        divide_clearBuffers();
+    }
+
+    void LuDecomposer::inverse(data::ContiguousMatrix &X, double *buffer_local, double *result_local,
+            double *external_result) {
+        inverse_checkMatrix(X);
+        divide_init(X);
+        divide_initBuffers(X, buffer_local, result_local, external_result);
+        inverse_lowerTriangle();
+        divide_upperTriangle();
+        divide_gather(resultLocal, result);
+        divide_setResult(X, result);
+        divide_clearBuffers();
+    }
+
+    inline void LuDecomposer::divide_checkMatrices(const data::ContiguousMatrix &X, const ContiguousMatrix &B) const {
+        if (X.getHeight() != B.getHeight() || X.getHeight() != A.getHeight()){
+            throw matrix_dimensions_mismatch();
+        }
+        if (X.getWidth() != B.getWidth()){
+            throw matrix_dimensions_mismatch();
+        }
+    }
+
+    inline void LuDecomposer::inverse_checkMatrix(const data::ContiguousMatrix &X) const {
+        if (X.getHeight() != A.getHeight() || X.getWidth() != A.getWidth()){
+            throw matrix_dimensions_mismatch();
+        }
+    }
+
+    inline void LuDecomposer::divide_init(const data::ContiguousMatrix &B) {
+        M = B.getWidth();
+        localJob = M/n + (M%n != 0);
+        totalJob = localJob * n;
+        jStart = r * localJob;
+        jFinish = jStart + localJob;
+        if (jFinish > M) jFinish = M;
+    }
+
+    inline double* LuDecomposer::divide_createBufferLocal(const data::ContiguousMatrix &B, bool initialized) {
+        if (!initialized){
+            divide_init(B);
+        }
+        return new double[N*localJob];
+    }
+
+    inline double* LuDecomposer::divide_createResultLocal(const data::ContiguousMatrix &B, bool initialized) {
+        if (!initialized){
+            divide_init(B);
+        }
+        return new double[N*localJob];
+    }
+
+    inline double* LuDecomposer::divide_createResult(const data::ContiguousMatrix &B, bool initialized) {
+        if (!initialized){
+            divide_init(B);
+        }
+        return new double[N*totalJob];
+    }
+
+
+    inline void LuDecomposer::divide_initBuffers(const data::ContiguousMatrix &B, double *buffer_local,
+            double *result_local, double *external_result) {
+        if (buffer_local == nullptr){
+            bufferLocal = divide_createBufferLocal(B, true);
+            bufferLocalInitialized = true;
+        } else {
+            bufferLocal = buffer_local;
+            bufferLocalInitialized = false;
+        }
+
+        if (result_local == nullptr){
+            resultLocal = divide_createResultLocal(B, true);
+            resultLocalInitialized = true;
+        } else {
+            resultLocal = result_local;
+            resultLocalInitialized = false;
+        }
+
+        if (external_result == nullptr){
+            result = divide_createResult(B, true);
+            resultInitialized = true;
+        } else {
+            result = external_result;
+            resultInitialized = false;
+        }
+    }
+
+    inline void LuDecomposer::divide_clearBuffers() {
+        if (bufferLocalInitialized){
+            delete [] bufferLocal;
+        }
+        if (resultLocalInitialized){
+            delete [] resultLocal;
+        }
+        if (resultInitialized){
+            delete [] result;
+        }
+    }
+
+    inline void LuDecomposer::divide_lowerTriangle(const data::ContiguousMatrix &B) {
+        ContiguousMatrix::ConstantIterator b(B, 0);
+        for (int j = jStart, localCol = 0; j < jFinish; ++j, ++localCol){
+            for (int i=0; i < N; ++i){
+                double& value = bufferLocal[i*localJob + localCol];
+                value = b.val(P[i], j);
+                for (int k=0; k < i; ++k){
+                    value -= l(i, k) * bufferLocal[k*localJob + localCol];
+                }
+            }
+        }
+    }
+
+    inline void LuDecomposer::inverse_lowerTriangle() {
+        for (int j = jStart, localCol = 0; j < jFinish; ++j, ++localCol){
+            for (int i=0; i < N; ++i){
+                double& value = bufferLocal[i*localJob + localCol];
+                value = (double)(P[i] == j);
+                for (int k = 0; k < i; ++k){
+                    value -= l(i, k) * bufferLocal[k*localJob + localCol];
+                }
+            }
+        }
+    }
+
+    inline void LuDecomposer::divide_upperTriangle() {
+        for(int j=jStart, localJ = 0; j < jFinish; ++j, ++localJ){
+            for (int i = N-1; i >= 0; --i){
+                double& value = resultLocal[i*localJob + localJ];
+                value = bufferLocal[i*localJob + localJ];
+                for (int k = i+1; k < N; ++k){
+                    value -= u(i, k) * resultLocal[k*localJob + localJ];
+                }
+                value /= u(i, i);
+            }
+        }
+    }
+
+    inline void LuDecomposer::divide_gather(const double *localBuffer, double *buffer) {
+        for (int i=0; i < N; ++i) {
+            comm.allGather(localBuffer, localJob, MPI_DOUBLE, buffer, localJob, MPI_DOUBLE);
+            localBuffer += localJob;
+            buffer += totalJob;
+        }
+    }
+
+    inline void LuDecomposer::divide_setResult(data::ContiguousMatrix &X, double *result) {
+        ContiguousMatrix::Iterator x(X, 0);
+        for (int i=0; i < N; ++i){
+            double* px = &(*x);
+            memcpy(px, result, M * sizeof(double));
+            x += M;
+            result += totalJob;
+        }
     }
 
 

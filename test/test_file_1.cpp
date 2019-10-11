@@ -1,6 +1,6 @@
-#include "mpi/App.h"
-#include "mpi/File.h"
-#include "mpi/Status.h"
+#include "../mpi/App.h"
+#include "../mpi/File.h"
+#include "../mpi/Status.h"
 
 mpi::Status getStatus(){
     mpi::Status status;

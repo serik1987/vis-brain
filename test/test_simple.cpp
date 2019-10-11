@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "mpi/App.h"
+#include "../mpi/App.h"
 
 int main(int argc, char* argv[]) {
 

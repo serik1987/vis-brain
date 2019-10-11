@@ -1,9 +1,9 @@
 #include <iostream>
 #include <windows.h>
 
-#include "mpi/App.h"
-#include "mpi/Intercommunicator.h"
-#include "mpi/SuperIntercommunicator.h"
+#include "../mpi/App.h"
+#include "../mpi/Intercommunicator.h"
+#include "../mpi/SuperIntercommunicator.h"
 
 int main(int argc, char* argv[]) {
 

@@ -2,10 +2,10 @@
 // Created by serik1987 on 21.09.19.
 //
 
-#include "Application.h"
-#include "data/Matrix.h"
-#include "data/LocalMatrix.h"
-#include "data/ContiguousMatrix.h"
+#include "../Application.h"
+#include "../data/Matrix.h"
+#include "../data/LocalMatrix.h"
+#include "../data/ContiguousMatrix.h"
 
 void fill_matrix(data::Matrix& matrix, double filler = 0){
     for (int i=0; i < matrix.getHeight(); i++){

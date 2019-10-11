@@ -1,5 +1,5 @@
-#include "mpi/App.h"
-#include "mpi/File.h"
+#include "../mpi/App.h"
+#include "../mpi/File.h"
 
 static const int buf_size = 4096;
 static const int blocklength = 16;

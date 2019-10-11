@@ -5,10 +5,6 @@
 
 #include "log/Engine.h"
 
-void test(){
-    throw ApplicationAlreadyExists();
-}
-
 int main(int argc, char* argv[]) {
 
 

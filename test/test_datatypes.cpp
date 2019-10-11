@@ -1,7 +1,7 @@
 #include <random>
 
-#include "mpi/App.h"
-#include "mpi/Datatype.h"
+#include "../mpi/App.h"
+#include "../mpi/Datatype.h"
 
 inline void get_datatype_info(mpi::App& app, mpi::ComplexDatatype& dtype){
     app << "Datatype extent: " << dtype.getExtent() << "\n";

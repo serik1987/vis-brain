@@ -1,4 +1,4 @@
-#include "mpi/App.h"
+#include "../mpi/App.h"
 
 class Sequence{
 private:

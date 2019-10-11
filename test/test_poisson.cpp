@@ -1,6 +1,6 @@
 #include <cmath>
-#include "mpi/App.h"
-#include "mpi/CartesianCommunicator.h"
+#include "../mpi/App.h"
+#include "../mpi/CartesianCommunicator.h"
 
 const int width = 230;
 const int height = 230;

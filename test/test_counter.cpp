@@ -1,4 +1,4 @@
-#include "mpi/App.h"
+#include "../mpi/App.h"
 
 #ifdef _WIN32
     #include <windows.h>

@@ -1,8 +1,8 @@
 
 
-#include "mpi/App.h"
-#include "mpi/Info.h"
-#include "mpi/File.h"
+#include "../mpi/App.h"
+#include "../mpi/Info.h"
+#include "../mpi/File.h"
 
 int main(int argc, char* argv[]){
     mpi::App app(&argc, &argv);

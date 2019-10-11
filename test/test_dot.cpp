@@ -2,10 +2,10 @@
 // Created by serik1987 on 21.09.19.
 //
 
-#include "Application.h"
-#include "data/Matrix.h"
-#include "data/LocalMatrix.h"
-#include "data/ContiguousMatrix.h"
+#include "../Application.h"
+#include "../data/Matrix.h"
+#include "../data/LocalMatrix.h"
+#include "../data/ContiguousMatrix.h"
 
 void test_main(){
     using namespace std;
@@ -13,9 +13,9 @@ void test_main(){
     logging::progress(0, 1, "Matrix initialization");
 
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
-    data::ContiguousMatrix A(comm, 6, 6, 1.0, 1.0);
-    data::ContiguousMatrix B(comm, 6, 6, 1.0, 1.0);
-    data::LocalMatrix C(comm, 6, 6, 1.0, 1,0);
+    data::ContiguousMatrix A6(comm, 6, 6, 1.0, 1.0);
+    data::ContiguousMatrix L6(comm, 6, 6, 1.0, 1.0);
+    data::LocalMatrix U6(comm, 6, 6, 1.0, 1,0);
 
     A.getValue(0, 0) = 35;
     A.getValue(0, 1) = 1;
@@ -59,43 +59,7 @@ void test_main(){
     A.getValue(5, 4) = 18;
     A.getValue(5, 5) = 11;
 
-    logging::enter();
-    logging::debug("Matrix A, after initialization");
-    A.printLocal();
-    logging::debug("");
-    logging::exit();
-
-    logging::enter();
-    logging::debug("Matrix transpose test");
-    A.transpose().printLocal();
-    logging::debug("");
-    logging::debug("After transpose");
-    A.printLocal();
-    logging::debug("");
-    logging::debug("After synchronize");
-    logging::exit();
-    A.synchronize();
-    logging::enter();
-    A.printLocal();
-    logging::debug("");
-    logging::exit();
-
-    logging::enter();
-    logging::debug("Matrix transpose test # 2");
-    B.transpose(A).printLocal();
-    logging::debug("");
-    logging::debug("After transpose:");
-    B.printLocal();
-    logging::debug("");
-    logging::exit();
-
-    B.synchronize();
-    logging::enter();
-    logging::debug("Matrix B, after synchronize");
-    B.printLocal();
-    logging::debug("");
-    logging::exit();
-
+    
 
 
     logging::progress(1, 1);

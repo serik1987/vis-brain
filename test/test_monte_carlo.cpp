@@ -3,8 +3,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "mpi/App.h"
-#include "mpi/Group.h"
+#include "../mpi/App.h"
+#include "../mpi/Group.h"
 
 #define REQUEST 1
 #define REPLY 2

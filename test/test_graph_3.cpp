@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <cmath>
 
-#include "mpi/App.h"
-#include "mpi/AbstractGraphItem.h"
-#include "mpi/Graph.h"
-#include "mpi/GraphItem.h"
-#include "mpi/GraphCommunicator.h"
-#include "sys/Semaphore.h"
+#include "../mpi/App.h"
+#include "../mpi/AbstractGraphItem.h"
+#include "../mpi/Graph.h"
+#include "../mpi/GraphItem.h"
+#include "../mpi/GraphCommunicator.h"
+#include "../sys/Semaphore.h"
 
 void print_rank_info(mpi::AbstractGraphItem& info){
     mpi::Communicator& comm = mpi::App::getInstance()->getAppCommunicator();

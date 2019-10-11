@@ -1,5 +1,6 @@
 //
-// Created by serik1987 on 21.09.19.
+// (C) Sergei Kozhukhov, 2019
+// (C) the Institute of Higher Nervous Activity and Neurophysiology, Russian Academy of Sciences, 2019
 //
 
 #include "Matrix.h"

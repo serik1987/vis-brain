@@ -11,90 +11,131 @@
 void test_main(){
     using namespace std;
 
-    logging::progress(0, 1, "Magic matrix: calculating");
+    logging::progress(0, 1, "Calculating magic matrix");
 
-    const int n = 2001;
+    const int n = 7;
     double sum = 0;
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
     data::ContiguousMatrix A = data::ContiguousMatrix::magic(comm, n);
+    logging::enter();
+    A.printLocal();
+    logging::exit();
 
-    {
-        logging::progress(0, 1, "Magic matrix: column check");
-        data::ContiguousMatrix::Iterator a(A, 0);
-        for (int i = 0; i < n; ++i) {
-            double local_sum = 0;
-            for (int j = 0; j < n; ++j) {
-                local_sum += a.val(i, j);
-                if (a.val(i, j) == 0.0) {
-                    throw std::runtime_error("Value is not filled");
-                }
-            }
-            if (sum != local_sum && sum != 0) {
-                throw std::runtime_error("Column sum inconsistency");
-            }
-            sum = local_sum;
+    logging::progress(0, 1, "LU decomposition");
+    data::LuDecomposer decomposer(A);
+    data::ContiguousMatrix L = decomposer.getLowerTriangle();
+    data::ContiguousMatrix U = decomposer.getUpperTriangle();
+    data::ContiguousMatrix P = decomposer.getPermutationMatrix();
+    logging::enter();
+    logging::debug("Lower triangle matrix");
+    L.printLocal();
+    logging::debug("Upper triangle matrix");
+    U.printLocal();
+    logging::debug("Permutation matrix");
+    P.printLocal();
+    logging::exit();
+
+    logging::progress(0, 1, "LU decomposition test");
+    data::ContiguousMatrix left_side(comm, n, n, 1.0, 1.0);
+    data::ContiguousMatrix right_side(comm, n, n, 1.0, 1.0);
+    data::ContiguousMatrix equality(comm, n, n, 1.0, 1.0);
+    left_side.dot(L, U);
+    right_side.dot(P, A);
+    equality.sub(left_side, right_side);
+    logging::enter();
+    logging::debug("L*U value");
+    left_side.printLocal();
+    logging::debug("P*A value");
+    right_side.printLocal();
+    logging::debug("Control check");
+    equality.printLocal();
+    logging::exit();
+
+    for (auto e: equality){
+        if (abs(e) > 1e-10){
+            throw std::runtime_error("LU decomposition test failed");
         }
+    }
 
-        logging::progress(0, 1, "Magic matrix: row check");
+    logging::progress(0, 1, "Solving A*x = b");
 
-        for (int j = 0; j < n; ++j) {
-            double local_sum = 0;
-            for (int i = 0; i < n; ++i) {
-                local_sum += a.val(i, j);
-            }
-            if (sum != local_sum) {
-                throw std::runtime_error("Row sum inconsistency");
-            }
-        }
-
-        logging::progress(0, 1, "check diagonals");
-
-        double local_sum = 0;
-        for (int i = 0, j = 0; i < n; ++i, ++j) {
-            local_sum += a.val(i, j);
-        }
-        if (sum != local_sum) {
-            throw std::runtime_error("Main diagonal inconsistency");
-        }
-
-        local_sum = 0;
-        for (int i = 0, j = n - 1; i < n; ++i, --j) {
-            local_sum += a.val(i, j);
-        }
+    data::ContiguousMatrix b(comm, 1, n, 1.0, 1.0/n);
+    data::ContiguousMatrix x(comm, 1, n, 1.0, 1.0/n);
+    for (int i=0; i < n; ++i){
+        b[i] = (double)i;
     }
 
     logging::enter();
-    if (comm.getRank() == 0) {
-        logging::debug("Matrix A");
-        logging::debug("Magic sum: " + to_string(sum));
-        logging::debug("n = " + to_string(n));
-    }
+    logging::debug("b values");
+    b.printLocal();
     logging::exit();
 
-    data::LuDecomposer decomposer(A, "LU decomposition", 50);
-    decomposer.printDebugInformation();
+    logging::enter();
+    decomposer.solve(x, b);
+    logging::exit();
 
-    logging::progress(0, 1, "Checking decomnposed information");
-    for (int i=0; i < n; ++i){
-        for (int j = 0; j < n; ++j){
-            double PA_real = decomposer.PA(i, j);
-            double PA_decomposed = 0.0;
-            for (int k = 0; k < n; ++k){
-                PA_decomposed += decomposer.L(i, k) * decomposer.U(k, j);
+    logging::enter();
+    logging::debug("x values");
+    x.printLocal();
+    logging::exit();
+
+    logging::progress(0, 1, "Solution check");
+    logging::enter();
+    if (comm.getRank() == 0){
+        logging::debug("Control values:");
+        for (int i=0; i < n; ++i) {
+            double check_value = 0.0;
+            for (int j = 0; j < n; ++j) {
+                check_value += A.getValue(i, j) * x.getValue(j);
             }
-            if (abs(PA_real - PA_decomposed) > 1e-8) {
-                logging::enter();
-                if (comm.getRank() == 0) {
-                    logging::debug("i = " + std::to_string(i) + "; j = "
-                                   + std::to_string(j) + "; PA_real = " + std::to_string(PA_real) +
-                                   "; PA_decomposed = " + std::to_string(PA_decomposed));
-                }
-                logging::exit();
-                throw std::runtime_error("Decomposition test failed");
+            check_value -= b.getValue(i);
+            logging::debug(to_string(check_value));
+            if (abs(check_value) > 1e-10){
+                throw std::runtime_error("Solution check failed");
             }
         }
     }
+    logging::debug("Solution check completed successfully");
+    logging::exit();
 
+    data::ContiguousMatrix B(A);
+    B.synchronize();
+    data::ContiguousMatrix X(comm, n, n, 1.0, 1.0);
+
+    logging::progress(0, 1, "Matrix division");
+    decomposer.divide(X, B);
+    logging::enter();
+    logging::debug("Division result:");
+    X.printLocal();
+    logging::exit();
+
+    logging::progress(0, 1, "Matrix inverse");
+    decomposer.inverse(X);
+    logging::enter();
+    logging::debug("Inverse result:");
+    X.printLocal();
+    logging::exit();
+
+    logging::progress(0, 1, "Inverse matrix check");
+    for (int i=0; i < n; ++i){
+        for (int j=0; j < n; ++j){
+            double control = 0.0;
+            for (int k=0; k < n; ++k){
+                control += A.getValue(i, k) * X.getValue(k, j);
+            }
+            control -= (double)(i == j);
+            if (abs(control) > 1e-10){
+                logging::enter();
+                logging::debug("Inverse matrix check failure at (" + std::to_string(i)+", "+std::to_string(j) + "):");
+                logging::debug("a = " + std::to_string(A.getValue(i, j)));
+                logging::debug("x = " + std::to_string(X.getValue(i, j)));
+                logging::debug("A*X = " + std::to_string(control));
+                logging::debug("required: " + std::to_string((int)(i == j)));
+                logging::exit();
+                throw std::runtime_error("Inverse matrix check failed");
+            }
+        }
+    }
 
 
     logging::progress(1, 1);

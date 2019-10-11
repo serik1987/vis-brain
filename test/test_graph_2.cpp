@@ -1,5 +1,5 @@
-#include "mpi/App.h"
-#include "mpi/GraphCommunicator.h"
+#include "../mpi/App.h"
+#include "../mpi/GraphCommunicator.h"
 
 int main(int argc, char* argv[]){
     mpi::App app(&argc, &argv);
