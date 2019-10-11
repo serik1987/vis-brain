@@ -633,6 +633,107 @@ namespace data {
              return global_result;
          }
 
+         /**
+          * Calculates sum of all elements within the matrix.
+          * This is a collective routine
+          *
+          * @return sum of all elements on the matrix
+          */
+         double sum() const;
+
+         /**
+          * Calculates that maximum values in the matrix
+          * This is a collective routine
+          *
+          * @return maximum value of the matrix
+          */
+         double max() const;
+
+         /**
+          * Calculates the index of the maximum value
+          * This is a collective routine
+          *
+          * @param row index of the row where the value is maximum
+          * @param col index of the column where the value is maximum
+          * @param value pointer to the value which will be filled by the maximum value within the matrix or nullptr
+          * if don't do it
+          * @return linear index of the maximum value
+          */
+         int argmax(int& row, int& col, double* value = nullptr) const;
+
+         /**
+          * Calculates the minimum value within the matrix
+          * This is a collective routine
+          *
+          * @return then minimum value itself
+          */
+         double min() const;
+
+        /**
+         * Calculates the index of the minimum value
+         * This is a collective routine
+         *
+         * @param row index of the row where the value is minimum
+         * @param col index of the column where the value is minimum
+         * @param value pointer to the value which will be filled by the minimum value within the matrix or nullptr
+         * if don't do it
+         * @return linear index of the minimum value
+         */
+         int argmin(int& row, int& col, double* value = nullptr) const;
+
+         /**
+          * Calculates the mean value
+          * This is a collective routine
+          *
+          * @return the mean value itself
+          */
+         double mean() const {
+             return sum()/(width * height);
+         }
+
+         /**
+          * Calculates the standard deviation
+          * This is a collective routine
+          *
+          * @return the standard deviation itself
+          */
+         double std() const;
+
+         /**
+          * Calculates standard error of mean
+          * This is a collective routine
+          *
+          * @return standard error of mean
+          */
+         double sterr() const {
+             return std() / sqrt(width*height);
+         }
+
+         /**
+          * Calculates the error function between two matrices
+          * This is a collective routine
+          *
+          * @param other the other matrix
+          * @return the error function itself
+          */
+         double errorfunc(const Matrix& other) const;
+
+         /**
+          * Computes covariance between two matrices
+          *
+          * @param other the other matrix
+          * @return covariance itself
+          */
+         double cov(const Matrix& other) const;
+
+         /**
+          * Computes correlation between two matrices
+          *
+          * @param other the other matrix
+          * @return correlation itself
+          */
+         double corr(const Matrix& other) const;
+
          Matrix& operator++();
          Matrix& operator--();
          Matrix& operator+=(const Matrix& other);

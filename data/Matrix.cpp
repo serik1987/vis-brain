@@ -230,6 +230,191 @@ namespace data{
         return *this;
     }
 
+    double Matrix::sum() const{
+        double r = 0.0;
+        r = reduce(0.0, MPI_SUM, [](double& result, double x){
+            result += x;
+        });
+        return r;
+    }
+
+    double Matrix::max() const{
+        double m = 0.0;
+        bool initialized = false;
+        m = reduce(NAN, MPI_MAX, [&initialized](double& result, double x){
+            if (initialized){
+                if (x > result) result = x;
+            } else {
+                result = x;
+                initialized = true;
+            }
+        });
+        return m;
+    }
+
+    struct MPI_MAX_MIN_LOC_STRUCTURE {
+        double value;
+        int rank;
+    };
+
+    int Matrix::argmax(int &row, int &col, double *value) const {
+        auto a = cbegin();
+        double localValue = *a;
+        int localIndex = a.getIndex();
+        int localRow = a.getRow();
+        int localCol = a.getColumn();
+        double globalValue;
+
+        for (++a; a != cend(); ++a){
+            if (*a > localValue){
+                localValue = *a;
+                localIndex = a.getIndex();
+                localRow = a.getRow();
+                localCol = a.getColumn();
+            }
+        }
+
+        MPI_MAX_MIN_LOC_STRUCTURE local, global;
+        local.value = localValue;
+        local.rank = communicator.getRank();
+        communicator.allReduce(&local, &global, 1, MPI_DOUBLE_INT, MPI_MAXLOC);
+        if (value != nullptr) *value = global.value;
+
+        int indices[3] = {localIndex, localRow, localCol};
+        communicator.broadcast(indices, 3, MPI_INT, global.rank);
+        row = indices[1];
+        col = indices[2];
+        return indices[0];
+    }
+
+    double Matrix::min() const{
+        double minValue;
+        bool initialized = false;
+        minValue = reduce(NAN, MPI_MIN, [&initialized](double& result, double x){
+            if (initialized){
+                if (x < result) result = x;
+            } else {
+                result = x;
+                initialized = true;
+            }
+        });
+        return minValue;
+    }
+
+    int Matrix::argmin(int &row, int &col, double *value) const {
+        ConstantIterator a = cbegin();
+        double localValue = *a;
+        int localIndex = a.getIndex();
+        int localRow = a.getRow();
+        int localCol = a.getColumn();
+
+        for (++a; a != cend(); ++a){
+            if (*a < localValue){
+                localValue = *a;
+                localIndex = a.getIndex();
+                localRow = a.getRow();
+                localCol = a.getColumn();
+            }
+        }
+
+        MPI_MAX_MIN_LOC_STRUCTURE localStructure, globalStructure;
+        localStructure.value = localValue;
+        localStructure.rank = communicator.getRank();
+        communicator.allReduce(&localStructure, &globalStructure, 1, MPI_DOUBLE_INT, MPI_MINLOC);
+        if (value != nullptr) *value = globalStructure.value;
+        int root = globalStructure.rank;
+
+        int indices[3] = {localIndex, localRow, localCol};
+        communicator.broadcast(indices, 3, MPI_INT, root);
+        row = indices[1];
+        col = indices[2];
+        return indices[0];
+    }
+
+#define SQR(X) ((X)*(X))
+
+    double Matrix::std() const{
+        const int VALUES = 0;
+        const int SQUARES = 1;
+        double localSum[2] = {0, 0};
+        double globalSum[2] = {0, 0};
+        double deviation;
+        int items = height * width;
+
+        for (auto a = cbegin(); a != cend(); ++a){
+            localSum[VALUES] += *a;
+            localSum[SQUARES] += *a * *a;
+        }
+        communicator.allReduce(localSum, globalSum, 2, MPI_DOUBLE, MPI_SUM);
+        deviation = sqrt(globalSum[SQUARES]/items - SQR(globalSum[VALUES]/items));
+
+        return deviation;
+    }
+
+    double Matrix::errorfunc(const data::Matrix &other) const {
+        double localError, globalError;
+
+        localError = 0.0;
+        for (auto a = cbegin(), b = other.cbegin(); a != cend(); ++a, ++b){
+            localError += SQR(*a - *b);
+        }
+        communicator.allReduce(&localError, &globalError, 1, MPI_DOUBLE, MPI_SUM);
+
+        return globalError/2.0;
+    }
+
+    double Matrix::cov(const data::Matrix &other) const {
+        const int MUTUAL_SUM = 0;
+        const int FIRST_SUM = 1;
+        const int SECOND_SUM = 2;
+        double N = width * height;
+        double local[3] = {0.0, 0.0, 0.0};
+        double global[3];
+        double cov;
+
+        for (auto a = cbegin(), b = other.cbegin(); a != cend(); ++a, ++b){
+            local[MUTUAL_SUM] += *a * *b;
+            local[FIRST_SUM] += *a;
+            local[SECOND_SUM] += *b;
+        }
+        communicator.allReduce(local, global, 3, MPI_DOUBLE, MPI_SUM);
+        for (int i=0; i < 3; ++i) global[i] /= N;
+        cov = global[MUTUAL_SUM] - global[FIRST_SUM] * global[SECOND_SUM];
+
+        return cov;
+    }
+
+    double Matrix::corr(const data::Matrix& other) const {
+        const int MUTUAL_SUM = 0;
+        const int A_SUM = 1;
+        const int B_SUM = 2;
+        const int SQR_A_SUM = 3;
+        const int SQR_B_SUM = 4;
+        double local[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+        double global[5];
+        int N = width * height;
+        double covAB;
+        double varA;
+        double varB;
+        double corrAB;
+
+        for (auto a = cbegin(), b = other.cbegin(); a != cend(); ++a, ++b){
+            local[MUTUAL_SUM] += *a * *b;
+            local[A_SUM] += *a;
+            local[B_SUM] += *b;
+            local[SQR_A_SUM] += SQR(*a);
+            local[SQR_B_SUM] += SQR(*b);
+        }
+        communicator.allReduce(local, global, 5, MPI_DOUBLE, MPI_SUM);
+        for (int i=0; i < 5; ++i) global[i] /= N;
+        covAB = global[MUTUAL_SUM] - global[A_SUM] * global[B_SUM];
+        varA = global[SQR_A_SUM] - SQR(global[A_SUM]);
+        varB = global[SQR_B_SUM] - SQR(global[B_SUM]);
+        corrAB = covAB / sqrt(varA * varB);
+
+        return corrAB;
+    }
+
 
 }
 
