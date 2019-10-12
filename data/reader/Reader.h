@@ -25,7 +25,7 @@ namespace data::reader {
          * @param filename__ default filename to apply
          */
         Reader(const std::string& filename__): filename(filename__) {};
-        virtual ~Reader() {};
+        virtual ~Reader() = default;
 
         /**
          * Returns the current filename

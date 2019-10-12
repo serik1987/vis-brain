@@ -50,6 +50,7 @@ namespace data {
          * @param fillter initial values for the matrix
          */
         Matrix(mpi::Communicator &comm, int w, int h, double w_um, double h_um, double filler = 0.0);
+        virtual ~Matrix() = default;
 
         /**
          *

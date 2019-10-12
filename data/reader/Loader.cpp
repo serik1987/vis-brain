@@ -13,6 +13,11 @@ namespace data::reader{
         } else {
             current_filename = filename;
         }
+        LocalMatrix* result = loadFile(comm, current_filename);
+        return result;
+    }
+
+    LocalMatrix* Loader::loadFile(mpi::Communicator &comm, const std::string &current_filename) {
         file = new mpi::File(comm, current_filename, MPI_MODE_RDONLY);
         data::LocalMatrix* result = read(comm);
         delete file;

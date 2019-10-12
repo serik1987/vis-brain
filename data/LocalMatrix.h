@@ -52,7 +52,7 @@ namespace data {
          */
         LocalMatrix(const LocalMatrix& other);
 
-        ~LocalMatrix();
+        virtual ~LocalMatrix();
 
         /**
          * Provides an access to the matrix element

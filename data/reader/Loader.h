@@ -27,12 +27,30 @@ namespace data::reader {
          * allocate memory for this
          */
         virtual data::LocalMatrix* read(mpi::Communicator& comm) = 0;
+
+        /**
+         * Loads file from the hard disk drive. Its difference from the public load(...) method is the system always
+         * loads the file which name is given in current_filename variable. Default filename will not take into
+         * consideration.
+         *
+         * The method is called by load(...) routine which in turn evaluates filename to load and pass it as
+         * current_filename argument. If file loading process is based on MPI routines, this is not necessary to
+         * pay attention on this method. Otherwise, this method shall open the file, read header and data from it
+         * and close it. In this case file protected variable will not be saved
+         *
+         * @param comm communicator that will assign to the matrix
+         * @param current_filename name of a file to load
+         * @return pointer to the loaded matrix. The method creates new instance for the matrix and allocates memory
+         * for this.
+         */
+        virtual data::LocalMatrix* loadFile(mpi::Communicator& comm, const std::string& current_filename);
     public:
         /**
          *
          * @param filename default filename
          */
         Loader(const std::string& filename): Reader(filename) {}
+        virtual ~Loader() = default;
 
         /**
          * Loads the matrix from the file

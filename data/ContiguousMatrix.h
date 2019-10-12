@@ -63,7 +63,7 @@ namespace data {
          */
         ContiguousMatrix(mpi::Communicator& comm, int width, int height, double widthUm, double heightUm,
                 double filler = 0.0);
-        ~ContiguousMatrix();
+        virtual ~ContiguousMatrix();
 
         ContiguousMatrix(const ContiguousMatrix& other);
 

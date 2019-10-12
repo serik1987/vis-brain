@@ -21,7 +21,7 @@ namespace data::reader {
         data::LocalMatrix* read(mpi::Communicator& comm) override;
     public:
         BinReader(const std::string& filename): Saver(filename), Loader(filename), Reader(filename) {};
-        virtual ~BinReader() {}
+        virtual ~BinReader() = default;
     };
 
 }
