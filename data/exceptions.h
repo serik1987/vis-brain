@@ -52,6 +52,13 @@ namespace data{
         }
     };
 
+    class incorrect_data_format: public std::exception{
+    public:
+        const char* what() const noexcept override{
+            return "Incorrect file is given as an input file";
+        }
+    };
+
 }
 
 #endif //MPI2_EXCEPTIONS_H

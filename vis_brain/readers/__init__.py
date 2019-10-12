@@ -2,6 +2,7 @@
 
 from vis_brain.readers.Reader import Reader
 from vis_brain.readers.Loader import Loader
+from vis_brain.readers.Saver import Saver
 from vis_brain.readers.BinReader import BinReader
 
 def create_reader(format, filename):

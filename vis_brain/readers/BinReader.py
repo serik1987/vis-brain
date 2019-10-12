@@ -2,9 +2,9 @@
 
 import struct
 import numpy as np
-from vis_brain.readers import Loader
+from vis_brain.readers import Loader, Saver
 
-class BinReader(Loader):
+class BinReader(Loader, Saver):
     '''
     Implements reading and writing operations for .bin native vis-brain files
     '''
@@ -14,7 +14,7 @@ class BinReader(Loader):
 
     def read(self):
         '''
-        Overrides a virtual mathod in the based class. For service use only
+        Overrides a virtual method in the based class. For service use only
         '''
         chunk = self._file.read(self.__CHUNK_SIZE).decode("utf-8").strip('\x00')
         if chunk != self.__CHUNK:
@@ -29,3 +29,18 @@ class BinReader(Loader):
         linearized_data = np.array(tupled_data)
         data = np.reshape(linearized_data, (height, width))
         return data
+
+    def write(self, matrix):
+        '''
+        Overrides a virtual method in the based class. For service use only
+        '''
+        chunk = self.__CHUNK.encode("utf-8")
+        self._savingFile.write(chunk)
+        bytesRequired = self.__CHUNK_SIZE - len(chunk)
+        chunk2 = b'\x00'*bytesRequired
+        self._savingFile.write(chunk2)
+        height, width = matrix.shape
+        header = struct.pack("iidd", width, height, self.getWidthUm(), self.getHeightUm())
+        self._savingFile.write(header)
+        content = bytes(matrix)
+        self._savingFile.write(content)

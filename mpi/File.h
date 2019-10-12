@@ -65,7 +65,6 @@ namespace mpi {
         : handle(MPI_FILE_NULL), comm(nullptr){
             int errcode;
             if ((errcode = MPI_File_open(*c, filename.c_str(), amode, info, &handle)) != MPI_SUCCESS) {
-                std::cout << errcode << std::endl;
                 throw_exception(errcode);
             }
             comm = &c;
