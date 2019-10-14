@@ -416,6 +416,39 @@ namespace data{
     }
 
 
+    Matrix& Matrix::convolve(const data::ContiguousMatrix &K, const data::ContiguousMatrix &A) {
+        if (A.getWidth() != width || A.getHeight() != height){
+            throw matrix_dimensions_mismatch();
+        }
+
+        Matrix::Iterator b = begin();
+        Matrix::ConstantIterator a = A.cbegin();
+        int W = (K.getWidth() - 1)/2;
+        int H = (K.getHeight() - 1)/2;
+        ContiguousMatrix::ConstantIterator k(K, W, H);
+
+        for (; b != end(); ++b, ++a){
+            *b = 0.0;
+            double local_sum = 0.0;
+            for (int h = -H; h <= H; ++h){
+                int i_loc = a.getRow() + h;
+                if (i_loc >= 0 && i_loc < A.getHeight()){
+                    for (int w = -W; w < W; ++w){
+                        int j_loc = a.getColumn() + w;
+                        if (j_loc >= 0 && j_loc < A.getHeight()){
+                            *b += k.val(h, w) * a.val(h, w);
+                            local_sum += k.val(h, w);
+                        }
+                    }
+                }
+            }
+            *b /= local_sum;
+        }
+
+        return *this;
+    }
+
+
 }
 
 void swap(data::Matrix& A, data::Matrix& B){

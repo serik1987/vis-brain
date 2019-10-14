@@ -919,6 +919,19 @@ namespace data {
          * @return reference to the result
          */
         Matrix& dot(const ContiguousMatrix& A, const ContiguousMatrix& B);
+
+        /**
+         * Provides spatial convolution of two matrices. The convolution results will be normalized.
+         * Please, note that all source matrices shall be contiguous and syhcnronized
+         * (see data::ContiguousMatrix::synchronize for details). Despite of this, the resultant  matrix will not be
+         * synchronized
+         *
+         * @param K the convolving (or so called "kernel" matrix
+         * @param A source matrix. Please, note that dimensions of the source matrix shall be the same as dimensions
+         * of the current matrix. Otherwise, this method will throw an exception
+         * @return The convoution results will be put to the current matrix. Its alias will be returned
+         */
+        Matrix& convolve(const ContiguousMatrix& K, const ContiguousMatrix& A);
     };
 
 }
