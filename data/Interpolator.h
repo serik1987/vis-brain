@@ -44,6 +44,10 @@ namespace data {
          * matrix is given, the interpolator instance will interpolate all matrices with the same size as the source
          * matrix. The resultant matrix will have the same size as the result.
          *
+         * Please, also bear in mind that the size of the resultant matrix shall divide on the size of the source
+         * matrix without any reminder. If this is not truth, construction of the Interpolator class will generate
+         * a simulation exception; new instance of the Interpolator class will not be created.
+         *
          * @param result shall be given to define the size of all result matrices
          * @param source shall be given to define the size of all source matrices
          */

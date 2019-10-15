@@ -52,8 +52,8 @@ namespace data {
         sourceWidth = source.getWidth();
         resultHeight = result.getHeight();
         resultWidth = result.getWidth();
-        double Nx_float = resultWidth / sourceWidth;    Nx = (int)Nx_float;
-        double Ny_float = resultHeight / sourceHeight;  Ny = (int)Ny_float;
+        double Nx_float = (double)resultWidth / sourceWidth;    Nx = (int)Nx_float;
+        double Ny_float = (double)resultHeight / sourceHeight;  Ny = (int)Ny_float;
         if (Nx != Nx_float || Ny != Ny_float || sourceWidth == 1 || sourceHeight == 1){
             throw matrix_dimensions_mismatch();
         }

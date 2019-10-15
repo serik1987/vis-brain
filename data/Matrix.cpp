@@ -449,6 +449,31 @@ namespace data{
     }
 
 
+    Matrix& Matrix::downsample(const ContiguousMatrix& source){
+        int sourceHeight = source.getHeight();
+        int sourceWidth = source.getWidth();
+        double Ny_float = (double)sourceHeight/height;
+        double Nx_float = (double)sourceWidth/width;
+        int Ny = (int)Ny_float;
+        int Nx = (int)Nx_float;
+        if (Nx != Nx_float || Ny != Ny_float){
+            throw matrix_dimensions_mismatch();
+        }
+
+        for (auto b = begin(); b != end(); ++b){
+            int i0 = b.getRow();
+            int j0 = b.getColumn();
+            ContiguousMatrix::ConstantIterator a(source, i0 * Ny, j0 * Nx);
+            *b = 0;
+            for (int i = 0; i < Nx; ++i){
+                for (int j = 0; j < Ny; ++j){
+                    *b += a.val(i, j);
+                }
+            }
+        }
+    }
+
+
 }
 
 void swap(data::Matrix& A, data::Matrix& B){

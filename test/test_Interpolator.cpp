@@ -14,28 +14,27 @@ void test_main(){
 
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
 
-    data::ContiguousMatrix source(comm, 2100, 2100, 1.0, 1.0);
-    data::LocalMatrix result(comm, 210, 210, 1.0, 1.0);
-    data::reader::BinReader reader("source.bin");
+    data::ContiguousMatrix A(comm, 21, 21, 1.0, 1.0);
+    data::ContiguousMatrix Asmooth(comm, 210, 210, 1.0, 1.0);
+    data::reader::BinReader reader("matrixA.bin");
 
     const double sigma = 0.2;
 
-    for (auto a = source.begin(); a != source.end(); ++a){
+    for (auto a = A.begin(); a != A.end(); ++a){
         double x = a.getColumnUm();
         double y = a.getRowUm();
         *a = exp(-(x*x + y*y)/(2 * sigma * sigma));
     }
-    double sum = source.sum();
-    for (auto a = source.begin(); a != source.end(); ++a){
+    double sum = A.sum();
+    for (auto a = A.begin(); a != A.end(); ++a){
         *a /= sum;
     }
-    source.synchronize();
-    reader.save(source);
+    A.synchronize();
 
-    logging::progress(0, 1, "Downsampling");
-    result.downsample(source);
-    reader.save(result, "target.bin");
+    logging::progress(0, 1, "Interpolation");
+    data::Interpolator interpolator(Asmooth, A);
+    interpolator.interpolate(Asmooth, A);
+    reader.save(Asmooth);
 
     logging::progress(1, 1);
-
 }

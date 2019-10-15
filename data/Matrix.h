@@ -932,6 +932,15 @@ namespace data {
          * @return The convoution results will be put to the current matrix. Its alias will be returned
          */
         Matrix& convolve(const ContiguousMatrix& K, const ContiguousMatrix& A);
+
+        /**
+         * Downsamples rhw source matrix and puts the results to the current matrix.
+         * The source matrix is assumed to be synchronized. See data::ContiguousMatrix::synchronize for details.
+         *
+         * @param source the source matrix
+         * @return reference to this matrix
+         */
+        Matrix& downsample(const ContiguousMatrix& source);
     };
 
 }
