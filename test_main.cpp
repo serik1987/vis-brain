@@ -5,6 +5,7 @@
 
 #include "data/ContiguousMatrix.h"
 #include "data/reader/BinReader.h"
+#include "data/Interpolator.h"
 
 void test_main(){
     using namespace std;
@@ -31,7 +32,8 @@ void test_main(){
     A.synchronize();
 
     logging::progress(0, 1, "Interpolation");
-    Asmooth.interpolate(A);
+    data::Interpolator interpolator(Asmooth, A);
+    interpolator.interpolate(Asmooth, A);
     reader.save(Asmooth);
 
     logging::progress(1, 1);

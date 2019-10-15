@@ -250,20 +250,6 @@ namespace data {
          */
         Matrix& transpose(const ContiguousMatrix& A) override { return Matrix::transpose(A); }
 
-        /**
-         * Interpolates the matrix A and puts the result to the current matrix
-         * The source matrix A is assumed to be synchronized. If this is not the case do this. See
-         * data::ContiguousMatrix::synchronize for details
-         * This is a collective routine. Its execution will be completed successfully only when this will be
-         * launched by all processes within the communicator simultaneously.
-         * Tne target matrix will be synchronized. The synchronization process will be accomplished during execution
-         * of this method
-         *
-         * @param A source low-resolution matrix. The matrix size in each dimension shall be greater that one
-         * @return alias of the current matrix
-         */
-        ContiguousMatrix& interpolate(const ContiguousMatrix& A);
-
 
 
 #if DEBUG==1
