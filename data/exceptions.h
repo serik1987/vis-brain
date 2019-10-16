@@ -48,7 +48,7 @@ namespace data{
     class matrix_dimensions_mismatch: public simulation_exception{
     public:
         const char* what() const noexcept override{
-            return "Dimensions of different input matrices in the equation are not mismatched";
+            return "Dimensions of different input matrices in the equation are mismatched";
         }
     };
 
@@ -56,6 +56,20 @@ namespace data{
     public:
         const char* what() const noexcept override{
             return "Incorrect file is given as an input file";
+        }
+    };
+
+    class stream_not_opened: public simulation_exception{
+    public:
+        const char* what() const noexcept override{
+            return "Can't read the matrix from the stream because the stream has not been opened";
+        }
+    };
+
+    class end_of_stream_reached: public simulation_exception{
+    public:
+        const char* what() const noexcept override{
+            return "The simulation process requires extra frames that are absent in the input stream";
         }
     };
 
