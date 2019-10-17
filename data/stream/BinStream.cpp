@@ -10,6 +10,13 @@ namespace data::stream {
     static const MPI_Offset FRAME_NNUMBER_POSITION = 264;
     static const char CHUNK[CHUNK_SIZE] = "#!vis-brain.data.stream";
 
+    BinStream::BinStream(data::Matrix *matrix, const std::string &filename, data::stream::Stream::StreamMode mode,
+                         double sampleRate, bool autoopen): Stream(matrix, filename, mode, sampleRate, autoopen) {
+        if (autoopen){
+            open();
+        }
+    }
+
     void BinStream::openStreamFile() {
         logging::enter();
         if (Application::getInstance().getAppCommunicator().getRank() == 0) {
@@ -34,11 +41,13 @@ namespace data::stream {
     }
 
     void BinStream::writeMatrix(data::Matrix *matrix) {
-        MPI_Offset offset = matrix->getIstart() * sizeof(double);
         auto a = matrix->begin();
-        void* buffer = &(*a);
-
-        handle->seek(offset, MPI_SEEK_CUR);
+        double* buffer = &(*a);
+        if (frameNumber == 0) {
+            handle->seek(matrix->getIstart() * sizeof(double), MPI_SEEK_CUR);
+        } else {
+            handle->seek((matrix->getSize() - matrix->getLocalSize()) * sizeof(double), MPI_SEEK_CUR);
+        }
         handle->write(buffer, matrix->getLocalSize(), MPI_DOUBLE);
     }
 

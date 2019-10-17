@@ -140,6 +140,7 @@ namespace data::stream {
                     opened = false;
                 }
             }
+            frameNumber = 0;
         };
 
         /**

@@ -5,6 +5,7 @@
 #include "data/ContiguousMatrix.h"
 #include "data/stream/BinStream.h"
 #include "data/LocalMatrix.h"
+#include "data/reader/PngReader.h"
 
 void print_stream_info(data::stream::Stream& stream, const std::string& prompt){
     logging::enter();
@@ -44,22 +45,27 @@ void test_main(){
     const double sample_rate = 10.0;
     const int final_timestamp = (int)(length * sample_rate);
     const double moving_rate = 2.0;
-    const double spatial_frequency = 0.2;
+    const double spatial_frequency = 2.0;
 
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
-    data::ContiguousMatrix stream_source(comm, 20, 20, height, width);
+    data::ContiguousMatrix stream_source(comm, 20, 20, width, height);
     data::stream::BinStream stream(&stream_source, "sample-stream.bin",
             data::stream::Stream::Write, sample_rate);
+    data::reader::PngReader reader("test.png");
+    reader.setColormap(data::reader::PngReader::JetColormap); // this reader was added just for check
 
     print_stream_info(stream, "Stream was just opened");
 
     for (int ts = 0; ts < final_timestamp; ++ts){
         for (auto a = stream_source.begin(); a != stream_source.end(); ++a){
-            double y = a.getColumnUm();
+            double y = a.getRowUm();
             double time = (double)ts / sample_rate;
             *a = cos(2 * M_PI * (moving_rate * time - spatial_frequency * y));
         }
         stream.write();
+        if (ts == 0){
+            reader.save(stream_source);
+        }
     }
 
     print_stream_info(stream, "All data has been written to the stream");

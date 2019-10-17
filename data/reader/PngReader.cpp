@@ -222,7 +222,6 @@ namespace data::reader {
 
     void PngReader::write_destroy_all_buffers() {
         if (graphic_buffer != nullptr){
-            std::cout << "GRAPHIC BUFFER DESTROY\n";
             for (int y = 0; y < buffer->getHeight(); ++y){
                 delete [] graphic_buffer[y];
             }
@@ -230,17 +229,14 @@ namespace data::reader {
             graphic_buffer = nullptr;
         }
         if (png_handler != nullptr && png_info_handler != nullptr){
-            std::cout << "HANDLER AND INFO HANDLER DESTROY\n";
             png_destroy_write_struct(&png_handler, &png_info_handler);
             png_handler = nullptr;
             png_info_handler = nullptr;
         } else if (png_handler != nullptr && png_info_handler == nullptr){
-            std::cout << "HANDLER DESTROY\n";
             png_destroy_write_struct(&png_handler, NULL);
             png_handler = nullptr;
         }
         if (fp != nullptr){
-            std::cout << "FILE DESTROY\n";
             fclose(fp);
             fp = nullptr;
         }

@@ -37,11 +37,7 @@ namespace data::stream {
          * @param autoopen
          */
         BinStream(data::Matrix* matrix, const std::string& filename, StreamMode mode,
-                double sampleRate, bool autoopen = true): Stream(matrix, filename, mode, sampleRate, autoopen) {
-            if (autoopen){
-                open();
-            }
-        };
+                double sampleRate, bool autoopen = true);
 
         ~BinStream() {
             if (autoopen){
