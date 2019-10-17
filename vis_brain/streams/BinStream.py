@@ -37,6 +37,27 @@ class BinStream(Stream):
             self.__handle.close()
             raise exc
 
+    def _openForWriting(self):
+        global _STREAM_CHUNK, _STREAM_CHUNK_SIZE
+        self.__handle = open(self._filename, "wb")
+        try:
+            raw_chunk = _STREAM_CHUNK.encode("utf-8")
+            raw_chunk += b"\x00" * (_STREAM_CHUNK_SIZE - len(raw_chunk))
+            self.__handle.write(raw_chunk)
+            integer_header = struct.pack("iii",
+                                         self.getHeaders()['height'],
+                                         self.getHeaders()['width'],
+                                         self.getHeaders()['nframes'])
+            float_header = struct.pack("ddd",
+                                       self.getHeaders()["height_um"],
+                                       self.getHeaders()["width_um"],
+                                       self.getHeaders()["sample_rate"])
+            self.__handle.write(integer_header)
+            self.__handle.write(float_header)
+        except Exception as exc:
+            self.__handle.close()
+            raise exc
+
     def _read(self):
         height = self.getHeaders()['height']
         width = self.getHeaders()['width']
@@ -48,7 +69,21 @@ class BinStream(Stream):
         matrix = np.reshape(raw_matrix, (height, width))
         return matrix
 
+    def _write(self, matrix):
+        content = bytes(matrix)
+        self.__handle.write(content)
+
     def _closeForReading(self):
+        self.__handle.close()
+
+    def _closeForWriting(self):
+        try:
+            self.__handle.seek(264)
+            buffer = struct.pack("i", self.getHeaders()["current_frame"])
+            self.__handle.write(buffer)
+        except Exception as exc:
+            self.__handle.close()
+            raise exc
         self.__handle.close()
 
 

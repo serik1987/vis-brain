@@ -49,8 +49,8 @@ class Stream:
     _headersDescription = {
         "height": "Height of all matrices in px",
         "width": "width of all matrices in px",
-        "nframes": "total number of frames in the stream (no affect for writing strema)",
-        "current_frame": "number of frames that has alread been read or written",
+        "nframes": "total number of frames in the stream (no affect for writing streams)",
+        "current_frame": "number of frames that has already been read or written",
         "height_um": "height of all matrices in the stream in um",
         "width_um": "width of all matrices in the stream in um",
         "sample_rate": "sample rate for stream data in Hz",
@@ -99,6 +99,7 @@ class Stream:
                 raise vis_brain.streams.FileAlreadyExists()
             self._openForWriting()
         self.__headers['opened'] = True
+        self.__headers['current_frame'] = 0
 
     def _openForReading(self):
         '''
@@ -115,7 +116,7 @@ class Stream:
 
         :return: nothing
         '''
-        print("STREAM OPENED FOR WRITING")
+        raise NotImplementedError("vis_brain.streams.Stream.Stream._openForWriting")
 
     def read(self):
         '''
@@ -156,7 +157,7 @@ class Stream:
         desired_sizes = self.__headers["height"], self.__headers["width"]
         try:
             if matrix.shape != desired_sizes:
-                raise ValueError("Matrix dimensions to write doesn't coincide with the stream dimensions to write")
+                raise ValueError("Matrix dimensions are not the same as stream dimensions")
             self._write(matrix)
         except Exception as exc:
             self.close()
@@ -168,7 +169,7 @@ class Stream:
         When creating custom stream class from this base class this method shall be re-implemented in such a way as
         it writes the matrix directly to the stream
         '''
-        print("SINGLE FRAME WRITE TO THE STREAM")
+        raise NotImplementedError("vis_brain.streams.Stream.Stream._write")
 
     def close(self):
         '''

@@ -7,7 +7,7 @@
 namespace data::stream {
 
     static const int CHUNK_SIZE = 256;
-    static const MPI_Offset FRAME_NNUMBER_POSITION = 264;
+    static const MPI_Offset FRAME_NUMBER_POSITION = 264;
     static const char CHUNK[CHUNK_SIZE] = "#!vis-brain.data.stream";
 
     BinStream::BinStream(data::Matrix *matrix, const std::string &filename, data::stream::Stream::StreamMode mode,
@@ -68,17 +68,14 @@ namespace data::stream {
     }
 
     void BinStream::finishWriting() {
-        std::exception* exception = nullptr;
         try{
-            handle->seek(FRAME_NNUMBER_POSITION, MPI_SEEK_SET);
+            handle->seek(FRAME_NUMBER_POSITION, MPI_SEEK_SET);
             handle->writeAll(&frameNumber, 1, MPI_INTEGER);
         } catch (std::exception& e){
-            exception = &e;
+            delete handle;
+            throw;
         }
         delete handle;
-        if (exception != nullptr){
-            throw *exception;
-        }
     }
 
 }
