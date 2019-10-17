@@ -9,7 +9,11 @@ namespace data::stream{
     Stream::Stream(data::Matrix *matrix, const std::string &filename, data::stream::Stream::StreamMode mode,
                    double frameRate, bool autoopen): comm(matrix->getCommunicator()) {
         this->matrix = matrix;
-        this->filename = Application::getInstance().getOutputFolder() + "/" + filename;
+        if (mode == Write) {
+            this->filename = Application::getInstance().getOutputFolder() + "/" + filename;
+        } else {
+            this->filename = filename;
+        }
         this->mode = mode;
         this->sampleRate = frameRate;
         this->autoopen = autoopen;

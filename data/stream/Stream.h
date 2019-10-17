@@ -25,13 +25,13 @@ namespace data::stream {
         mpi::Communicator& comm;
         data::Matrix* matrix;
         StreamMode mode;
-        double sampleRate;
         bool opened;
 
     protected:
         std::string filename;
         int frameNumber;
-        int totalFrames = 0;
+        int totalFrames = 1;
+        double sampleRate;
         bool autoopen;
 
         /**
@@ -207,21 +207,26 @@ namespace data::stream {
          * @param input_data pointer to the matrix where all read data shall be placed
          */
         void read(data::Matrix* input_data = nullptr){
-            if (mode == Write || !opened){
-                throw stream_not_opened();
+            try {
+                if (mode == Write || !opened) {
+                    throw stream_not_opened();
+                }
+                if (frameNumber >= totalFrames) {
+                    throw end_of_stream_reached();
+                }
+                if (input_data == nullptr) {
+                    input_data = matrix;
+                }
+                if (input_data->getHeight() != matrix->getHeight() ||
+                    input_data->getWidth() != matrix->getWidth()) {
+                    throw matrix_dimensions_mismatch();
+                }
+                readMatrix(input_data);
+                ++frameNumber;
+            } catch (std::exception& exc){
+                close();
+                throw;
             }
-            if (frameNumber >= totalFrames){
-                throw end_of_stream_reached();
-            }
-            if (input_data == nullptr){
-                input_data = matrix;
-            }
-            if (input_data->getHeight() != matrix->getHeight() ||
-                input_data->getWidth() != matrix->getWidth()){
-                throw matrix_dimensions_mismatch();
-            }
-            readMatrix(input_data);
-            ++frameNumber;
         }
 
         /**

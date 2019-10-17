@@ -18,11 +18,28 @@ namespace data::stream {
     }
 
     void BinStream::openStreamFile() {
-        logging::enter();
-        if (Application::getInstance().getAppCommunicator().getRank() == 0) {
-            logging::debug("STREAM FILE OPENED");
+        handle = new mpi::File(getCommunicator(), filename, MPI_MODE_RDONLY);
+        try{
+            char actual_chunk[CHUNK_SIZE];
+            handle->readAll(actual_chunk, CHUNK_SIZE, MPI_CHAR);
+            if (strcmp(actual_chunk, CHUNK) != 0){
+                throw incorrect_data_format();
+            }
+            int integer_headers[3];
+            handle->readAll(integer_headers, 3, MPI_INTEGER);
+            int height = integer_headers[0];
+            int width = integer_headers[1];
+            totalFrames = integer_headers[2];
+            if (height != getMatrix().getHeight() || width != getMatrix().getWidth()){
+                throw matrix_dimensions_mismatch();
+            }
+            double float_headers[3];
+            handle->readAll(float_headers, 3, MPI_DOUBLE);
+            sampleRate = float_headers[2];
+        } catch (std::exception& exc){
+            delete handle;
+            throw;
         }
-        logging::exit();
     }
 
     void BinStream::createStreamFile(){
@@ -52,19 +69,18 @@ namespace data::stream {
     }
 
     void BinStream::readMatrix(data::Matrix *matrix) {
-        logging::enter();
-        if (Application::getInstance().getAppCommunicator().getRank() == 0){
-            logging::debug("MATRIX HAS BEEN READ FROM THE STREAM");
+        auto a = matrix->begin();
+        double* buffer = &(*a);
+        if (frameNumber == 0){
+            handle->seek(matrix->getIstart() * sizeof(double), MPI_SEEK_CUR);
+        } else {
+            handle->seek((matrix->getSize() - matrix->getLocalSize()) * sizeof(double), MPI_SEEK_CUR);
         }
-        logging::exit();
+        handle->read(buffer, matrix->getLocalSize(), MPI_DOUBLE);
     }
 
     void BinStream::finishReading() {
-        logging::enter();
-        if (Application::getInstance().getAppCommunicator().getRank() == 0){
-            logging::debug("READING STREAM HAS BEEN CLOSED");
-        }
-        logging::exit();
+        delete handle;
     }
 
     void BinStream::finishWriting() {

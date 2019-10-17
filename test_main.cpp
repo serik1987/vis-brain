@@ -70,6 +70,40 @@ void test_main(){
 
     print_stream_info(stream, "All data has been written to the stream");
 
+    logging::progress(0, 1, "Reading data from the stream");
+
+    data::LocalMatrix stream_buffer(comm, 40, 40, 1.0, 1.0);
+    data::stream::BinStream test_stream(&stream_buffer, "python-stream-file.bin",
+            data::stream::Stream::Read, 1.0);
+
+    print_stream_info(test_stream, "Test stream has been opened");
+
+    for (int nframe = 0; nframe < 50; ++nframe){
+        std::stringstream ss;
+        double time = nframe * 1.0 / test_stream.getSampleRate();
+
+        ss << "Checking frame # " << nframe << " for " << time << " s";
+        logging::progress(0, 1, ss.str());
+        test_stream.read();
+        for (auto a = stream_buffer.begin(); a != stream_buffer.end(); ++a){
+            double x = a.getColumnUm() * 39 / 40;
+            double desired_value = cos(2 * M_PI * (2.0 * time - 3.0 * x));
+            double actual_value = *a;
+            double difference = abs(actual_value - desired_value);
+            if (difference > 1e-10){
+                std::stringstream ess;
+                ess << "i = " << a.getRow() << "; y = " << a.getColumn() << "; desired = " << desired_value <<
+                    "; actual = " << actual_value << "; difference = " << difference;
+                throw std::runtime_error(ess.str());
+            }
+        }
+    }
+
+    logging::progress(0, 1, "Closing reading stream");
+
+
+    test_stream.close();
+
     logging::progress(1, 1);
 
 }
