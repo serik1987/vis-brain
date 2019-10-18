@@ -7,16 +7,14 @@
 
 #include <png.h>
 #include "ExternalSaver.h"
+#include "../graph/ColorAxis.h"
 
 namespace data::reader {
 
     class PngReader: public ExternalSaver {
-    public:
-        enum Colormap {GrayColormap, JetColormap, HsvColormap};
 
     private:
-        Colormap colormap = GrayColormap;
-        double minValue = 0.0, maxValue = 1.0;
+        data::graph::ColorAxis colorAxis;
 
         /* Some service variables for the writing process */
         FILE* fp = nullptr;
@@ -32,8 +30,7 @@ namespace data::reader {
         inline void write_set_header();
         inline void write_png_header();
         inline void write_create_buffer_gray();
-        inline void write_create_buffer_jet();
-        inline void write_create_buffer_hsv();
+        inline void write_create_buffer_color();
         inline void write_put_buffer();
         inline void write_error_handling();
         void write_destroy_all_buffers();
@@ -42,47 +39,16 @@ namespace data::reader {
         void write(data::Matrix& matrix) override;
 
     public:
-        PngReader(const std::string& filename): ExternalSaver(filename), Saver(filename), Reader(filename) {};
+        PngReader(const std::string& filename): ExternalSaver(filename), Saver(filename), Reader(filename),
+            colorAxis(data::graph::ColorAxis::GrayColormap, 0.0, 1.0){};
         ~PngReader() override = default;
 
         /**
-         * Returns a current colormap. This colormap will be used during the consequtive savings
+         * Returns the color axis. This colormap will be used during the consequtive savings
          *
          * @return current colormap
          */
-        Colormap getColormap() { return colormap; }
-
-        /**
-         * Sets the new colormap. You may set one of the following colormaps:
-         * data::reader::PngReader::GrayColormap black-and-white plot
-         * data::reader::PngReader::JetColormap colored colormap, for non-periodic values
-         * data::reader::PngReader::HsvColormap colored colormap, for periodic values
-         *
-         * @param new_colormap new colormap to set
-         */
-        void setColormap(Colormap new_colormap) { colormap = new_colormap; }
-
-        /**
-         * Returns minimum value for the color axis (0.0 by default)
-         *
-         * @return the minimum value
-         */
-        double getMinValue() { return minValue; }
-
-        /**
-         * Returns maximum value for the color axis (1.0 by default
-         *
-         * @return
-         */
-        double getMaxValue() { return maxValue; }
-
-        /**
-         * Sets the range for the color axis
-         *
-         * @param min minimum value within the range. All values below it will be replaced to this value
-         * @param max maximum value within the range. All values above it will be replaced to this value
-         */
-        void setColorRange(double min, double max) { minValue = min, maxValue = max; }
+        data::graph::ColorAxis& getColorAxis() { return colorAxis; }
 
         class png_exception: public std::exception{
         public:

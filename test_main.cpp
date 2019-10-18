@@ -52,7 +52,8 @@ void test_main(){
     data::stream::BinStream stream(&stream_source, "sample-stream.bin",
             data::stream::Stream::Write, sample_rate);
     data::reader::PngReader reader("test.png");
-    reader.setColormap(data::reader::PngReader::JetColormap); // this reader was added just for check
+    reader.getColorAxis().setColormap(data::graph::ColorAxis::HsvColormap); // this reader was added just for check
+    reader.getColorAxis().setColorRange(-1.0, 1.0);
 
     print_stream_info(stream, "Stream was just opened");
 
@@ -100,8 +101,6 @@ void test_main(){
     }
 
     logging::progress(0, 1, "Closing reading stream");
-
-
     test_stream.close();
 
     logging::progress(1, 1);

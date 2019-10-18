@@ -15,18 +15,16 @@ namespace data::reader {
         write_init_io();
         write_set_header();
         write_png_header();
-        switch (colormap){
-            case GrayColormap:
+        switch (colorAxis.getColormap()){
+            case data::graph::ColorAxis::GrayColormap:
                 write_create_buffer_gray();
                 break;
-            case JetColormap:
-                write_create_buffer_jet();
-                break;
-            case HsvColormap:
-                write_create_buffer_hsv();
+            case data::graph::ColorAxis::JetColormap:
+            case data::graph::ColorAxis::HsvColormap:
+                write_create_buffer_color();
                 break;
             default:
-                std::cout << "BUFFER NOT CREATED\n";
+                throw png_exception();
         }
         write_put_buffer();
         write_destroy_all_buffers();
@@ -66,7 +64,7 @@ namespace data::reader {
 
     inline void PngReader::write_set_header() {
         int color_type;
-        if (colormap == GrayColormap){
+        if (getColorAxis().getColormap() == data::graph::ColorAxis::GrayColormap){
             color_type = PNG_COLOR_TYPE_GRAY;
         } else {
             color_type = PNG_COLOR_TYPE_RGB;
@@ -104,97 +102,32 @@ namespace data::reader {
             graphic_buffer[y] = new png_byte[2 * buffer->getWidth()];
             for (int x = 0; x < buffer->getWidth(); ++x){
                 double original_value = buffer->getValue(y, x);
-                double gray_scale = (original_value - minValue) / (maxValue - minValue);
-                int gray_scale_int = (int)(gray_scale * 65536);
-                if (gray_scale_int > 65535) gray_scale_int = 65535;
-                if (gray_scale_int < 0) gray_scale_int = 0;
+                double gray_scale = colorAxis.getGrayPixel(original_value);
+                int gray_scale_int = (int)(gray_scale * 65535);
                 graphic_buffer[y][2*x] = gray_scale_int / 256;
                 graphic_buffer[y][2*x + 1] = gray_scale_int % 256;
             }
         }
     }
 
-    const int RH = 0;
-    const int RL = 1;
-    const int GH = 2;
-    const int GL = 3;
-    const int BH = 4;
-    const int BL = 5;
+    static const int RH = 0;
+    static const int RL = 1;
+    static const int GH = 2;
+    static const int GL = 3;
+    static const int BH = 4;
+    static const int BL = 5;
 
-    inline void PngReader::write_create_buffer_jet(){
+    inline void PngReader::write_create_buffer_color(){
         graphic_buffer = new png_bytep[buffer->getHeight()];
-        double cp = 0.5 * (minValue + maxValue);
         for (int y = 0; y < buffer->getHeight(); ++y){
             graphic_buffer[y] = new png_byte[6 * buffer->getWidth()];
             for (int x = 0; x < buffer->getWidth(); ++x){
                 png_bytep pixel = graphic_buffer[y] + 6 * x;
                 double value = buffer->getValue(y, x);
-                if (value < minValue) value = minValue;
-                if (value > maxValue) value = maxValue;
-                double redChannel = (value - minValue) / (maxValue - minValue);
-                double greenChannel = 1 - abs(value - cp) / (maxValue - cp);
-                double blueChannel = (maxValue - value) / (maxValue - minValue);
-                int red = (int)(redChannel * 65535);
-                int green = (int)(greenChannel * 65535);
-                int blue = (int)(blueChannel * 65535);
-                pixel[RH] = red / 256;
-                pixel[RL] = red % 256;
-                pixel[GH] = green / 256;
-                pixel[GL] = green % 256;
-                pixel[BH] = blue / 256;
-                pixel[BL] = blue % 256;
-            }
-        }
-    }
-
-    inline void PngReader::write_create_buffer_hsv() {
-        graphic_buffer = new png_bytep[buffer->getHeight()];
-        for (int y = 0; y < buffer->getHeight(); ++y){
-            png_bytep pixel = graphic_buffer[y] = new png_byte[6 * buffer->getWidth()];
-            for (int x = 0; x < buffer->getWidth(); ++x, pixel += 6){
-                double value = buffer->getValue(y, x);
-                if (value < minValue) value = minValue;
-                if (value > maxValue) value = maxValue;
-                double hueValue = (value - minValue) * 360 / (maxValue - minValue);
-                int hue = (int)hueValue;
-                int hue_category = hue / 60 % 6;
-                int a = 65535 * (hue % 60) / 60;
-                int Vinc = a;
-                int Vdec = 65535 - a;
-                int red = 0;
-                int green = 0;
-                int blue = 0;
-                switch (hue_category){
-                    case 0:
-                        red = 65535;
-                        green = Vinc;
-                        blue = 0;
-                        break;
-                    case 1:
-                        red = Vdec;
-                        green = 65535;
-                        blue = 0;
-                        break;
-                    case 2:
-                        red = 0;
-                        green = 65535;
-                        blue = Vinc;
-                        break;
-                    case 3:
-                        red = 0;
-                        green = Vdec;
-                        blue = 65535;
-                        break;
-                    case 4:
-                        red = Vinc;
-                        green = 0;
-                        blue = 65535;
-                        break;
-                    case 5:
-                        red = 65535;
-                        green = 0;
-                        blue = Vdec;
-                }
+                data::graph::ColorAxis::ColorPixel pixel_value = colorAxis.getColorPixel(value);
+                int red = (int)(pixel_value.red * 65535);
+                int green = (int)(pixel_value.green * 65535);
+                int blue = (int)(pixel_value.blue * 65535);
                 pixel[RH] = red / 256;
                 pixel[RL] = red % 256;
                 pixel[GH] = green / 256;
