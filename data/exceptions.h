@@ -73,6 +73,20 @@ namespace data{
         }
     };
 
+    class external_stream_error: public std::exception{
+    public:
+        const char* what() const noexcept override{
+            return "Attempt to write the local matrix into external stream: only contiguous synchronized matrices can be written";
+        }
+    };
+
+    class write_only_stream_error: public std::exception{
+    public:
+        const char* what() const noexcept override {
+            return "Can't read from this type of stream. Choose another stream to read";
+        }
+    };
+
 }
 
 #endif //MPI2_EXCEPTIONS_H

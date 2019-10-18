@@ -6,6 +6,7 @@
 #include "data/stream/BinStream.h"
 #include "data/LocalMatrix.h"
 #include "data/reader/PngReader.h"
+#include "data/stream/AviStream.h"
 
 void print_stream_info(data::stream::Stream& stream, const std::string& prompt){
     logging::enter();
@@ -54,6 +55,7 @@ void test_main(){
     data::reader::PngReader reader("test.png");
     reader.getColorAxis().setColormap(data::graph::ColorAxis::HsvColormap); // this reader was added just for check
     reader.getColorAxis().setColorRange(-1.0, 1.0);
+    data::stream::AviStream aviStream(&stream_source, "sample-stream.avi", data::stream::Stream::Write, sample_rate);
 
     print_stream_info(stream, "Stream was just opened");
 
@@ -67,6 +69,8 @@ void test_main(){
         if (ts == 0){
             reader.save(stream_source);
         }
+        stream_source.synchronize();
+        aviStream.write(&stream_source);
     }
 
     print_stream_info(stream, "All data has been written to the stream");

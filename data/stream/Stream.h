@@ -117,6 +117,7 @@ namespace data::stream {
         /**
          * Opens the stream file for reading or writing.
          * The method will be called automatically when the stream instance is created with autoopen parameter set to true
+         * This is a collective routine
          *
          * If the stream has already been closed, don't try to open the stream for writing again. This will cause
          * an exception
@@ -147,6 +148,7 @@ namespace data::stream {
          * Closes the stream that is previously opened.
          * If the stream is created with autoopen flag, the method will be called automatically during the object
          * destruction.
+         * This is a collective routine
          *
          * If the stream has already been closed the method will do nothing.
          */
@@ -171,6 +173,7 @@ namespace data::stream {
          * When the streamer is in reading mode the method throws an exception
          * Writing will be switched off if error occured during the stream opening or writing. In this case
          * any following write(...) method will do nothing
+         * This is a collective routine
          *
          * @param output_data pointer to the matrix to be written or nullptr if you want to write the matrix pointed
          * during the construction
@@ -203,6 +206,7 @@ namespace data::stream {
         /**
          * Reads a single matrix from the hard disk
          * If stream is opened in writing mode the method
+         * This is a collective routine
          *
          * @param input_data pointer to the matrix where all read data shall be placed
          */

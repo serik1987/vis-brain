@@ -31,6 +31,7 @@ namespace data::graph {
 
     public:
         ColorAxis(Colormap colormap, double cmin, double cmax): colormap(colormap), cmin(cmin), cmax(cmax) {};
+        ColorAxis(): colormap(GrayColormap), cmin(0.0), cmax(1.0) {};
         virtual ~ColorAxis() {};
 
         /**
