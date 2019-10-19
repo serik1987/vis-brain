@@ -87,6 +87,13 @@ namespace data{
         }
     };
 
+    class neighbor_process_exception: public std::exception{
+    public:
+        const char* what() const noexcept override{
+            return "Collective routine failed on the neighbor process";
+        }
+    };
+
 }
 
 #endif //MPI2_EXCEPTIONS_H

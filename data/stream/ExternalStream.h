@@ -18,6 +18,7 @@ namespace data::stream {
     class ExternalStream: public Stream {
     private:
         int root = 0;
+        int root_success;
 
     protected:
 
@@ -76,7 +77,20 @@ namespace data::stream {
                 throw external_stream_error();
             }
             if (matrix->getCommunicator().getRank() == root){
-                writeContiguousMatrix(contiguousMatrix);
+                try {
+                    writeContiguousMatrix(contiguousMatrix);
+                    root_success = 1;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                } catch (std::exception& e){
+                    root_success = 0;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                    throw;
+                }
+            } else {
+                getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                if (!root_success){
+                    throw neighbor_process_exception();
+                }
             }
         };
 
@@ -103,7 +117,20 @@ namespace data::stream {
          */
         void openStreamFile() override final {
             if (getCommunicator().getRank() == root){
-                openExternalStream();
+                try{
+                    openExternalStream();
+                    root_success = 1;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                } catch (std::exception& e){
+                    root_success = 0;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                    throw;
+                }
+            } else {
+                getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                if (!root_success){
+                    throw neighbor_process_exception();
+                }
             }
         }
 
@@ -113,7 +140,20 @@ namespace data::stream {
          */
         void createStreamFile() override final {
             if (getCommunicator().getRank() == root){
-                createExternalStream();
+                try {
+                    createExternalStream();
+                    root_success = 1;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                } catch (std::exception& e){
+                    root_success = 0;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                    throw;
+                }
+            } else {
+                getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                if (!root_success){
+                    throw neighbor_process_exception();
+                }
             }
         }
 
@@ -133,7 +173,20 @@ namespace data::stream {
          */
         void finishWriting() override final {
             if (getCommunicator().getRank() == root){
-                closeExternalWritingStream();
+                try {
+                    closeExternalWritingStream();
+                    root_success = 1;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                } catch (std::exception& e){
+                    root_success = 0;
+                    getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                    throw;
+                }
+            } else {
+                getCommunicator().broadcast(&root_success, 1, MPI_INT, root);
+                if (!root_success){
+                    throw neighbor_process_exception();
+                }
             }
         }
 
