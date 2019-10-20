@@ -136,6 +136,78 @@ class Stream:
         self.__headers['current_frame'] += 1
         return matrix
 
+    def move(self, n):
+        '''
+        Moves the pointer to the specified number of frames
+
+        :return:
+        '''
+        if not self.__headers['opened']:
+            raise vis_brain.streams.WrongStreamModeOrState()
+        if self.__headers['current_frame'] + n < 0 or self.__headers['current_frame'] + n > self.__headers['nframes'] - 1:
+            raise vis_brain.streams.EndOfStreamReached()
+        try:
+            self._move(n)
+        except Exception as exc:
+            self.close()
+            raise exc
+        self.__headers['current_frame'] += n
+
+    def first(self):
+        '''
+        Moves the pointer to the initial frame
+
+        :return: nothing
+        '''
+        if not self.__headers['opened']:
+            raise vis_brain.streams.WrongStreamModeOrState()
+        try:
+            self._first()
+        except Exception as exc:
+            self.close()
+            raise exc
+        self.__headers['current_frame'] = 0
+
+    def last(self):
+        '''
+        Moves the pointer to the last frame
+        '''
+        if not self.__headers['opened']:
+            raise vis_brain.streams.WrongStreamModeOrState()
+        try:
+            self._last()
+        except Exception as err:
+            self.close()
+            raise err
+        self.__headers['current_frame'] = self.__headers['nframes'] - 1
+
+    def _move(self, n):
+        '''
+        When you create custom stream from this base class you shall re-implement this method in such a way as it
+        reads moves the pointer to the specified position
+
+        :return:
+        '''
+        raise NotImplementedError("vis_brain.streams.Stream._move")
+
+    def _first(self):
+        '''
+        When you create custom stream from this base class you shall re-implement this method in such a way as it
+        moves to the beginning of the stream
+
+        :return:
+        '''
+        raise NotImplementedError("vis_brain.streams.Stream._first")
+
+    def _last(self):
+        '''
+        When you create custom stream from this base class you shall re-implement this method in such a way as it
+        moves to the finish of the stream
+
+        :return:
+        '''
+        raise NotImplementedError("vis_brain.streams.Stream._last")
+
     def _read(self):
         '''
         When you create custom stream from this base class you shall re-implement this method in such a way as it

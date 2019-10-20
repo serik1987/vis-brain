@@ -69,6 +69,21 @@ class BinStream(Stream):
         matrix = np.reshape(raw_matrix, (height, width))
         return matrix
 
+    def _move(self, n):
+        height = self.getHeaders()['height']
+        width = self.getHeaders()['width']
+        frameSize = width * height * 8
+        self.__handle.seek(frameSize * n, 1)
+
+    def _first(self):
+        self.__handle.seek(292, 0)
+
+    def _last(self):
+        height = self.getHeaders()['height']
+        width = self.getHeaders()['width']
+        frameSize = width * height * 8
+        self.__handle.seek(-frameSize, 2)
+
     def _write(self, matrix):
         content = bytes(matrix)
         self.__handle.write(content)
