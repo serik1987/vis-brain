@@ -6,8 +6,6 @@
 #include "data/noise/UniformNoiseGenerator.h"
 #include "data/stream/BinStream.h"
 
-#define SAMPLE_NUMBER 10000
-
 
 
 void test_main(){
@@ -20,7 +18,7 @@ void test_main(){
     data::noise::UniformNoiseGenerator gen(-1.0, 1.0);
     data::stream::BinStream stream(&matrix, "output.bin", data::stream::Stream::Write, 100.0);
 
-    for (int i=0; i < SAMPLE_NUMBER; ++i){
+    for (int i=0; i < 10000; ++i){
         gen.fill(matrix);
         stream.write();
     }
