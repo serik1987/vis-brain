@@ -11,6 +11,7 @@
 #include "param/Object.h"
 #include "log/Engine.h"
 #include "param/Engine.h"
+#include "data/noise/NoiseEngine.h"
 #include "exceptions.h"
 
 
@@ -42,7 +43,9 @@ public:
     ~Application();
 
     /**
-     * Loads all parameters in the application presented in your JS code
+     * Loads all application parameters in the application presented in your JS code.
+     * This also loads V8 engine and parses all JS code
+     * Application parameters are contained in world.application JS object
      * If --help option is given the application returns the help string and terminates
      * If --gui option is given the application prints all parameters as JSON string into standard output stream
      *
@@ -99,9 +102,11 @@ public:
     }
 
     /**
-     * If the number of MPI processes are not the same as the number
+     * Indicates whether application shall be re-started. The value shall be checked after loadAllParameter() function
+     * will be applied
      *
-     * @return
+     * @return empty string if the application shall continue working.
+     * Non-empty string if application is needed to be restarted by running a command given in the return results
      */
     const std::string& getCmd() const{
         return cmd;
@@ -129,6 +134,14 @@ public:
         return *log;
     }
 
+    data::noise::NoiseEngine& getNoiseEngine(){
+        if (gen == nullptr){
+            log->progress(0, 1, "Initializing PRNG");
+            gen = new data::noise::NoiseEngine();
+        }
+        return *gen;
+    }
+
 private:
     static Application* instance;
     bool application_ready = false;
@@ -152,6 +165,7 @@ private:
 
     param::Engine* engine = nullptr;
     logging::Engine* log = nullptr;
+    data::noise::NoiseEngine* gen = nullptr;
 
 
     void setOutputFolder(const std::string& folder_prefix);

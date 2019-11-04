@@ -39,10 +39,8 @@ void Application::deleteV8Engine() {
 }
 
 void Application::clearEngines(){
-    if (log != nullptr){
-        delete log;
-        log = nullptr;
-    }
+    delete gen;
+    delete log;
     deleteV8Engine();
 }
 
@@ -67,11 +65,6 @@ void Application::loadAllParameters() {
     if (process_number == comm.getProcessorNumber() && !is_gui){
         log = new logging::Engine(output_folder);
     }
-    /*
-    if (comm.getRank() == 0){
-        delete engine;
-    }
-     */
 }
 
 
@@ -177,7 +170,7 @@ void Application::fillCmd() {
 
 
 void Application::simulate() {
-    deleteV8Engine();
+    // deleteV8Engine();
     try {
 #if DEBUG==1
         test_main();

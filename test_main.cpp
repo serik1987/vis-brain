@@ -2,29 +2,38 @@
 // Created by serik1987 on 21.09.19.
 //
 
-#include "data/LocalMatrix.h"
-#include "data/noise/UniformNoiseGenerator.h"
-#include "data/stream/BinStream.h"
-
-#define SAMPLE_NUMBER 10000
+#include "data/noise/NoiseEngine.h"
 
 
 
 void test_main(){
     using namespace std;
 
-    logging::progress(0, 1, "Noise generation");
-
+    data::noise::NoiseEngine& engine = Application::getInstance().getNoiseEngine();
     mpi::Communicator& comm = Application::getInstance().getAppCommunicator();
-    data::LocalMatrix matrix(comm, 20, 20, 1.0, 1.0);
-    data::noise::UniformNoiseGenerator gen(-1.0, 1.0);
-    data::stream::BinStream stream(&matrix, "output.bin", data::stream::Stream::Write, 100.0);
 
-    for (int i=0; i < SAMPLE_NUMBER; ++i){
-        gen.fill(matrix);
-        stream.write();
+    logging::progress(0, 1, "Test of random number engine");
+    {
+        unsigned long min_value = engine.min();
+        unsigned long max_value = engine.max();
+
+        vector<unsigned long> numbers(10);
+        for (auto& x: numbers){
+            x = engine();
+        }
+
+        logging::enter();
+        logging::debug("Minimum value = " + to_string(min_value));
+        logging::debug("Maximum value = " + to_string(max_value));
+        logging::debug("Random numbers within the given range are listed below:");
+        for (auto x: numbers){
+            logging::debug(to_string(x));
+        }
+        logging::debug("");
+        logging::exit();
     }
 
+    uniform_int_distribution<int> distr(1, 6);
 
     logging::progress(1, 1);
 

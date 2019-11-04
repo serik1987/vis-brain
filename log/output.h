@@ -20,7 +20,7 @@ namespace logging{
     }
 
     /**
-     * Creates new progress bar. The functioon will be executed only by the process with rank 0
+     * Creates new progress bar. The function will be executed only by the process with rank 0
      *
      * @param completed number of completed steps
      * @param total number of total steps

@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <exception>
 #include "Application.h"
-#include "exceptions.h"
 
 #include "log/Engine.h"
 
@@ -26,6 +25,7 @@ int main(int argc, char* argv[]) {
         if (application.getAppCommunicator().getRank() == 0) {
             std::cerr << "\033[31m\033[1mFAILED\nFATAL ERROR: \033[0m";
             std::cerr << e.what() << std::endl;
+            return -1;
         }
     }
 

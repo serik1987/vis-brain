@@ -22,4 +22,7 @@
 #define WARNING_LOG_FILE "/warnings.log"
 #define FAIL_LOG_FILE "/failed.log"
 
+#define PRIMARY_GENERATOR std::random_device
+#define SECONDARY_GENERATOR std::mt19937
+
 #endif //MPI2_COMPILE_OPTIONS_H
