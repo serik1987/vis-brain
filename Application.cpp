@@ -64,6 +64,9 @@ void Application::loadAllParameters() {
     broadcastParameterList();
     if (process_number == comm.getProcessorNumber() && !is_gui){
         log = new logging::Engine(output_folder);
+#if AUTO_INITIALIZATION==1
+        getNoiseEngine();
+#endif
     }
 }
 

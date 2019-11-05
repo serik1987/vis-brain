@@ -30,6 +30,8 @@ namespace data::noise {
         PrimaryGenerator* primaryGenerator = nullptr;
         SecondaryGenerator* secondaryGenerator = nullptr;
     public:
+        using result_type = typename SecondaryGenerator::result_type;
+
         /**
          * Creates the noise engine. First, it creates the primary generator of type PrimaryGenerator.
          * Secondly, it uses the primary generator
