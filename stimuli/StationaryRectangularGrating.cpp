@@ -14,8 +14,8 @@ namespace stim{
         double phi0 = getSpatialPhase()/2/M_PI;
         double C = getContrast();
         double L = getLuminance();
-        double Lmax = L + C;
-        double Lmin = L - C;
+        double Lmax = L + 0.5 * C;
+        double Lmin = L - 0.5 * C;
 
         for (auto pix = stimulusMatrix->begin(); pix != stimulusMatrix->end(); ++pix){
             double x = pix.getColumnUm();

@@ -8,6 +8,7 @@
 #include "StationaryGaborGrating.h"
 #include "StationaryRectangularGrating.h"
 #include "StationaryDotStimulus.h"
+#include "StationaryBarStimulus.h"
 
 namespace stim{
 
@@ -91,6 +92,9 @@ namespace stim{
         } else if (mechanism == "dot") {
             logging::info("Stationary dot");
             stimulus = new StationaryDotStimulus(comm);
+        } else if (mechanism == "bar") {
+            logging::info("Stationary bar");
+            stimulus = new StationaryBarStimulus(comm);
         } else {
             throw param::UnknownMechanism("stimulus:stationary."+mechanism);
         }

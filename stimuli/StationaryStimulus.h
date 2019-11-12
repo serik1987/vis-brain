@@ -10,27 +10,6 @@
 
 namespace stim {
 
-    class negative_prestimulus_epoch: public simulation_exception{
-    public:
-        const char* what() const noexcept override{
-            return "Prestimulus epoch is negative";
-        }
-    };
-
-    class negative_stimulus_duration: public simulation_exception{
-    public:
-        const char* what() const noexcept override{
-            return "Stimulus duration is negative";
-        }
-    };
-
-    class negative_poststimulus_epoch: public simulation_exception{
-    public:
-        const char* what() const noexcept override{
-            return "Poststimulus epoch is negative";
-        }
-    };
-
     /**
      * Base class for all stationary stimuli
      * A stimulus is treated to be stationary if it doesn't depend on the input signal
@@ -104,6 +83,27 @@ namespace stim {
 
         ~StationaryStimulus() override{
             finalizeProcessor(true);
+        };
+
+        class negative_prestimulus_epoch: public simulation_exception{
+        public:
+            const char* what() const noexcept override{
+                return "Prestimulus epoch is negative";
+            }
+        };
+
+        class negative_stimulus_duration: public simulation_exception{
+        public:
+            const char* what() const noexcept override{
+                return "Stimulus duration is negative";
+            }
+        };
+
+        class negative_poststimulus_epoch: public simulation_exception{
+        public:
+            const char* what() const noexcept override{
+                return "Poststimulus epoch is negative";
+            }
         };
 
         /**

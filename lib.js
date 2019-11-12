@@ -169,7 +169,7 @@ let gabor_grating_stimulus = {
     size_x: 1.0*d,
     size_y: 1.0*d,
     luminance: 0.5,
-    contrast: 0.5,
+    contrast: 1.0,
     spatial_frequency: 3.0*cpd,
     spatial_phase: 0,
     orientation: 45*deg,
@@ -186,7 +186,7 @@ let rectangular_grating_stimulus = {
     size_x: 1.0*d,
     size_y: 1.0*d,
     luminance: 0.5,
-    contrast: 0.5,
+    contrast: 1.0,
     spatial_frequency: 3.0*cpd,
     spatial_phase: 0,
     orientation: 45*deg,
@@ -212,6 +212,32 @@ let stationary_dot_stimulus = {
     radius: 0.05*d
 };
 
+let stationary_bar_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:stationary.bar",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.0,
+    contrast: 1.0,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    length: 0.3*d,
+    width: 0.05*d,
+    x: 0.0*d,
+    y: 0.0*d,
+    orientation: 90*deg
+};
+
+let stimulus_list = {
+    gabor_grating_stimulus: gabor_grating_stimulus,
+    rectangular_grating_stimulus: rectangular_grating_stimulus,
+    stationary_dot_stimulus: stationary_dot_stimulus,
+    stationary_bar_stimulus: stationary_bar_stimulus
+}
+
 
 
 let world = {
@@ -226,7 +252,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stationary_dot_stimulus,
+    stimulus: stationary_bar_stimulus,
 
 
     analysis: {

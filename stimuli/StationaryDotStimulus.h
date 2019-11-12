@@ -9,27 +9,6 @@
 
 namespace stim {
 
-    class dot_abscissa_error: public simulation_exception{
-    public:
-        [[nodiscard]] const char* what() const noexcept override{
-            return "Abscissa of the stationary dot is out of the visual field";
-        }
-    };
-
-    class dot_ordinate_error: public simulation_exception{
-    public:
-        [[nodiscard]] const char* what() const noexcept override{
-            return "Ordinate of the stationary dot is out of the visual field";
-        }
-    };
-
-    class dot_radius_error: public simulation_exception{
-    public:
-        [[nodiscard]] const char* what() const noexcept override{
-            return "Radius of the visual field is too large (> 1/2 visual field) or negative";
-        }
-    };
-
     class StationaryDotStimulus : public StationaryStimulus {
     private:
         double x = 0.0;
@@ -45,6 +24,27 @@ namespace stim {
 
     public:
         explicit StationaryDotStimulus(mpi::Communicator& comm): StationaryStimulus(comm) {};
+
+        class dot_abscissa_error: public simulation_exception{
+        public:
+            [[nodiscard]] const char* what() const noexcept override{
+                return "Abscissa of the stationary dot is out of the visual field";
+            }
+        };
+
+        class dot_ordinate_error: public simulation_exception{
+        public:
+            [[nodiscard]] const char* what() const noexcept override{
+                return "Ordinate of the stationary dot is out of the visual field";
+            }
+        };
+
+        class dot_radius_error: public simulation_exception{
+        public:
+            [[nodiscard]] const char* what() const noexcept override{
+                return "Radius of the visual field is too large (> 1/2 visual field) or negative";
+            }
+        };
 
         /**
          *

@@ -6,6 +6,7 @@
 #include "stimuli/StationaryGrating.h"
 #include "stimuli/StationaryDotStimulus.h"
 #include "data/stream/BinStream.h"
+#include "stimuli/StationaryBarStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -17,6 +18,7 @@ void test_main(){
     auto* stim2 = dynamic_cast<stim::StationaryStimulus*>(&stim);
     auto* stim3 = dynamic_cast<stim::StationaryGrating*>(&stim);
     auto* stim4 = dynamic_cast<stim::StationaryDotStimulus*>(&stim);
+    auto* stim5 = dynamic_cast<stim::StationaryBarStimulus*>(&stim);
 
     logging::enter();
     logging::debug("grid x: " + to_string(stim.getGridX()));
@@ -39,6 +41,13 @@ void test_main(){
         logging::debug("X = " + to_string(stim4->getX()));
         logging::debug("Y = " + to_string(stim4->getY()));
         logging::debug("radius = " + to_string(stim4->getRadius()));
+    }
+    if (stim5 != nullptr){
+        logging::debug("Bar length: " + to_string(stim5->getLength()));
+        logging::debug("Bar width: " + to_string(stim5->getWidth()));
+        logging::debug("X = " + to_string(stim5->getX()));
+        logging::debug("Y = " + to_string(stim5->getY()));
+        logging::debug("Bar orientation, rad: " + to_string(stim5->getOrientation()));
     }
     logging::debug("");
     logging::exit();

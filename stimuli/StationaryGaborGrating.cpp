@@ -12,7 +12,7 @@ namespace stim{
         double sf = getSpatialFrequency();
         double phi0 = getSpatialPhase();
         double L = getLuminance();
-        double C = getContrast();
+        double C = 0.5 * getContrast();
 
         for (auto pix = stimulusMatrix->begin(); pix != stimulusMatrix->end(); ++pix){
             double x = pix.getColumnUm();

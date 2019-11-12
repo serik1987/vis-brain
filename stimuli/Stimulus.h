@@ -9,28 +9,6 @@
 
 namespace stim {
 
-    class negative_stimulus_dimensions: public simulation_exception{
-    public:
-        const char* what() const noexcept override{
-            return "Stimulus size in pixels (grid_x or grid_y) or stimulus size in degrees (size_x or size_y) is zero"
-                   " or negative";
-        }
-    };
-
-    class incorrect_luminance: public simulation_exception{
-    public:
-        const char* what() const noexcept override{
-            return "Stimulus luminance is set incorrectly";
-        }
-    };
-
-    class incorrect_contrast: public simulation_exception{
-    public:
-        const char* what() const noexcept override{
-            return "Stimulus contrast is set incorrectly";
-        }
-    };
-
     /**
      * A base class for all visual stimuli
      */
@@ -75,6 +53,28 @@ namespace stim {
 
     public:
         explicit Stimulus(mpi::Communicator& comm): Equation(comm) {};
+
+        class negative_stimulus_dimensions: public simulation_exception{
+        public:
+            const char* what() const noexcept override{
+                return "Stimulus size in pixels (grid_x or grid_y) or stimulus size in degrees (size_x or size_y) is zero"
+                       " or negative";
+            }
+        };
+
+        class incorrect_luminance: public simulation_exception{
+        public:
+            const char* what() const noexcept override{
+                return "Stimulus luminance is set incorrectly";
+            }
+        };
+
+        class incorrect_contrast: public simulation_exception{
+        public:
+            const char* what() const noexcept override{
+                return "Stimulus contrast is set incorrectly";
+            }
+        };
 
         /**
          * Initializes a stimulus
