@@ -4,6 +4,7 @@
 
 #include "stimuli/StationaryStimulus.h"
 #include "stimuli/StationaryGrating.h"
+#include "stimuli/StationaryDotStimulus.h"
 #include "data/stream/BinStream.h"
 
 void test_main(){
@@ -11,11 +12,11 @@ void test_main(){
 
     Application& app = Application::getInstance();
     mpi::Communicator& comm = app.getAppCommunicator();
+    app.createStimulus(comm);
     stim::Stimulus& stim = app.getStimulus();
     auto* stim2 = dynamic_cast<stim::StationaryStimulus*>(&stim);
     auto* stim3 = dynamic_cast<stim::StationaryGrating*>(&stim);
-    stim.initialize();
-    data::stream::BinStream stream(&stim.getOutput(), "output.bin", data::stream::Stream::Write, 100.0);
+    auto* stim4 = dynamic_cast<stim::StationaryDotStimulus*>(&stim);
 
     logging::enter();
     logging::debug("grid x: " + to_string(stim.getGridX()));
@@ -34,8 +35,16 @@ void test_main(){
         logging::debug("Spatial frequency: " + to_string(stim3->getSpatialFrequency()));
         logging::debug("Spatial phase: " + to_string(stim3->getSpatialPhase()));
     }
+    if (stim4 != nullptr){
+        logging::debug("X = " + to_string(stim4->getX()));
+        logging::debug("Y = " + to_string(stim4->getY()));
+        logging::debug("radius = " + to_string(stim4->getRadius()));
+    }
     logging::debug("");
     logging::exit();
+
+    stim.initialize();
+    data::stream::BinStream stream(&stim.getOutput(), "output.bin", data::stream::Stream::Write, 100.0);
 
     double time;
     for (int i=0; time < stim.getRecordLength(); i++){

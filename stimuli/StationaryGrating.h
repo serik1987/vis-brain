@@ -29,8 +29,6 @@ namespace stim {
         void loadStationaryStimulusParameters(const param::Object& source) override;
         void broadcastStationaryStimulusParameters() override;
         void setStationaryStimulusParameter(const std::string& name, const void* pvalue) override;
-        void fillStimulusMatrix() override;
-        std::string getProcessorName() override { return "stim::StationaryGrating"; }
 
     public:
         explicit StationaryGrating(mpi::Communicator& comm): StationaryStimulus(comm) {};

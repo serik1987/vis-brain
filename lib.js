@@ -1,17 +1,17 @@
 /* Units */
 
-let pi = Math.PI;
-let d = 1.0;
-let cpd = 1.0;
-let deg = Math.PI/180;
-let rad = 1.0;
-let grad = Math.PI/200;
-let ms = 1.0;
-let s = 1000*ms;
-let um = 1e-3*ms;
-let ns = 1e-6*ms;
-let min = 60*s;
-let hour = 60*min;
+const pi = Math.PI;
+const d = 1.0;
+const cpd = 1.0;
+const deg = Math.PI/180;
+const rad = 1.0;
+const grad = Math.PI/200;
+const ms = 1.0;
+const s = 1000*ms;
+const um = 1e-3*ms;
+const ns = 1e-6*ms;
+const min = 60*s;
+const hour = 60*min;
 
 
 let lgn_on = {
@@ -161,6 +161,58 @@ let simulation_job = {
     output_folder: "default_folder"
 };
 
+let gabor_grating_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:stationary.gabor-grating",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 0.5,
+    spatial_frequency: 3.0*cpd,
+    spatial_phase: 0,
+    orientation: 45*deg,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms
+};
+
+let rectangular_grating_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:stationary.gabor-grating",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 0.5,
+    spatial_frequency: 3.0*cpd,
+    spatial_phase: 0,
+    orientation: 45*deg,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms
+};
+
+let stationary_dot_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:stationary.dot",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 0.5,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    x: -0.25*d,
+    y: -0.4*d,
+    radius: 0.05*d
+};
+
+
 
 let world = {
 
@@ -174,22 +226,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: {
-        type: "processor",
-        mechanism: "stimulus:stationary.grating",
-        grid_x: 51,
-        grid_y: 51,
-        size_x: 1.0*d,
-        size_y: 1.0*d,
-        luminance: 0.5,
-        contrast: 0.5,
-        spatial_frequency: 3.0*cpd,
-        spatial_phase: 0,
-        orientation: 45*deg,
-        prestimulus_epoch: 400*ms,
-        stimulus_duration: 400*ms,
-        poststimulus_epoch: 400*ms
-    },
+    stimulus: stationary_dot_stimulus,
 
 
     analysis: {

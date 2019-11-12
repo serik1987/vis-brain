@@ -10,7 +10,12 @@
 namespace stim {
 
     class StationaryGaborGrating : public StationaryGrating {
+    protected:
+        std::string getProcessorName() override { return "stim::StationaryGaborGrating"; }
+        void fillStimulusMatrix() override;
 
+    public:
+        explicit StationaryGaborGrating(mpi::Communicator& comm): StationaryGrating(comm) {};
     };
 
 }

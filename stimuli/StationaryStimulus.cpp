@@ -5,7 +5,9 @@
 #include "StationaryStimulus.h"
 #include "../Application.h"
 #include "../log/output.h"
-#include "StationaryGrating.h"
+#include "StationaryGaborGrating.h"
+#include "StationaryRectangularGrating.h"
+#include "StationaryDotStimulus.h"
 
 namespace stim{
 
@@ -63,6 +65,10 @@ namespace stim{
 
     data::Matrix& StationaryStimulus::getOutput(){
         data::Matrix* result;
+
+        if (output == nullptr || stimulusMatrix == nullptr){
+            throw uninitialized_processor();
+        }
         if (time >= getStimulusStart() && time < getStimulusFinish()){
             result = stimulusMatrix;
         } else {
@@ -76,11 +82,17 @@ namespace stim{
                                                                      const std::string &mechanism) {
         StationaryStimulus* stimulus;
 
-        if (mechanism == "grating"){
-            logging::info("Stationary grating");
-            stimulus = new StationaryGrating(comm);
+        if (mechanism == "gabor-grating") {
+            logging::info("Stationary gabor grating");
+            stimulus = new StationaryGaborGrating(comm);
+        } else if (mechanism == "rectangular-grating") {
+            logging::info("Stationary rectangular grating");
+            stimulus = new StationaryRectangularGrating(comm);
+        } else if (mechanism == "dot") {
+            logging::info("Stationary dot");
+            stimulus = new StationaryDotStimulus(comm);
         } else {
-            throw param::UnknownMechanism();
+            throw param::UnknownMechanism("stimulus:stationary."+mechanism);
         }
 
         return stimulus;

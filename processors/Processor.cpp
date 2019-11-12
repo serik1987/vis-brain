@@ -55,7 +55,7 @@ namespace equ{
         if (mechanismClass == "stimulus"){
             processor = stim::Stimulus::createStimulus(comm, mechanismName);
         } else {
-            throw param::UnknownMechanism();
+            throw param::UnknownMechanism(mechanism);
         }
 
         return processor;

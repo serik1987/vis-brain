@@ -77,7 +77,7 @@ namespace stim{
         if (major_name == "stationary"){
             stimulus = StationaryStimulus::createStationaryStimulus(comm, minor_name);
         } else {
-            throw param::UnknownMechanism();
+            throw param::UnknownMechanism("stimulus:"+mechanism);
         }
 
         return stimulus;

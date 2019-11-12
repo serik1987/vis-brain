@@ -195,7 +195,6 @@ void Application::setParameter(const std::string &name, void *pvalue) {
 
 void Application::simulate() {
     try {
-        createStimulus(getAppCommunicator());
 #if DEBUG==1
         test_main();
 #endif

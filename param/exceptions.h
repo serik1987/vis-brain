@@ -199,9 +199,16 @@ public:
 };
 
 class UnknownMechanism: public TypeError{
+private:
+    std::string message;
+
 public:
+    explicit UnknownMechanism(std::string mechanism){
+        message = "Mechanism '" + mechanism + "' is unknown or unsupported";
+    }
+
     [[nodiscard]] const char* what() const noexcept override{
-        return "Unknown or unsupported mechanism was put";
+        return message.c_str();
     }
 };
 
