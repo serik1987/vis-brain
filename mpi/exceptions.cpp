@@ -60,7 +60,6 @@ namespace mpi{
 
 
             default:
-                std::cerr << "[ERROR] unknown error\n";
                 throw exception();
         }
     }

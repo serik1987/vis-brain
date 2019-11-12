@@ -7,6 +7,7 @@
 #include "stimuli/StationaryDotStimulus.h"
 #include "data/stream/BinStream.h"
 #include "stimuli/StationaryBarStimulus.h"
+#include "stimuli/StationaryReaderStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -19,6 +20,9 @@ void test_main(){
     auto* stim3 = dynamic_cast<stim::StationaryGrating*>(&stim);
     auto* stim4 = dynamic_cast<stim::StationaryDotStimulus*>(&stim);
     auto* stim5 = dynamic_cast<stim::StationaryBarStimulus*>(&stim);
+    auto* stim6 = dynamic_cast<stim::StationaryReaderStimulus*>(&stim);
+
+    logging::progress(0, 1, "Testing stimulus");
 
     logging::enter();
     logging::debug("grid x: " + to_string(stim.getGridX()));
@@ -48,6 +52,9 @@ void test_main(){
         logging::debug("X = " + to_string(stim5->getX()));
         logging::debug("Y = " + to_string(stim5->getY()));
         logging::debug("Bar orientation, rad: " + to_string(stim5->getOrientation()));
+    }
+    if (stim6 != nullptr){
+        logging::debug("Filename: " + stim6->getFilename());
     }
     logging::debug("");
     logging::exit();

@@ -238,6 +238,4 @@ void Application::createStimulus(mpi::Communicator& comm){
         stimulus->loadParameters(par_stimulus);
     }
     stimulus->broadcastParameters();
-
-    stimulus->initialize();
 }

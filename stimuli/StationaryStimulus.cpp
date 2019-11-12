@@ -9,6 +9,7 @@
 #include "StationaryRectangularGrating.h"
 #include "StationaryDotStimulus.h"
 #include "StationaryBarStimulus.h"
+#include "StationaryReaderStimulus.h"
 
 namespace stim{
 
@@ -95,6 +96,9 @@ namespace stim{
         } else if (mechanism == "bar") {
             logging::info("Stationary bar");
             stimulus = new StationaryBarStimulus(comm);
+        } else if (mechanism == "reader") {
+            logging::info("External stimulus from the vis-brain .bin file");
+            stimulus = new StationaryReaderStimulus(comm);
         } else {
             throw param::UnknownMechanism("stimulus:stationary."+mechanism);
         }

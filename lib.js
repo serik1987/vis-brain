@@ -231,12 +231,28 @@ let stationary_bar_stimulus = {
     orientation: 90*deg
 };
 
+let stationary_stimulus_reader = {
+    type: "processor",
+    mechanism: "stimulus:stationary.reader",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    filename: "sample-stimulus.bin"
+};
+
 let stimulus_list = {
     gabor_grating_stimulus: gabor_grating_stimulus,
     rectangular_grating_stimulus: rectangular_grating_stimulus,
     stationary_dot_stimulus: stationary_dot_stimulus,
-    stationary_bar_stimulus: stationary_bar_stimulus
-}
+    stationary_bar_stimulus: stationary_bar_stimulus,
+    stationary_stimulus_reader: stationary_stimulus_reader
+};
 
 
 
@@ -252,7 +268,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stationary_bar_stimulus,
+    stimulus: stationary_stimulus_reader,
 
 
     analysis: {
