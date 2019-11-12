@@ -13,6 +13,7 @@
 #include "param/Engine.h"
 #include "data/noise/NoiseEngine.h"
 #include "exceptions.h"
+#include "stimuli/Stimulus.h"
 
 
 /**
@@ -164,6 +165,22 @@ public:
 
     void setParameter(const std::string& name, void* pvalue) override;
 
+    /**
+     * Reads the world.stimulus parameter and creates a new stimulus
+     *
+     * @param comm communicator for which the stimulus shall be created, certain communicator value shall be
+     * returned after the job has been created
+     */
+    void createStimulus(mpi::Communicator& comm);
+
+    /**
+     *
+     * @return pointer to the stimulus
+     */
+    stim::Stimulus& getStimulus(){
+        return *stimulus;
+    }
+
 private:
     static Application* instance;
     bool application_ready = false;
@@ -188,6 +205,7 @@ private:
     param::Engine* engine = nullptr;
     logging::Engine* log = nullptr;
     data::noise::NoiseEngine* gen = nullptr;
+    stim::Stimulus* stimulus = nullptr;
 
 
     void setOutputFolder(const std::string& folder_prefix);

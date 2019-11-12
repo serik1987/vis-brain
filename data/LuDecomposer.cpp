@@ -4,6 +4,8 @@
 //
 
 #include "LuDecomposer.h"
+#include "../Application.h"
+#include "../log/output.h"
 
 namespace data {
 

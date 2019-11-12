@@ -7,6 +7,7 @@
 
 #include "Reader.h"
 #include "../LocalMatrix.h"
+#include "../../mpi/File.h"
 
 namespace data::reader {
 

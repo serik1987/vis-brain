@@ -179,21 +179,35 @@ public:
         message = "'" + field_name + "' is not a boolean value of '" + object_name + "'";
     }
 
-    const char* what() const noexcept override{
+    [[nodiscard]] const char* what() const noexcept override{
         return message.c_str();
     }
 };
 
 class WrongObjectType: public TypeError{
 public:
-    const char* what() const noexcept override{
-        return "Object type given in JS doesn't correspond to the object type required by the parameter\n";
+    [[nodiscard]] const char* what() const noexcept override{
+        return "Object type given in JS doesn't correspond to the object type required by the parameter";
+    }
+};
+
+class WrongMechanism: public TypeError{
+public:
+    [[nodiscard]] const char* what() const noexcept override{
+        return "Incorrect JS object is substituted as a child";
+    }
+};
+
+class UnknownMechanism: public TypeError{
+public:
+    [[nodiscard]] const char* what() const noexcept override{
+        return "Unknown or unsupported mechanism was put";
     }
 };
 
 class SetApplicationParameterError: public simulation_exception{
 public:
-    const char* what() const noexcept override{
+    [[nodiscard]] const char* what() const noexcept override{
         return "Can't set application parameter through the job";
     }
 };
@@ -207,7 +221,7 @@ public:
         message = object_name + " has no parameter '" + parameter_name + "'";
     }
 
-    const char* what() const noexcept override{
+    [[nodiscard]] const char* what() const noexcept override{
         return message.c_str();
     }
 };

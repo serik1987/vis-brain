@@ -9,7 +9,7 @@
 
 #include "../mpi/Communicator.h"
 #include "../compile_options.h"
-#include "../log/output.h"
+
 
 namespace data{ class Matrix; }
 

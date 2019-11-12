@@ -188,6 +188,15 @@ namespace stim {
          * @param t current timestamp in milliseconds
          */
         void update(double t) override { time = t; }
+
+        /**
+         * Creates new stationary stimulus with a given mechanism
+         *
+         * @param mechanism the mechanism to create
+         * @param comm communicator
+         * @return pointer to the stimulus
+         */
+        static StationaryStimulus* createStationaryStimulus(mpi::Communicator& comm, const std::string& mechanism);
     };
 
 }

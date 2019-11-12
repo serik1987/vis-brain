@@ -45,4 +45,11 @@ public:
     }
 };
 
+class WrongStimulus: public ApplicationError{
+public:
+    const char* what() const noexcept override{
+        return "world.stimulus property doesn't contain a valid stimulus";
+    }
+};
+
 #endif //EXCEPTIONS_H

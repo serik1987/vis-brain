@@ -5,6 +5,7 @@
 #include "StationaryStimulus.h"
 #include "../Application.h"
 #include "../log/output.h"
+#include "StationaryGrating.h"
 
 namespace stim{
 
@@ -69,6 +70,20 @@ namespace stim{
         }
 
         return *result;
+    }
+
+    StationaryStimulus* StationaryStimulus::createStationaryStimulus(mpi::Communicator &comm,
+                                                                     const std::string &mechanism) {
+        StationaryStimulus* stimulus;
+
+        if (mechanism == "grating"){
+            logging::info("Stationary grating");
+            stimulus = new StationaryGrating(comm);
+        } else {
+            throw param::UnknownMechanism();
+        }
+
+        return stimulus;
     }
 
 }

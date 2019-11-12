@@ -3,6 +3,7 @@
 //
 
 #include "Stream.h"
+#include "../../Application.h"
 
 namespace data::stream{
 

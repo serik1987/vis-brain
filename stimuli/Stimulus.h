@@ -206,6 +206,15 @@ namespace stim {
                 throw incorrect_contrast();
             }
         }
+
+        /**
+         * Selects an appropriate child class for the stimulus and creates the stimulus as dynamic object
+         * (This is your responsibility to delete such a stimulus
+         *
+         * @param comm communicator for the creating stimulus
+         * @return pointer to the stimulus
+         */
+        static Stimulus* createStimulus(mpi::Communicator& comm, const std::string& mechanism);
     };
 
 }

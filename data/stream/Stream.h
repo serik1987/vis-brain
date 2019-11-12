@@ -7,6 +7,7 @@
 
 #include "../Matrix.h"
 #include "../exceptions.h"
+#include "../../log/output.h"
 
 namespace data::stream {
 

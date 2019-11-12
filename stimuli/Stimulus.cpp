@@ -3,7 +3,9 @@
 //
 
 #include "Stimulus.h"
+#include "StationaryStimulus.h"
 #include "../data/LocalMatrix.h"
+#include "../log/output.h"
 
 namespace stim{
 
@@ -60,5 +62,26 @@ namespace stim{
                 getSizeX(), getSizeY());
         initializeStimulus();
     }
+
+    Stimulus* Stimulus::createStimulus(mpi::Communicator &comm, const std::string &mechanism) {
+        using std::string;
+        Stimulus* stimulus = nullptr;
+
+        int delimiter = mechanism.find('.');
+        string major_name = mechanism.substr(0, delimiter);
+        string minor_name = mechanism.substr(delimiter+1);
+        if (delimiter == string::npos){
+            minor_name = "";
+        }
+
+        if (major_name == "stationary"){
+            stimulus = StationaryStimulus::createStationaryStimulus(comm, minor_name);
+        } else {
+            throw param::UnknownMechanism();
+        }
+
+        return stimulus;
+    }
+
 
 }

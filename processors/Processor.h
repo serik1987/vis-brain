@@ -5,6 +5,7 @@
 #ifndef MPI2_PROCESSOR_H
 #define MPI2_PROCESSOR_H
 
+#include <list>
 
 #include "../param/Loadable.h"
 #include "../mpi/Communicator.h"
@@ -19,6 +20,8 @@ namespace equ {
     class Processor: public param::Loadable {
     private:
         mpi::Communicator& comm;
+        Processor* outputProcessor = nullptr;
+        std::list<Processor*> inputProcessors;
 
     protected:
         const char* getObjectType() const noexcept override { return "processor"; }
@@ -117,6 +120,55 @@ namespace equ {
             }
             return ss.str();
         }
+
+        /**
+         *
+         * @return a processor for which current processor is treated as input processor
+         */
+        Processor* getOutputProcessor() { return outputProcessor; }
+
+        /**
+         * Adds input processors at the end of the list
+         *
+         * @param other reference to the input processor
+         */
+        void addInputProcessor(Processor* pother);
+
+        /**
+         * Removes the input processor from the input processor list
+         *
+         * @param pother list of the other processors
+         */
+        void removeInputProcessor(Processor* pother);
+
+        /**
+         *
+         * @return iterator to the first processor within the list of the input processors
+         */
+        std::list<Processor*>::iterator inputProcessorBegin() { return inputProcessors.begin(); }
+
+        /**
+         *
+         * @return iterator to the end of the list of the input processors
+         */
+        std::list<Processor*>::iterator inputProcessorEnd() { return inputProcessors.end(); }
+
+        /**
+         * Recursively prints all other processes within the iterator. the processes will be printed to cout
+         *
+         * @param level shall be zero when the function runs outside the class
+         * @param root rank of the process within the processor's communicator that will print the info
+         */
+        void printAllProcessors(int level = 0, int root = 0);
+
+        /**
+         * Creates new processor
+         *
+         * @param comm communicator for which the processor has to be created
+         * @param mechanism a mechanism
+         * @return pointer to the processor
+         */
+        static Processor* createProcessor(mpi::Communicator& comm, const std::string& mechanism);
     };
 
 }

@@ -3,6 +3,7 @@
 //
 
 #include "BinReader.h"
+#include <cstring>
 
 namespace data::reader{
 

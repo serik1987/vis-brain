@@ -6,6 +6,7 @@
 #include "Matrix.h"
 #include "../Application.h"
 #include "ContiguousMatrix.h"
+#include "../log/output.h"
 
 namespace data{
 

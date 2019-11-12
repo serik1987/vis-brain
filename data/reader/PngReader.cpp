@@ -4,6 +4,7 @@
 
 #include "PngReader.h"
 #include "../ContiguousMatrix.h"
+#include "../../sys/exceptions.h"
 
 namespace data::reader {
 

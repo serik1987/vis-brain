@@ -25,7 +25,7 @@ Application::Application(int* argc, char ***argv):
     mpi::App(argc, argv, APP_NAME),
     application_ready(false){
     if (instance != nullptr){
-        throw "application already exists";
+        throw ApplicationAlreadyExists();
     }
     instance = this;
     argument_number = *argc;
@@ -40,6 +40,7 @@ void Application::deleteV8Engine() {
 }
 
 void Application::clearEngines(){
+    delete stimulus;
     delete gen;
     delete log;
     deleteV8Engine();
@@ -194,10 +195,50 @@ void Application::setParameter(const std::string &name, void *pvalue) {
 
 void Application::simulate() {
     try {
+        createStimulus(getAppCommunicator());
 #if DEBUG==1
         test_main();
 #endif
     } catch (std::exception& e){
         log->fail(e);
     }
+}
+
+void Application::createStimulus(mpi::Communicator& comm){
+    mpi::Communicator& appComm = getAppCommunicator();
+    std::string mechanism;
+    int errcode = 0;
+    logging::progress(0, 1, "Loading stimulus");
+
+    if (appComm.getRank() == 0){
+        try {
+            auto &world = engine->getRoot();
+            param::Object par_stimulus = world.getObjectField("stimulus");
+            mechanism = par_stimulus.getStringField("mechanism");
+        } catch (std::exception& exc){
+            int local_errcode = -1;
+            broadcastInteger(local_errcode, 0);
+            throw;
+        }
+    }
+    broadcastInteger(errcode, 0);
+    if (errcode != 0){
+        throw param::root_error();
+    }
+    broadcastString(mechanism, 0);
+    logging::info("The following application stimulus was created");
+    equ::Processor* proc = equ::Processor::createProcessor(comm, mechanism);
+    stimulus = dynamic_cast<stim::Stimulus*>(proc);
+    if (stimulus == nullptr){
+        throw WrongStimulus();
+    }
+
+    if (appComm.getRank() == 0){
+        auto &world = engine->getRoot();
+        param::Object par_stimulus = world.getObjectField("stimulus");
+        stimulus->loadParameters(par_stimulus);
+    }
+    stimulus->broadcastParameters();
+
+    stimulus->initialize();
 }
