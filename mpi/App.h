@@ -227,6 +227,14 @@ namespace mpi {
          void broadcastInteger(int& data, int root);
 
          /**
+          * Broadcasting a particular double value
+          *
+          * @param data the value to broadcast
+          * @param root rank of the root process
+          */
+         void broadcastDouble(double& data, int root);
+
+         /**
           * Broadcasting a particular boolean value
           *
           * @param value the value to broadcast

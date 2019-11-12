@@ -29,5 +29,9 @@ namespace mpi {
     void App::broadcastBoolean(bool &value, int root) {
         getAppCommunicator().broadcast(&value, 1, MPI_C_BOOL, root);
     }
+
+    void App::broadcastDouble(double &data, int root) {
+        getAppCommunicator().broadcast(&data, 1, MPI_DOUBLE, root);
+    }
 }
 

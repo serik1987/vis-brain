@@ -30,4 +30,19 @@ public:
     }
 };
 
+class ParamEngineNotReady: public ApplicationError{
+public:
+    const char* what() const noexcept override{
+        return "Either you applied deleteV8Engine() before application of simulation parameters o"
+               "r you applied simulation parameters for the process with rank different from 0";
+    }
+};
+
+class WrongProcessorNumber: public ApplicationError{
+public:
+    const char* what() const noexcept override{
+        return "Total number of all processors given is incorrect";
+    }
+};
+
 #endif //EXCEPTIONS_H

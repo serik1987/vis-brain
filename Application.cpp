@@ -11,6 +11,7 @@
 #include "compile_options.h"
 #include "exceptions.h"
 #include "param/Engine.h"
+#include "param/exceptions.h"
 #include "sys/Folder.h"
 #include "sys/auxiliary.h"
 
@@ -61,7 +62,7 @@ void Application::loadAllParameters() {
             std::cerr << "Model parameters were sent to the output stream. Simulation aborted\n";
         }
     }
-    broadcastParameterList();
+    broadcastParameters();
     if (process_number == comm.getProcessorNumber() && !is_gui){
         log = new logging::Engine(output_folder);
 #if AUTO_INITIALIZATION==1
@@ -76,6 +77,9 @@ void Application::loadParameterList(const param::Object &source) {
     mpi::Communicator& comm = getAppCommunicator();
     parent = source.getStringField("parent");
     process_number = source.getIntegerField("process_number");
+    if (process_number <= 0){
+        throw WrongProcessorNumber();
+    }
     std::string mode = source.getStringField("configuration_mode");
     if (mode == "simple"){
         configuration_mode = Simple;
@@ -168,12 +172,27 @@ void Application::fillCmd() {
     cmd = buf.str();
 }
 
+void Application::setParameter(const std::string &name, void *pvalue) {
+    using std::string;
+
+    auto pos = name.find('.');
+    if (pos == string::npos){
+        throw param::IncorrectParameterName(name, "world");
+    }
+    string parameter_class = name.substr(0, pos);
+    string parameter_name = name.substr(pos+1);
+    if (parameter_class == "application"){
+        throw param::SetApplicationParameterError();
+    } else {
+        throw param::IncorrectParameterName(name, "world");
+    }
+}
+
 
 
 
 
 void Application::simulate() {
-    // deleteV8Engine();
     try {
 #if DEBUG==1
         test_main();

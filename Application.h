@@ -121,6 +121,22 @@ public:
         return output_folder;
     }
 
+    /**
+     * Returns the parameter engine
+     * ATTENTION! PLEASE, DON'T RUN THIS METHOD ON PROCESSES WITH RANK DIFFERENT FROM ZERO
+     *
+     * @return
+     */
+    param::Engine& getParameterEngine(){
+        if (getAppCommunicator().getRank() != 0){
+            std::cerr << "Application::getParameterEngine has been run by the process with rank different "
+                         "from zero. The application shall hang for this. Please, check this error and don't do it "
+                         "in the future\n";
+            throw ParamEngineNotReady();
+        }
+        return *engine;
+    }
+
 
     /**
      *
@@ -134,6 +150,10 @@ public:
         return *log;
     }
 
+    /**
+     *
+     * @return reference to the noise engine
+     */
     data::noise::NoiseEngine& getNoiseEngine(){
         if (gen == nullptr){
             log->progress(0, 1, "Initializing PRNG");
@@ -141,6 +161,8 @@ public:
         }
         return *gen;
     }
+
+    void setParameter(const std::string& name, void* pvalue) override;
 
 private:
     static Application* instance;

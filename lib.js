@@ -1,3 +1,19 @@
+/* Units */
+
+let pi = Math.PI;
+let d = 1.0;
+let cpd = 1.0;
+let deg = Math.PI/180;
+let rad = 1.0;
+let grad = Math.PI/200;
+let ms = 1.0;
+let s = 1000*ms;
+let um = 1e-3*ms;
+let ns = 1e-6*ms;
+let min = 60*s;
+let hour = 60*min;
+
+
 let lgn_on = {
     type: "layer",
     stimulus_acceptable: true,
@@ -7,7 +23,7 @@ let lgn_on = {
     },
     mechanism: "abstract:glm.lgn",
     saturation: {
-        type: "abstract_saturatopn",
+        type: "abstract_saturation",
         enabled: true,
         mechanism: "abstract_saturation:half_of_sigmoid",
         saturation_scale: 0.0
@@ -159,7 +175,20 @@ let world = {
     brain: brain_lgn_to_v1_connection_trial,
 
     stimulus: {
-
+        type: "processor",
+        mechanism: "stimulus:stationary.grating",
+        grid_x: 51,
+        grid_y: 51,
+        size_x: 1.0*d,
+        size_y: 1.0*d,
+        luminance: 0.5,
+        contrast: 0.5,
+        spatial_frequency: 3.0*cpd,
+        spatial_phase: 0,
+        orientation: 45*deg,
+        prestimulus_epoch: 400*ms,
+        stimulus_duration: 400*ms,
+        poststimulus_epoch: 400*ms
     },
 
 

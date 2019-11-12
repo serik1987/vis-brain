@@ -7,10 +7,18 @@
 
 #include <exception>
 #include <v8.h>
+#include "../log/exceptions.h"
 
 namespace param{
 
 class exception: public std::exception {};
+
+class root_error: public exception{
+public:
+    const char* what() const noexcept override{
+        return "ROOT PROCESS TERMINATED\n";
+    }
+};
 
 class DuplicateEngineException: public exception{
 public:
@@ -182,6 +190,31 @@ public:
         return "Object type given in JS doesn't correspond to the object type required by the parameter\n";
     }
 };
+
+class SetApplicationParameterError: public simulation_exception{
+public:
+    const char* what() const noexcept override{
+        return "Can't set application parameter through the job";
+    }
+};
+
+class IncorrectParameterName: public simulation_exception{
+private:
+    std::string message;
+
+public:
+    IncorrectParameterName(const std::string& parameter_name, const std::string& object_name){
+        message = object_name + " has no parameter '" + parameter_name + "'";
+    }
+
+    const char* what() const noexcept override{
+        return message.c_str();
+    }
+};
+
+
+
+
 
 }
 
