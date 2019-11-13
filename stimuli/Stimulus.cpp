@@ -4,6 +4,7 @@
 
 #include "Stimulus.h"
 #include "StationaryStimulus.h"
+#include "MovingStimulus.h"
 #include "../data/LocalMatrix.h"
 #include "../log/output.h"
 
@@ -74,8 +75,10 @@ namespace stim{
             minor_name = "";
         }
 
-        if (major_name == "stationary"){
+        if (major_name == "stationary") {
             stimulus = StationaryStimulus::createStationaryStimulus(comm, minor_name);
+        } else if (major_name == "moving") {
+            stimulus = MovingStimulus::createMovingStimulus(comm, minor_name);
         } else {
             throw param::UnknownMechanism("stimulus:"+mechanism);
         }

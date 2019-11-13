@@ -12,6 +12,8 @@ const um = 1e-3*ms;
 const ns = 1e-6*ms;
 const min = 60*s;
 const hour = 60*min;
+const Hz = 1.0;
+const kHz = 1000.0*Hz;
 
 
 let lgn_on = {
@@ -178,6 +180,24 @@ let gabor_grating_stimulus = {
     poststimulus_epoch: 400*ms
 };
 
+let moving_gabor_grating_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:moving.gabor-grating",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    spatial_frequency: 3.0*cpd,
+    temporal_frequency: 10.0*Hz,
+    spatial_phase: 0,
+    orientation: 45*deg,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms
+};
+
 let rectangular_grating_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.gabor-grating",
@@ -247,11 +267,12 @@ let stationary_stimulus_reader = {
 };
 
 let stimulus_list = {
-    gabor_grating_stimulus: gabor_grating_stimulus,
-    rectangular_grating_stimulus: rectangular_grating_stimulus,
+    stationary_gabor_grating: gabor_grating_stimulus,
+    stationary_rectangular_grating: rectangular_grating_stimulus,
     stationary_dot_stimulus: stationary_dot_stimulus,
     stationary_bar_stimulus: stationary_bar_stimulus,
-    stationary_stimulus_reader: stationary_stimulus_reader
+    stationary_stimulus_reader: stationary_stimulus_reader,
+    moving_gabor_grating: moving_gabor_grating_stimulus
 };
 
 
@@ -268,13 +289,11 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.gabor_grating_stimulus,
-
+    stimulus: stimulus_list.moving_gabor_grating,
 
     analysis: {
 
     },
-
 
     job: simulation_job
 

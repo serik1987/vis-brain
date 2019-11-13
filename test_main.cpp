@@ -8,6 +8,10 @@
 #include "data/stream/BinStream.h"
 #include "stimuli/StationaryBarStimulus.h"
 #include "stimuli/StationaryReaderStimulus.h"
+#include "stimuli/MovingStimulus.h"
+#include "stimuli/MovingGrating.h"
+
+#include "mpi.h"
 
 void test_main(){
     using namespace std;
@@ -21,6 +25,8 @@ void test_main(){
     auto* stim4 = dynamic_cast<stim::StationaryDotStimulus*>(&stim);
     auto* stim5 = dynamic_cast<stim::StationaryBarStimulus*>(&stim);
     auto* stim6 = dynamic_cast<stim::StationaryReaderStimulus*>(&stim);
+    auto* moving_stimulus = dynamic_cast<stim::MovingStimulus*>(&stim);
+    auto* moving_grating = dynamic_cast<stim::MovingGrating*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -53,6 +59,20 @@ void test_main(){
         logging::debug("Y = " + to_string(stim5->getY()));
         logging::debug("Bar orientation, rad: " + to_string(stim5->getOrientation()));
     }
+    if (moving_stimulus != nullptr){
+        logging::debug("Prestimulus epoch: " + to_string(moving_stimulus->getPrestimulusEpoch()));
+        logging::debug("Stimulus duration: " + to_string(moving_stimulus->getStimulusDuration()));
+        logging::debug("Poststimulus epoch: " + to_string(moving_stimulus->getPoststimulusEpoch()));
+        logging::debug("Stimulus start: " + to_string(moving_stimulus->getStimulusStart()));
+        logging::debug("Stimulus finish: " + to_string(moving_stimulus->getStimulusFinish()));
+        logging::debug("Record length: " + to_string(moving_stimulus->getRecordLength()));
+    }
+    if (moving_grating != nullptr){
+        logging::debug("Spatial frequency: " + to_string(moving_grating->getSpatialFrequency()));
+        logging::debug("Statial phase: " + to_string(moving_grating->getSpatialPhase()));
+        logging::debug("Orientation: " + to_string(moving_grating->getOrientation()));
+        logging::debug("Temporal frequency: " +to_string(moving_grating->getTemporalFrequency()));
+    }
     if (stim6 != nullptr){
         logging::debug("Filename: " + stim6->getFilename());
     }
@@ -62,7 +82,7 @@ void test_main(){
     stim.initialize();
     data::stream::BinStream stream(&stim.getOutput(), "output.bin", data::stream::Stream::Write, 100.0);
 
-    double time;
+    double time = 0.0;
     for (int i=0; time < stim.getRecordLength(); i++){
         time = 10.0*i;
         stim.update(time);
