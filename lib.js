@@ -163,7 +163,7 @@ let simulation_job = {
     output_folder: "default_folder"
 };
 
-let gabor_grating_stimulus = {
+gabor_grating_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.gabor-grating",
     grid_x: 51,
@@ -180,7 +180,7 @@ let gabor_grating_stimulus = {
     poststimulus_epoch: 400*ms
 };
 
-let moving_gabor_grating_stimulus = {
+moving_gabor_grating_stimulus = {
     type: "processor",
     mechanism: "stimulus:moving.gabor-grating",
     grid_x: 51,
@@ -198,9 +198,9 @@ let moving_gabor_grating_stimulus = {
     poststimulus_epoch: 400*ms
 };
 
-let rectangular_grating_stimulus = {
+rectangular_grating_stimulus = {
     type: "processor",
-    mechanism: "stimulus:stationary.gabor-grating",
+    mechanism: "stimulus:stationary.rectangular-grating",
     grid_x: 51,
     grid_y: 51,
     size_x: 1.0*d,
@@ -215,7 +215,25 @@ let rectangular_grating_stimulus = {
     poststimulus_epoch: 400*ms
 };
 
-let stationary_dot_stimulus = {
+moving_rect_grating = {
+    type: "processor",
+    mechanism: "stimulus:moving.rectangular-grating",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    spatial_frequency: 3.0*cpd,
+    temporal_frequency: 10*Hz,
+    spatial_phase: 0,
+    orientation: 45*deg,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms
+};
+
+stationary_dot_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.dot",
     grid_x: 51,
@@ -232,7 +250,7 @@ let stationary_dot_stimulus = {
     radius: 0.05*d
 };
 
-let stationary_bar_stimulus = {
+stationary_bar_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.bar",
     grid_x: 51,
@@ -251,7 +269,7 @@ let stationary_bar_stimulus = {
     orientation: 90*deg
 };
 
-let stationary_stimulus_reader = {
+stationary_stimulus_reader = {
     type: "processor",
     mechanism: "stimulus:stationary.reader",
     grid_x: 51,
@@ -272,7 +290,8 @@ let stimulus_list = {
     stationary_dot_stimulus: stationary_dot_stimulus,
     stationary_bar_stimulus: stationary_bar_stimulus,
     stationary_stimulus_reader: stationary_stimulus_reader,
-    moving_gabor_grating: moving_gabor_grating_stimulus
+    moving_gabor_grating: moving_gabor_grating_stimulus,
+    moving_rectangular_grating: moving_rect_grating
 };
 
 
@@ -289,7 +308,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.moving_gabor_grating,
+    stimulus: stimulus_list.moving_rectangular_grating,
 
     analysis: {
 
