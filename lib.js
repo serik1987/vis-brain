@@ -14,6 +14,7 @@ const min = 60*s;
 const hour = 60*min;
 const Hz = 1.0;
 const kHz = 1000.0*Hz;
+const dps = 1.0;
 
 
 let lgn_on = {
@@ -269,6 +270,26 @@ stationary_bar_stimulus = {
     orientation: 90*deg
 };
 
+moving_bar_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:moving.bar",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.0,
+    contrast: 1.0,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    length: 0.3*d,
+    width: 0.05*d,
+    x: 0.0*d,
+    y: 0.0*d,
+    orientation: 45*deg,
+    speed: 3.0*dps
+};
+
 stationary_stimulus_reader = {
     type: "processor",
     mechanism: "stimulus:stationary.reader",
@@ -291,7 +312,8 @@ let stimulus_list = {
     stationary_bar_stimulus: stationary_bar_stimulus,
     stationary_stimulus_reader: stationary_stimulus_reader,
     moving_gabor_grating: moving_gabor_grating_stimulus,
-    moving_rectangular_grating: moving_rect_grating
+    moving_rectangular_grating: moving_rect_grating,
+    moving_bar_stimulus: moving_bar_stimulus
 };
 
 
@@ -308,7 +330,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.moving_rectangular_grating,
+    stimulus: stimulus_list.moving_bar_stimulus,
 
     analysis: {
 

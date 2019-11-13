@@ -5,6 +5,7 @@
 #include "MovingStimulus.h"
 #include "MovingGaborGrating.h"
 #include "MovingRectangularGrating.h"
+#include "MovingBarStimulus.h"
 #include "../log/output.h"
 
 
@@ -17,6 +18,8 @@ namespace stim {
             stimulus = new MovingGaborGrating(comm);
         } else if (mechanism == "rectangular-grating") {
             stimulus = new MovingRectangularGrating(comm);
+        } else if (mechanism == "bar"){
+            stimulus = new MovingBarStimulus(comm);
         } else {
             throw param::UnknownMechanism("stimulus:moving." + mechanism);
         }

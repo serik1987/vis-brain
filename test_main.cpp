@@ -12,6 +12,7 @@
 #include "stimuli/MovingGrating.h"
 
 #include "mpi.h"
+#include "stimuli/MovingBarStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -27,6 +28,7 @@ void test_main(){
     auto* stim6 = dynamic_cast<stim::StationaryReaderStimulus*>(&stim);
     auto* moving_stimulus = dynamic_cast<stim::MovingStimulus*>(&stim);
     auto* moving_grating = dynamic_cast<stim::MovingGrating*>(&stim);
+    auto* moving_bar = dynamic_cast<stim::MovingBarStimulus*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -75,6 +77,14 @@ void test_main(){
     }
     if (stim6 != nullptr){
         logging::debug("Filename: " + stim6->getFilename());
+    }
+    if (moving_bar != nullptr){
+        logging::debug("Bar length: " + to_string(moving_bar->getLength()));
+        logging::debug("Bar width: " + to_string(moving_bar->getWidth()));
+        logging::debug("Bar orientation, rad: " + to_string(moving_bar->getOrientation()));
+        logging::debug("x0 = " + to_string(moving_bar->getX()));
+        logging::debug("y0 = " + to_string(moving_bar->getY()));
+        logging::debug("Speed, dps: " + to_string(moving_bar->getSpeed()));
     }
     logging::debug("");
     logging::exit();

@@ -9,54 +9,17 @@
 namespace stim {
 
     void StationaryBarStimulus::loadStationaryStimulusParameters(const param::Object &source) {
-        using std::to_string;
-
-        if (getSizeX() > getSizeY()){
-            maxSize = getSizeX();
-            minSize = getSizeY();
-        } else {
-            maxSize = getSizeY();
-            minSize = getSizeX();
-        }
-
-        setLength(source.getFloatField("length"));
-        logging::info("Bar length, deg: " + to_string(getLength()));
-
-        setWidth(source.getFloatField("width"));
-        logging::info("Bar width, deg: " + to_string(getWidth()));
-
-        setX(source.getFloatField("x"));
-        logging::info("X = " + to_string(getX()));
-
-        setY(source.getFloatField("y"));
-        logging::info("Y = " + to_string(getY()));
-
-        setOrientation(source.getFloatField("orientation"));
-        logging::info("orientation, rad: " + to_string(orientation));
+        loadBarStimulusParameters(source, getSizeX(), getSizeY());
     }
 
     void StationaryBarStimulus::broadcastStationaryStimulusParameters() {
-        Application& app = Application::getInstance();
-
-        app.broadcastDouble(length, 0);
-        app.broadcastDouble(width, 0);
-        app.broadcastDouble(x, 0);
-        app.broadcastDouble(y, 0);
-        app.broadcastDouble(orientation, 0);
+        broadcastBarStimulusParameters();
     }
 
     void StationaryBarStimulus::setStationaryStimulusParameter(const std::string &name, const void *pvalue) {
-        if (name == "length") {
-            setLength(*(double *) pvalue);
-        } else if (name == "width") {
-            setWidth(*(double *) pvalue);
-        } else if (name == "x") {
-            setX(*(double *) pvalue);
-        } else if (name == "y") {
-            setY(*(double *) pvalue);
-        } else if (name == "orientation") {
-            setOrientation(*(double*)pvalue);
-        } else {
+        bool is_bar_stimulus_parameter = setBarStimulusParameter(name, pvalue);
+
+         if (!is_bar_stimulus_parameter) {
             throw param::IncorrectParameterName(name, "stationary bar");
         }
     }
