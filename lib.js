@@ -268,7 +268,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stationary_stimulus_reader,
+    stimulus: stimulus_list.gabor_grating_stimulus,
 
 
     analysis: {

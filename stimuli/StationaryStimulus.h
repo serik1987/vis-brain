@@ -6,6 +6,7 @@
 #define MPI2_STATIONARYSTIMULUS_H
 
 #include "Stimulus.h"
+#include "StepStimulusParameters.h"
 #include "../data/LocalMatrix.h"
 
 namespace stim {
@@ -18,11 +19,8 @@ namespace stim {
      * the background stimulus will be presented where each pixels eauals to the luminance At the stimulus state
      * stimulusMatrix is presented
      */
-    class StationaryStimulus: public Stimulus {
+    class StationaryStimulus: public Stimulus, public StepStimulusParameters {
     private:
-        double prestimulusEpoch = 0.0;
-        double stimulusDuration = 0.0;
-        double poststimulusEpoch = 0.0;
         double time = 0.0;
 
     protected:
@@ -85,101 +83,6 @@ namespace stim {
             finalizeProcessor(true);
         };
 
-        class negative_prestimulus_epoch: public simulation_exception{
-        public:
-            const char* what() const noexcept override{
-                return "Prestimulus epoch is negative";
-            }
-        };
-
-        class negative_stimulus_duration: public simulation_exception{
-        public:
-            const char* what() const noexcept override{
-                return "Stimulus duration is negative";
-            }
-        };
-
-        class negative_poststimulus_epoch: public simulation_exception{
-        public:
-            const char* what() const noexcept override{
-                return "Poststimulus epoch is negative";
-            }
-        };
-
-        /**
-         *
-         * @return prestimulus epoch in ms
-         */
-        [[nodiscard]] double getPrestimulusEpoch() const { return prestimulusEpoch; }
-
-        /**
-         *
-         * @return stimulus duration in ms
-         */
-        [[nodiscard]] double getStimulusDuration() const { return stimulusDuration; }
-
-        /**
-         *
-         * @return poststimulus epoch in ms
-         */
-        [[nodiscard]] double getPoststimulusEpoch() const { return poststimulusEpoch; }
-
-        /**
-         *
-         * @return time of stimulus start
-         */
-        double getStimulusStart(){
-            return prestimulusEpoch;
-        }
-
-        /**
-         *
-         * @return time of stimulus finish
-         */
-        double getStimulusFinish(){
-            return prestimulusEpoch + stimulusDuration;
-        }
-
-        double getRecordLength() override{
-            return prestimulusEpoch + stimulusDuration + poststimulusEpoch;
-        }
-
-        /**
-         * Sets the time from the beginning of the record to the stimulus onset
-         *
-         * @param value prestimulus epoch in ms
-         */
-        void setPrestimulusEpoch(double value){
-            if (value < 0.0){
-                throw negative_prestimulus_epoch();
-            }
-            prestimulusEpoch = value;
-        }
-
-        /**
-         * Sets the stimulus duration
-         *
-         * @param value stimulus duration in ms
-         */
-        void setStimulusDuration(double value){
-            if (value < 0.0){
-                throw negative_stimulus_duration();
-            }
-            stimulusDuration = value;
-        }
-
-        /**
-         * Sets the time from the stimulus offset to the end of the record
-         *
-         * @param value poststimulus time in ms
-         */
-        void setPoststimulusEpoch(double value){
-            if (value < 0.0){
-                throw negative_poststimulus_epoch();
-            }
-            poststimulusEpoch = value;
-        }
-
         [[nodiscard]] data::Matrix& getOutput() override;
 
         /**
@@ -197,6 +100,14 @@ namespace stim {
          * @return pointer to the stimulus
          */
         static StationaryStimulus* createStationaryStimulus(mpi::Communicator& comm, const std::string& mechanism);
+
+        /**
+         *
+         * @return record length for the stimulus
+         */
+        double getRecordLength() override{
+            return StepStimulusParameters::getRecordLength();
+        }
     };
 
 }
