@@ -10,35 +10,19 @@ namespace stim {
 
 
     void StationaryDotStimulus::loadStationaryStimulusParameters(const param::Object &source) {
-        using std::to_string;
-
-        setX(source.getFloatField("x"));
-        logging::info("x = " + to_string(getX()));
-
-        setY(source.getFloatField("y"));
-        logging::info("y = " + to_string(getY()));
-
-        setRadius(source.getFloatField("radius"));
-        logging::info("Dot radius, degr: " + to_string(getRadius()));
+        loadDotStimulusParameters(source, getSizeX(), getSizeY());
     }
 
     void StationaryDotStimulus::broadcastStationaryStimulusParameters() {
-        Application& app = Application::getInstance();
-
-        app.broadcastDouble(x, 0);
-        app.broadcastDouble(y, 0);
-        app.broadcastDouble(radius, 0);
+        broadcastDotStimulusParameters();
     }
 
     void StationaryDotStimulus::setStationaryStimulusParameter(const std::string &name, const void *pvalue) {
-        if (name == "x"){
-            setX(*(double*)pvalue);
-        } else if (name == "y") {
-            setY(*(double *) pvalue);
-        } else if (name == "radius"){
-            setRadius(*(double*)pvalue);
-        } else {
-            throw param::IncorrectParameterName(name, "stationary dot");
+        bool paramSetResult = setDotStimulusParameters(name, pvalue);
+        if (!paramSetResult){
+            {
+                throw param::IncorrectParameterName(name, "stationary dot");
+            }
         }
     }
 

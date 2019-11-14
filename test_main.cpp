@@ -10,9 +10,8 @@
 #include "stimuli/StationaryReaderStimulus.h"
 #include "stimuli/MovingStimulus.h"
 #include "stimuli/MovingGrating.h"
-
-#include "mpi.h"
 #include "stimuli/MovingBarStimulus.h"
+#include "stimuli/MovingDotStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -29,6 +28,7 @@ void test_main(){
     auto* moving_stimulus = dynamic_cast<stim::MovingStimulus*>(&stim);
     auto* moving_grating = dynamic_cast<stim::MovingGrating*>(&stim);
     auto* moving_bar = dynamic_cast<stim::MovingBarStimulus*>(&stim);
+    auto* moving_dot = dynamic_cast<stim::MovingDotStimulus*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -85,6 +85,13 @@ void test_main(){
         logging::debug("x0 = " + to_string(moving_bar->getX()));
         logging::debug("y0 = " + to_string(moving_bar->getY()));
         logging::debug("Speed, dps: " + to_string(moving_bar->getSpeed()));
+    }
+    if (moving_dot != nullptr){
+        logging::debug("X = " + to_string(moving_dot->getX()));
+        logging::debug("Y = " + to_string(moving_dot->getY()));
+        logging::debug("Dot radius, deg: " + to_string(moving_dot->getRadius()));
+        logging::debug("Velocity projection on X, dps: " + to_string(moving_dot->getVelocityX()));
+        logging::debug("Velocity projection on Y, dps: " + to_string(moving_dot->getVelocityY()));
     }
     logging::debug("");
     logging::exit();

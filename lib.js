@@ -251,6 +251,25 @@ stationary_dot_stimulus = {
     radius: 0.05*d
 };
 
+moving_dot_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:moving.dot",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.0,
+    contrast: 1.0,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    x: 0.0*d,
+    y: 0.0*d,
+    radius: 0.1*d,
+    velocity_x: 3*dps,
+    velocity_y: 3*dps
+};
+
 stationary_bar_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.bar",
@@ -297,7 +316,7 @@ stationary_stimulus_reader = {
     grid_y: 51,
     size_x: 1.0*d,
     size_y: 1.0*d,
-    luminance: 0.5,
+    luminance: 0.0,
     contrast: 1.0,
     prestimulus_epoch: 400*ms,
     stimulus_duration: 400*ms,
@@ -313,7 +332,8 @@ let stimulus_list = {
     stationary_stimulus_reader: stationary_stimulus_reader,
     moving_gabor_grating: moving_gabor_grating_stimulus,
     moving_rectangular_grating: moving_rect_grating,
-    moving_bar_stimulus: moving_bar_stimulus
+    moving_bar: moving_bar_stimulus,
+    moving_dot: moving_dot_stimulus
 };
 
 
@@ -330,7 +350,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.moving_bar_stimulus,
+    stimulus: stimulus_list.moving_dot,
 
     analysis: {
 
