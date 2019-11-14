@@ -4,6 +4,7 @@
 
 #include "Processor.h"
 #include "../log/output.h"
+#include "../sys/auxiliary.h"
 
 namespace equ{
 
@@ -59,6 +60,26 @@ namespace equ{
         }
 
         return processor;
+    }
+
+    std::string Processor::lookExternalMechanism(const std::string &category, const std::string &external_name) {
+        using sys::file_exists;
+        std::string lib_path;
+        std::string public_file = "/usr/local/lib/vis-brain/" + category + "/" + external_name + ".so";
+        std::string private_file = sys::get_home_directory() + "/.vis-brain/" + category + "/" + external_name + ".so";
+        std::string current_file = sys::get_current_directory() + "/" + category + "/" + external_name + ".so";
+
+        if (file_exists(public_file)){
+            lib_path = public_file;
+        } else if (file_exists(private_file)) {
+            lib_path = private_file;
+        } else if (file_exists(current_file)){
+            lib_path = current_file;
+        } else {
+            throw param::UnknownMechanism("external stimulus mechanism '" + external_name + "'");
+        }
+
+        return lib_path;
     }
 
 }

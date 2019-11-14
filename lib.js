@@ -337,7 +337,22 @@ stimulus_stream = {
     stimulus_duration: 400*ms,
     poststimulus_epoch: 400*ms,
     filename: "sample-stimulus.bin"
-}
+};
+
+test_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:external.test",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    sigma_speed: 1.5
+};
 
 let stimulus_list = {
     stationary_gabor_grating: gabor_grating_stimulus,
@@ -366,7 +381,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.moving_stream,
+    stimulus: test_stimulus,
 
     analysis: {
 

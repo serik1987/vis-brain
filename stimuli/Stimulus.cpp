@@ -5,6 +5,7 @@
 #include "Stimulus.h"
 #include "StationaryStimulus.h"
 #include "MovingStimulus.h"
+#include "ExternalStimulus.h"
 #include "../data/LocalMatrix.h"
 #include "../log/output.h"
 
@@ -79,6 +80,10 @@ namespace stim{
             stimulus = StationaryStimulus::createStationaryStimulus(comm, minor_name);
         } else if (major_name == "moving") {
             stimulus = MovingStimulus::createMovingStimulus(comm, minor_name);
+        } else if (major_name == "external") {
+            std::string lib_name = Processor::lookExternalMechanism("stimuli", minor_name);
+            logging::info("External stimulus was selected. Mechanism name: " + minor_name);
+            stimulus = new ExternalStimulus(comm, lib_name);
         } else {
             throw param::UnknownMechanism("stimulus:"+mechanism);
         }

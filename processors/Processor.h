@@ -169,6 +169,16 @@ namespace equ {
          * @return pointer to the processor
          */
         static Processor* createProcessor(mpi::Communicator& comm, const std::string& mechanism);
+
+        /**
+         * Looks whether external mechanisms exists as a real .so file
+         *
+         * @param category mechanism category (name of a folder where an appropriate .so file shall be looked).
+         * @param external_name minor name of the mechanism
+         * @return Absolute or relative path to the .so file.
+         * @throws param::UnknownMechanism if the function is failed to find an appropriate .so file
+         */
+        static std::string lookExternalMechanism(const std::string& category, const std::string& external_name);
     };
 
 }

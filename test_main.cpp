@@ -13,6 +13,7 @@
 #include "stimuli/MovingBarStimulus.h"
 #include "stimuli/MovingDotStimulus.h"
 #include "stimuli/StreamStimulus.h"
+#include "stimuli/ExternalStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -31,6 +32,7 @@ void test_main(){
     auto* moving_bar = dynamic_cast<stim::MovingBarStimulus*>(&stim);
     auto* moving_dot = dynamic_cast<stim::MovingDotStimulus*>(&stim);
     auto* stream_stimulus = dynamic_cast<stim::StreamStimulus*>(&stim);
+    auto* external_stimulus = dynamic_cast<stim::ExternalStimulus*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -97,6 +99,15 @@ void test_main(){
     }
     if (stream_stimulus != nullptr){
         logging::debug("Filename: " + stream_stimulus->getFilename());
+    }
+    if (external_stimulus != nullptr){
+        logging::debug("Total number of parameters: " + to_string(external_stimulus->getParameterNumber()));
+        for (int i=0; i < external_stimulus->getParameterNumber(); i++){
+            stringstream ss;
+            const char* parname = external_stimulus->getParameterName(i);
+            ss << parname << ": " << external_stimulus->getParameter(parname);
+            logging::debug(ss.str());
+        }
     }
     logging::debug("");
     logging::exit();
