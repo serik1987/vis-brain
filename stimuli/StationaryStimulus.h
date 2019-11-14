@@ -105,7 +105,7 @@ namespace stim {
          *
          * @return record length for the stimulus
          */
-        double getRecordLength() override{
+        [[nodiscard]] double getRecordLength() const override{
             return StepStimulusParameters::getRecordLength();
         }
     };

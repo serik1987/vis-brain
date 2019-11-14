@@ -7,6 +7,7 @@
 #include "MovingRectangularGrating.h"
 #include "MovingBarStimulus.h"
 #include "MovingDotStimulus.h"
+#include "StreamStimulus.h"
 #include "../log/output.h"
 
 
@@ -23,6 +24,8 @@ namespace stim {
             stimulus = new MovingBarStimulus(comm);
         } else if (mechanism == "dot") {
             stimulus = new MovingDotStimulus(comm);
+        } else if (mechanism == "stream") {
+            stimulus = new StreamStimulus(comm);
         } else {
             throw param::UnknownMechanism("stimulus:moving." + mechanism);
         }
@@ -36,11 +39,15 @@ namespace stim {
                 getSizeX(), getSizeY(), getLuminance());
         output = new data::LocalMatrix(getCommunicator(), getGridX(), getGridY(),
                 getSizeX(), getSizeY(), 0.0);
+        initializeExtraBuffer();
     }
 
     void MovingStimulus::finalizeProcessor(bool destruct) noexcept {
         delete meanLuminance;
         meanLuminance = nullptr;
+        if (!destruct){
+            finalizeExtraBuffer(false);
+        }
     }
 
     void MovingStimulus::update(double t){

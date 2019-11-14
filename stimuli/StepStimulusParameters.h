@@ -71,7 +71,7 @@ namespace stim {
          *
          * @return time of stimulus start
          */
-        double getStimulusStart(){
+        [[nodiscard]] double getStimulusStart() const{
             return prestimulusEpoch;
         }
 
@@ -79,7 +79,7 @@ namespace stim {
          *
          * @return time of stimulus finish
          */
-        double getStimulusFinish(){
+        [[nodiscard]] double getStimulusFinish() const{
             return prestimulusEpoch + stimulusDuration;
         }
 
@@ -119,7 +119,7 @@ namespace stim {
             poststimulusEpoch = value;
         }
 
-        double getRecordLength(){
+        double getRecordLength() const{
             return prestimulusEpoch + stimulusDuration + poststimulusEpoch;
         }
 

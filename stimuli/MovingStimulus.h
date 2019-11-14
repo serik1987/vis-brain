@@ -46,11 +46,28 @@ namespace stim {
         virtual void setMovingStimulusParameter(const std::string& name, const void* pvalue) = 0;
 
         /**
+         * By default, MovingStimulus initializes meanLuminance and output matrices, and for the most of moving
+         * stimulus this is enough. If this is not enough for a certain implementation of the MovingStimulus, please,
+         * override this method. The methods is called by the initializeStimulus method
+         */
+        virtual void initializeExtraBuffer() {};
+
+        /**
          * Updates the moving stimulus when the moving stimulus itself is presented
          *
          * @param relativeTime time from the stimulus onset
          */
         virtual void updateMovingStimulus(double relativeTime) = 0;
+
+        /**
+         * By default, MovingStimulus destroys meanLuminance and output matrices, and for the most of moving stimuli]
+         * this is enough. If this is not enough for a certain implementation of the MovingStimulus, please,
+         * override this method. The method is called by the finalizeProcessor method. Also, don't forget to call this
+         * from the destructor
+         *
+         * @param destruct shall be false everywhere except when called from the destructor
+         */
+        virtual void finalizeExtraBuffer(bool destruct = false) {};
 
     public:
         explicit MovingStimulus(mpi::Communicator& comm): Stimulus(comm), StepStimulusParameters() {};
@@ -72,7 +89,7 @@ namespace stim {
          *
          * @return total length of the record
          */
-        double getRecordLength() override {
+        [[nodiscard]] double getRecordLength() const override {
             return StepStimulusParameters::getRecordLength();
         }
 

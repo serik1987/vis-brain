@@ -41,7 +41,7 @@ namespace stim {
          *
          * @return name of a file to open
          */
-        [[nodiscard]] const std::string& getFilename() { return filename; }
+        [[nodiscard]] const std::string& getFilename() const { return filename; }
 
         /**
          * Sets the filename from which the stimulus shall be read

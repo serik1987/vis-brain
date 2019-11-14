@@ -324,6 +324,21 @@ stationary_stimulus_reader = {
     filename: "sample-stimulus.bin"
 };
 
+stimulus_stream = {
+    type: "processor",
+    mechanism: "stimulus:moving.stream",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    prestimulus_epoch: 400*ms,
+    stimulus_duration: 400*ms,
+    poststimulus_epoch: 400*ms,
+    filename: "sample-stimulus.bin"
+}
+
 let stimulus_list = {
     stationary_gabor_grating: gabor_grating_stimulus,
     stationary_rectangular_grating: rectangular_grating_stimulus,
@@ -333,7 +348,8 @@ let stimulus_list = {
     moving_gabor_grating: moving_gabor_grating_stimulus,
     moving_rectangular_grating: moving_rect_grating,
     moving_bar: moving_bar_stimulus,
-    moving_dot: moving_dot_stimulus
+    moving_dot: moving_dot_stimulus,
+    moving_stream: stimulus_stream
 };
 
 
@@ -350,7 +366,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.moving_dot,
+    stimulus: stimulus_list.moving_stream,
 
     analysis: {
 

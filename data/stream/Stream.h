@@ -247,7 +247,13 @@ namespace data::stream {
          *
          * @return total number of matrices
          */
-        int getFrameNumber() { return frameNumber; }
+        [[nodiscard]] int getFrameNumber() const { return frameNumber; }
+
+        /**
+         *
+         * @return total number of frames containing in the stream
+         */
+        [[nodiscard]] int getTotalFrames() const { return totalFrames; }
 
         /**
          * Stream mode. Stream mode is set during the object construction and can't be changed

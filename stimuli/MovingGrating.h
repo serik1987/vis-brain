@@ -32,7 +32,7 @@ namespace stim {
          *
          * @return temporal frequency of the moving grating in Hz
          */
-        [[nodiscard]] double getTemporalFrequency() { return temporalFrequency; }
+        [[nodiscard]] double getTemporalFrequency() const { return temporalFrequency; }
 
         void setTemporalFrequency(double value){
             if (value > 0){

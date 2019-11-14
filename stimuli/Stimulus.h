@@ -95,7 +95,7 @@ namespace stim {
          *
          * @return record length in ms. The record length is defined by the stimulus length
          */
-        virtual double getRecordLength()=0;
+        [[nodiscard]] virtual double getRecordLength() const=0;
 
         /**
          *

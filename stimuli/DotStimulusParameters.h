@@ -73,19 +73,19 @@ namespace stim {
          *
          * @return abscissa of the dot center
          */
-        [[nodiscard]] double getX() { return x; }
+        [[nodiscard]] double getX() const { return x; }
 
         /**
          *
          * @return ordinate of the dot center
          */
-        [[nodiscard]] double getY() { return y; }
+        [[nodiscard]] double getY() const { return y; }
 
         /**
          *
          * @return radius of the dot
          */
-        [[nodiscard]] double getRadius() { return radius; }
+        [[nodiscard]] double getRadius() const { return radius; }
 
         /**
          * Sets abscissa of the dot center

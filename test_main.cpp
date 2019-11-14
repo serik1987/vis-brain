@@ -12,6 +12,7 @@
 #include "stimuli/MovingGrating.h"
 #include "stimuli/MovingBarStimulus.h"
 #include "stimuli/MovingDotStimulus.h"
+#include "stimuli/StreamStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -29,6 +30,7 @@ void test_main(){
     auto* moving_grating = dynamic_cast<stim::MovingGrating*>(&stim);
     auto* moving_bar = dynamic_cast<stim::MovingBarStimulus*>(&stim);
     auto* moving_dot = dynamic_cast<stim::MovingDotStimulus*>(&stim);
+    auto* stream_stimulus = dynamic_cast<stim::StreamStimulus*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -93,6 +95,9 @@ void test_main(){
         logging::debug("Velocity projection on X, dps: " + to_string(moving_dot->getVelocityX()));
         logging::debug("Velocity projection on Y, dps: " + to_string(moving_dot->getVelocityY()));
     }
+    if (stream_stimulus != nullptr){
+        logging::debug("Filename: " + stream_stimulus->getFilename());
+    }
     logging::debug("");
     logging::exit();
 
@@ -105,6 +110,8 @@ void test_main(){
         stim.update(time);
         stream.write(&stim.getOutput());
     }
+
+    stim.finalize();
 
     logging::progress(1, 1);
 }

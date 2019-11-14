@@ -29,13 +29,13 @@ namespace stim {
          *
          * @return velocity on abscissa in dps
          */
-        [[nodiscard]] double getVelocityX() { return velocityX; }
+        [[nodiscard]] double getVelocityX() const { return velocityX; }
 
         /**
          *
          * @return velocity on ordinate in dps
          */
-        [[nodiscard]] double getVelocityY() { return velocityY; }
+        [[nodiscard]] double getVelocityY() const { return velocityY; }
 
         /**
          * Sets projection of stimulus velocity on abscissa

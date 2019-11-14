@@ -43,19 +43,19 @@ namespace stim {
         *
         * @return grating orientation in radians
         */
-        double getOrientation(){ return orientation; }
+        [[nodiscard]] double getOrientation() const { return orientation; }
 
         /**
          *
          * @return spatial phase in radians
          */
-        double getSpatialPhase() { return spatialPhase; }
+        [[nodiscard]] double getSpatialPhase() const { return spatialPhase; }
 
         /**
          *
          * @return spatial frequency in cpd
          */
-        double getSpatialFrequency() { return spatialFrequency; }
+        [[nodiscard]] double getSpatialFrequency() const { return spatialFrequency; }
 
         /**
          * Sets the grating orientation

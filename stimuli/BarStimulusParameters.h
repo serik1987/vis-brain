@@ -63,31 +63,31 @@ namespace stim {
          *
          * @return bar length in degrees
          */
-        [[nodiscard]] double getLength() { return length; }
+        [[nodiscard]] double getLength() const { return length; }
 
         /**
          *
          * @return bar width in dengrees
          */
-        [[nodiscard]] double getWidth() { return width; }
+        [[nodiscard]] double getWidth() const { return width; }
 
         /**
          *
          * @return abscissa of the bar center
          */
-        [[nodiscard]] double getX() { return x; }
+        [[nodiscard]] double getX() const { return x; }
 
         /**
          *
          * @return ordinate of the bar center
          */
-        [[nodiscard]] double getY() { return y; }
+        [[nodiscard]] double getY() const { return y; }
 
         /**
          *
          * @return bar orientation in radians
          */
-        [[nodiscard]] double getOrientation() { return orientation; }
+        [[nodiscard]] double getOrientation() const { return orientation; }
 
         /**
          * Sets the bar length in degrees

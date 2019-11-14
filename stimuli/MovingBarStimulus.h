@@ -29,7 +29,7 @@ namespace stim {
          *
          * @return current stimulus speed in degrees per second
          */
-        [[nodiscard]] double getSpeed() { return speed; }
+        [[nodiscard]] double getSpeed() const { return speed; }
 
         /**
          * Sets the stimulus speed
