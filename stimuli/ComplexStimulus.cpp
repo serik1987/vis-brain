@@ -4,6 +4,7 @@
 
 #include "ComplexStimulus.h"
 #include "WeightedStimulus.h"
+#include "BoundedStimulus.h"
 #include "../log/output.h"
 
 namespace stim {
@@ -11,8 +12,10 @@ namespace stim {
     ComplexStimulus *ComplexStimulus::createComplexStimulus(mpi::Communicator &comm, const std::string &name) {
         ComplexStimulus* stimulus = nullptr;
 
-        if (name == "weighted"){
+        if (name == "weighted") {
             stimulus = new WeightedStimulus(comm);
+        } else if (name == "bounded"){
+            stimulus = new BoundedStimulus(comm);
         } else {
             throw param::UnknownMechanism("stimulus:complex." + name);
         }

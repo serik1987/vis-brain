@@ -391,6 +391,25 @@ test_weighted_stimulus = {
     weights: [1, 1, 1, 1]
 };
 
+dot_mask = Object.create(stationary_dot_stimulus);
+with (dot_mask) {
+    x = 0.0;
+    y = 0.0;
+    radius = 0.3*d;
+}
+
+test_bounded_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:complex.bounded",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0, // useless
+    content: [dot_mask, gabor_grating_stimulus]
+};
+
 let stimulus_list = {
     stationary_gabor_grating: gabor_grating_stimulus,
     stationary_rectangular_grating: rectangular_grating_stimulus,
@@ -401,7 +420,9 @@ let stimulus_list = {
     moving_rectangular_grating: moving_rect_grating,
     moving_bar: moving_bar_stimulus,
     moving_dot: moving_dot_stimulus,
-    moving_stream: stimulus_stream
+    moving_stream: stimulus_stream,
+    complex_weighted: test_weighted_stimulus,
+    complex_bounded: test_bounded_stimulus
 };
 
 
@@ -418,7 +439,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: test_weighted_stimulus,
+    stimulus: stimulus_list.complex_bounded,
 
     analysis: {
 
