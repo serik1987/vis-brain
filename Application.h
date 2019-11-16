@@ -163,7 +163,7 @@ public:
         return *gen;
     }
 
-    void setParameter(const std::string& name, void* pvalue) override;
+    void setParameter(const std::string& name, const void* pvalue) override;
 
     /**
      * Reads the world.stimulus parameter and creates a new stimulus

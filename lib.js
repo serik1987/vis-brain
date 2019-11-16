@@ -241,14 +241,14 @@ stationary_dot_stimulus = {
     grid_y: 51,
     size_x: 1.0*d,
     size_y: 1.0*d,
-    luminance: 0.5,
-    contrast: 0.5,
+    luminance: 0.0,
+    contrast: 1.0,
     prestimulus_epoch: 400*ms,
     stimulus_duration: 400*ms,
     poststimulus_epoch: 400*ms,
     x: -0.25*d,
     y: -0.4*d,
-    radius: 0.05*d
+    radius: 0.10*d
 };
 
 moving_dot_stimulus = {
@@ -354,6 +354,43 @@ test_stimulus = {
     sigma_speed: 1.5
 };
 
+top_right_dot = Object.create(stationary_dot_stimulus);
+with (top_right_dot){
+    x = 0.25*d;
+    y = 0.25*d;
+}
+
+top_left_dot = Object.create(stationary_dot_stimulus);
+with (top_left_dot){
+    x = -0.25*d;
+    y = 0.25*d;
+}
+
+bottom_right_dot = Object.create(stationary_dot_stimulus);
+with (bottom_right_dot){
+    x = 0.25*d;
+    y = -0.25*d;
+}
+
+bottom_left_dot = Object.create(stationary_dot_stimulus);
+with (bottom_left_dot){
+    x = -0.25*d;
+    y = -0.25*d;
+}
+
+test_weighted_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:complex.weighted",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    content: [top_right_dot, top_left_dot, bottom_right_dot, bottom_left_dot],
+    weights: [1, 1, 1, 1]
+};
+
 let stimulus_list = {
     stationary_gabor_grating: gabor_grating_stimulus,
     stationary_rectangular_grating: rectangular_grating_stimulus,
@@ -381,7 +418,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: test_stimulus,
+    stimulus: test_weighted_stimulus,
 
     analysis: {
 

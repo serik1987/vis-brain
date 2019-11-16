@@ -49,6 +49,18 @@ double param::Object::getFloatField(const std::string &name) const {
     return raw_value->NumberValue(context).ToChecked();
 }
 
+double param::Object::getFloatField(uint32_t index) const{
+    HandleScope handle_scope(isolate);
+    Persistent<Context>& persistent_context = Engine::getInstance().getContext();
+    Local<Context> context = Local<Context>::New(isolate, persistent_context);
+    Local<v8::Object> local_source = Local<v8::Object>::New(isolate, source);
+    auto raw_value = local_source->Get(context, index).ToLocalChecked();
+    if (!raw_value->IsNumber()){
+        throw FloatTypeError(object_name, std::to_string(index));
+    }
+    return raw_value->NumberValue(context).ToChecked();
+}
+
 std::string param::Object::getStringField(const std::string &name) const {
     HandleScope handle_scope(isolate);
     Persistent<Context>& persistent_context = Engine::getInstance().getContext();
@@ -78,6 +90,31 @@ param::Object param::Object::getObjectField(const std::string &name) const {
     Local<v8::Object> value = raw_value->ToObject(context).ToLocalChecked();
 
     return param::Object(isolate, name, value);
+}
+
+param::Object param::Object::getObjectField(uint32_t index) const {
+    HandleScope handle_scope(isolate);
+    Persistent<Context>& persistent_context = Engine::getInstance().getContext();
+    Local<Context> context = Local<Context>::New(isolate, persistent_context);
+    // Local<Context> context = isolate->GetCurrentContext();
+    Local<v8::Object> local_source = Local<v8::Object>::New(isolate, source);
+    auto raw_value = local_source->Get(context, index).ToLocalChecked();
+    if (!raw_value->IsObject()){
+        throw ObjectTypeError(object_name, std::to_string(index));
+    }
+    Local<v8::Object> value = raw_value->ToObject(context).ToLocalChecked();
+
+    return param::Object(isolate, std::to_string(index), value);
+}
+
+uint32_t param::Object::getPropertyNumber() const{
+    HandleScope handle_scope(isolate);
+    Persistent<Context>& persistent_context = Engine::getInstance().getContext();
+    Local<Context> context = Local<Context>::New(isolate, persistent_context);
+    Local<v8::Object> local_source = Local<v8::Object>::New(isolate, source);
+    Local<Array> property_names = local_source->GetPropertyNames(context).ToLocalChecked();
+    uint32_t property_number = property_names->Length();
+    return property_number;
 }
 
 bool param::Object::getBooleanField(const std::string &name) const {

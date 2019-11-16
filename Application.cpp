@@ -173,7 +173,7 @@ void Application::fillCmd() {
     cmd = buf.str();
 }
 
-void Application::setParameter(const std::string &name, void *pvalue) {
+void Application::setParameter(const std::string &name, const void *pvalue) {
     using std::string;
 
     auto pos = name.find('.');
@@ -182,8 +182,10 @@ void Application::setParameter(const std::string &name, void *pvalue) {
     }
     string parameter_class = name.substr(0, pos);
     string parameter_name = name.substr(pos+1);
-    if (parameter_class == "application"){
+    if (parameter_class == "application") {
         throw param::SetApplicationParameterError();
+    } else if (parameter_class == "stimulus"){
+        stimulus->setParameter(parameter_name, pvalue);
     } else {
         throw param::IncorrectParameterName(name, "world");
     }

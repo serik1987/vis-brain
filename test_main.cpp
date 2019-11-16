@@ -14,6 +14,8 @@
 #include "stimuli/MovingDotStimulus.h"
 #include "stimuli/StreamStimulus.h"
 #include "stimuli/ExternalStimulus.h"
+#include "stimuli/ComplexStimulus.h"
+#include "stimuli/WeightedStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -33,6 +35,8 @@ void test_main(){
     auto* moving_dot = dynamic_cast<stim::MovingDotStimulus*>(&stim);
     auto* stream_stimulus = dynamic_cast<stim::StreamStimulus*>(&stim);
     auto* external_stimulus = dynamic_cast<stim::ExternalStimulus*>(&stim);
+    auto* complex_stimulus = dynamic_cast<stim::ComplexStimulus*>(&stim);
+    auto* weighted_stimulus = dynamic_cast<stim::ComplexStimulus*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -109,11 +113,34 @@ void test_main(){
             logging::debug(ss.str());
         }
     }
+    if (complex_stimulus != nullptr){
+        cout << "PROCESSORS TREE FOR ALL PROCESSORS WITH RANK # " << comm.getRank() << ":\n";
+        complex_stimulus->printAllProcessors(0, comm.getRank());
+        logging::debug("Record length: " + to_string(complex_stimulus->getRecordLength()));
+    }
+    if (weighted_stimulus != nullptr){
+        int idx = 0;
+        for (auto it = weighted_stimulus->inputProcessorBegin(); it != weighted_stimulus->inputProcessorEnd(); ++it){
+            auto* dot_stimulus = dynamic_cast<stim::StationaryDotStimulus*>(*it);
+            if (dot_stimulus != nullptr){
+                stringstream ss;
+                ss << "STIMULUS # " << idx << ". X = " << dot_stimulus->getX() << ". Y = " << dot_stimulus->getY();
+                logging::debug(ss.str());
+            }
+            idx ++;
+        }
+    }
     logging::debug("");
     logging::exit();
 
     stim.initialize();
     data::stream::BinStream stream(&stim.getOutput(), "output.bin", data::stream::Stream::Write, 100.0);
+
+    logging::enter();
+    if (complex_stimulus != nullptr){
+        logging::debug("Record length, after initialization, ms: " + std::to_string(complex_stimulus->getRecordLength()));
+    }
+    logging::exit();
 
     double time = 0.0;
     for (int i=0; time < stim.getRecordLength(); i++){
@@ -123,6 +150,12 @@ void test_main(){
     }
 
     stim.finalize();
+
+    logging::enter();
+    if (complex_stimulus != nullptr){
+        logging::debug("Record length, after finalization, ms: " + std::to_string(complex_stimulus->getRecordLength()));
+    }
+    logging::exit();
 
     logging::progress(1, 1);
 }

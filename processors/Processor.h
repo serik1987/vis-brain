@@ -35,6 +35,8 @@ namespace equ {
 
         /**
          * Finalizes the processor
+         * The method shall destroy all matrices and buffers except output matrix which will be destroyed by
+         * the processor routine
          *
          * @param destruct false except you start the method from a child destructor
          */
@@ -152,6 +154,28 @@ namespace equ {
          * @return iterator to the end of the list of the input processors
          */
         std::list<Processor*>::iterator inputProcessorEnd() { return inputProcessors.end(); }
+
+        /**
+         *
+         * @return total number of the input processors
+         */
+        int getInputProcessorNumber(){
+            return inputProcessors.size();
+        }
+
+        /**
+         * Returns a certain input processor
+         *
+         * @param index number of the input processor
+         * @return pointer to the input processor
+         */
+        Processor* getInputProcessor(int index){
+            auto it = inputProcessorBegin();
+            for (int i=0; i < index; ++i){
+                ++it;
+            }
+            return *it;
+        }
 
         /**
          * Recursively prints all other processes within the iterator. the processes will be printed to cout

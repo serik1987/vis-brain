@@ -12,7 +12,7 @@
 namespace param {
 
     /**
-     * Represents a parameter group
+     * Represents a parameter group or array of parameter groups
      *
      * This is not necessary to use V8 concepts (such as isolate, scope, context etc.) in order to use it.
      * Just follow the following rules:
@@ -26,6 +26,10 @@ namespace param {
      * 3) Use the other methods mentioned below (except constructor, of course, it requires giving some V8 objects.
      *
      * Please, be carefull. If the instance of engine will be destroyed, all instances of this object will be damaged
+     *
+     * According to JS specification JS arrays are objects which properties have no string names. However, they
+     * have indices (use getObjectField(idx) for getting an object field) and their number can be counted by means of
+     * getPropertyNumber() routine
      */
     class Object {
     private:
@@ -62,7 +66,7 @@ namespace param {
          * @return value of the field if the value if integer
          * @throws TypeError if the field is not integer
          */
-        int getIntegerField(const std::string& name) const;
+        [[nodiscard]] int getIntegerField(const std::string& name) const;
 
         /**
          *
@@ -70,7 +74,16 @@ namespace param {
          * @return value of the field if the value is float
          * @throws TypeError if the field is not float
          */
-        double getFloatField(const std::string& name) const;
+        [[nodiscard]] double getFloatField(const std::string& name) const;
+
+        /**
+         * Returns a float item of the JS array
+         *
+         * @param index item index
+         * @return copy of the item value
+         * @throws TypeError if a certain item of the array is not float
+         */
+        [[nodiscard]] double getFloatField(uint32_t index) const;
 
         /**
          *
@@ -78,7 +91,7 @@ namespace param {
          * @return value of the field as std::string instance if the field has String type
          * @throws TypeError if the field doesn't belong to the String type
          */
-        std::string getStringField(const std::string& name) const;
+        [[nodiscard]] std::string getStringField(const std::string& name) const;
 
         /**
          *
@@ -86,7 +99,15 @@ namespace param {
          * @return An instance of param::Object corresponding to this field, if the fieid value is Object
          * @throws TypeError if the field type is not Object
          */
-        param::Object getObjectField(const std::string& name) const;
+        [[nodiscard]] param::Object getObjectField(const std::string& name) const;
+
+        /**
+         * Returns a certain item of an array, if it doesn't belong to an elementary type
+         *
+         * @param index item number, from 0 to N-1 where N is total number of items within the array
+         * @return content for a certain property
+         */
+        [[nodiscard]] param::Object getObjectField(uint32_t index) const;
 
         /**
          *
@@ -94,20 +115,27 @@ namespace param {
          * @return value of the field if it has a boolean type
          * @throws TypeError if the field doesn't belong to the Boolean type
          */
-        bool getBooleanField(const std::string& name) const;
+        [[nodiscard]] bool getBooleanField(const std::string& name) const;
 
         /**
          *
          * @param name Name of the field
          * @return Type of the field
          */
-        FieldType getFieldType(const std::string& name) const;
+        [[nodiscard]] FieldType getFieldType(const std::string& name) const;
 
         /**
          *
          * @return JSON representation of the root object (named 'world')
          */
-        std::string stringify() const;
+        [[nodiscard]] std::string stringify() const;
+
+        /**
+         * If an object represents an array, this returns total number of items within the array
+         *
+         * @return total number of all properties within the object
+         */
+        [[nodiscard]] uint32_t getPropertyNumber() const;
 
 
         /**

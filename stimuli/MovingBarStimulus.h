@@ -16,7 +16,7 @@ namespace stim {
         double speed = 0.0;
 
     protected:
-        [[nodiscard]] std::string getProcessorName() override { return "stim:MovingBarStimulus"; }
+        [[nodiscard]] std::string getProcessorName() override { return "stimulus:moving.bar"; }
         void loadMovingStimulusParameters(const param::Object& source) override;
         void broadcastMovingStimulusParameters() override;
         void setMovingStimulusParameter(const std::string& name, const void* pvalue) override;

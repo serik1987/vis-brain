@@ -89,7 +89,7 @@ namespace stim {
          * @param name parameter name
          * @param pvalue parameter value
          */
-        void setParameter(const std::string& name, void* pvalue) override;
+        void setParameter(const std::string& name, const void* pvalue) override;
 
         /**
          *

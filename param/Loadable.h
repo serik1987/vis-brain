@@ -58,7 +58,7 @@ namespace param{
          * @param name parameter name
          * @param pvalue pointer to the parameter value
          */
-        virtual void setParameter(const std::string& name, void* pvalue)=0;
+        virtual void setParameter(const std::string& name, const void* pvalue)=0;
     };
 }
 

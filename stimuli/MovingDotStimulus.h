@@ -16,7 +16,7 @@ namespace stim {
         double velocityY = 0.0;
 
     protected:
-        std::string getProcessorName() override { return "stim::MovingDotStimulus"; }
+        std::string getProcessorName() override { return "stimulus:moving.dot"; }
         void loadMovingStimulusParameters(const param::Object& source) override;
         void broadcastMovingStimulusParameters() override;
         void setMovingStimulusParameter(const std::string& name, const void* pvalue) override;

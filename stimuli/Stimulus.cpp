@@ -6,6 +6,7 @@
 #include "StationaryStimulus.h"
 #include "MovingStimulus.h"
 #include "ExternalStimulus.h"
+#include "ComplexStimulus.h"
 #include "../data/LocalMatrix.h"
 #include "../log/output.h"
 
@@ -41,19 +42,19 @@ namespace stim{
         broadcastStimulusParameters();
     }
 
-    void Stimulus::setParameter(const std::string &name, void *pvalue) {
+    void Stimulus::setParameter(const std::string &name, const void *pvalue) {
         if (name == "grid_x") {
-            setGridX(*static_cast<int*>(pvalue));
+            setGridX(*(int*)(pvalue));
         } else if (name == "grid_y") {
-            setGridY(*static_cast<int *>(pvalue));
+            setGridY(*(int*)(pvalue));
         } else if (name == "size_x") {
-            setSizeX(*static_cast<double *>(pvalue));
+            setSizeX(*(int*)(pvalue));
         } else if (name == "size_y") {
-            setSizeY(*static_cast<double *>(pvalue));
+            setSizeY(*(int*)(pvalue));
         } else if (name == "luminance") {
-            setLuminance(*static_cast<double *>(pvalue));
+            setLuminance(*(double*)(pvalue));
         } else if (name == "contrast") {
-            setContrast(*static_cast<double*>(pvalue));
+            setContrast(*(double*)(pvalue));
         } else {
             setStimulusParameter(name, pvalue);
         }
@@ -84,6 +85,8 @@ namespace stim{
             std::string lib_name = Processor::lookExternalMechanism("stimuli", minor_name);
             logging::info("External stimulus was selected. Mechanism name: " + minor_name);
             stimulus = new ExternalStimulus(comm, lib_name);
+        } else if (major_name == "complex") {
+            stimulus = ComplexStimulus::createComplexStimulus(comm, minor_name);
         } else {
             throw param::UnknownMechanism("stimulus:"+mechanism);
         }

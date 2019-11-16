@@ -19,7 +19,7 @@ namespace stim {
         int (*get_stimulus_value)(double x, double y, double t, double* pvalue);
 
     protected:
-        [[nodiscard]] std::string getProcessorName() override{ return "stim::external"; }
+        [[nodiscard]] std::string getProcessorName() override{ return "stim:external"; }
         void loadMovingStimulusParameters(const param::Object& source) override;
         void broadcastMovingStimulusParameters() override;
         void setMovingStimulusParameter(const std::string& name, const void* pvalue) override;
