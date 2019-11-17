@@ -410,6 +410,27 @@ test_bounded_stimulus = {
     content: [dot_mask, gabor_grating_stimulus]
 };
 
+test_sequence_stimulus = {
+    type: "processor",
+    mechanism: "stimulus:complex.sequence",
+    grid_x: 51,
+    grid_y: 51,
+    size_x: 1.0*d,
+    size_y: 1.0*d,
+    luminance: 0.5,
+    contrast: 1.0,
+    shuffle: true,
+    repeats: 3,
+    name: "my_sequence",
+    content: []
+};
+
+[0, 30.0*deg, 60.0*deg, 90.0*deg, 120.0*deg, 160.0*deg].forEach(function(orientation){
+    var stimulus = Object.create(gabor_grating_stimulus);
+    stimulus.orientation = orientation;
+    test_sequence_stimulus.content.push(stimulus);
+});
+
 let stimulus_list = {
     stationary_gabor_grating: gabor_grating_stimulus,
     stationary_rectangular_grating: rectangular_grating_stimulus,
@@ -422,7 +443,8 @@ let stimulus_list = {
     moving_dot: moving_dot_stimulus,
     moving_stream: stimulus_stream,
     complex_weighted: test_weighted_stimulus,
-    complex_bounded: test_bounded_stimulus
+    complex_bounded: test_bounded_stimulus,
+    complex_sequence: test_sequence_stimulus
 };
 
 
@@ -439,7 +461,7 @@ let world = {
 
     brain: brain_lgn_to_v1_connection_trial,
 
-    stimulus: stimulus_list.complex_bounded,
+    stimulus: stimulus_list.complex_sequence,
 
     analysis: {
 

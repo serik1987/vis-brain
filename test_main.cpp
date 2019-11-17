@@ -16,6 +16,7 @@
 #include "stimuli/ExternalStimulus.h"
 #include "stimuli/ComplexStimulus.h"
 #include "stimuli/WeightedStimulus.h"
+#include "stimuli/SequenceStimulus.h"
 
 void test_main(){
     using namespace std;
@@ -37,6 +38,7 @@ void test_main(){
     auto* external_stimulus = dynamic_cast<stim::ExternalStimulus*>(&stim);
     auto* complex_stimulus = dynamic_cast<stim::ComplexStimulus*>(&stim);
     auto* weighted_stimulus = dynamic_cast<stim::ComplexStimulus*>(&stim);
+    auto* sequence_stimulus = dynamic_cast<stim::SequenceStimulus*>(&stim);
 
     logging::progress(0, 1, "Testing stimulus");
 
@@ -130,6 +132,13 @@ void test_main(){
             idx ++;
         }
     }
+    if (sequence_stimulus != nullptr){
+        stringstream ss;
+        ss << "Shuffling: " << sequence_stimulus->isShuffle() << endl;
+        ss << "Number of repeats: " << sequence_stimulus->getRepeats() << endl;
+        ss << "Name: " << sequence_stimulus->getName() << endl;
+        logging::debug(ss.str());
+    }
     logging::debug("");
     logging::exit();
 
@@ -144,9 +153,9 @@ void test_main(){
 
     double time = 0.0;
     for (int i=0; time < stim.getRecordLength(); i++){
-        time = 10.0*i;
         stim.update(time);
         stream.write(&stim.getOutput());
+        time = 10.0*i;
     }
 
     stim.finalize();

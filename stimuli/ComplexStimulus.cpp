@@ -5,6 +5,7 @@
 #include "ComplexStimulus.h"
 #include "WeightedStimulus.h"
 #include "BoundedStimulus.h"
+#include "SequenceStimulus.h"
 #include "../log/output.h"
 
 namespace stim {
@@ -14,8 +15,10 @@ namespace stim {
 
         if (name == "weighted") {
             stimulus = new WeightedStimulus(comm);
-        } else if (name == "bounded"){
+        } else if (name == "bounded") {
             stimulus = new BoundedStimulus(comm);
+        } else if (name == "sequence"){
+            stimulus = new SequenceStimulus(comm);
         } else {
             throw param::UnknownMechanism("stimulus:complex." + name);
         }
