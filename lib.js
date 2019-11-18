@@ -15,6 +15,7 @@ const hour = 60*min;
 const Hz = 1.0;
 const kHz = 1000.0*Hz;
 const dps = 1.0;
+const nA = 1.0;
 
 
 let lgn_on = {
@@ -26,7 +27,7 @@ let lgn_on = {
     },
     mechanism: "abstract:glm.lgn",
     saturation: {
-        type: "abstract_saturation",
+        type: "processor",
         enabled: true,
         mechanism: "abstract_saturation:half_of_sigmoid",
         saturation_scale: 0.0
@@ -448,6 +449,36 @@ let stimulus_list = {
 };
 
 
+no_saturation = {
+    type: "processor",
+    mechanism: "glm:stimulus_saturation.no",
+    dark_current: 0,
+    amplification: 40.0*nA
+};
+
+broken_line_saturation = {
+    type: "processor",
+    mechanism: "glm:stimulus_saturation.broken_line",
+    dark_current: 0,
+    amplification: 40.0*nA,
+    max_current: 20.0*nA
+};
+
+half_sigmoid_saturation = {
+    type: "processor",
+    mechanism: "glm:stimulus_saturation.half_sigmoid",
+    dark_current: 0,
+    amplification: 40.0*nA,
+    max_current: 20.0*nA
+};
+
+let saturation_list = {
+    no: no_saturation,
+    broken_line: broken_line_saturation,
+    half_sigmoid: half_sigmoid_saturation
+};
+
+
 
 let world = {
 
@@ -459,9 +490,11 @@ let world = {
         output_folder_prefix: "test"
     },
 
-    brain: brain_lgn_to_v1_connection_trial,
+    stimulus: stimulus_list.stationary_gabor_grating,
 
-    stimulus: stimulus_list.complex_sequence,
+    test_field: saturation_list.half_sigmoid,
+
+    brain: brain_lgn_to_v1_connection_trial,
 
     analysis: {
 

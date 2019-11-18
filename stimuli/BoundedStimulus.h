@@ -16,7 +16,6 @@ namespace stim {
         void broadcastComplexStimulusParameters() override;
         void setComplexStimulusParameter(const std::string& name, const void* pvalue) override;
         void initializeComplexStimulus() override;
-        void update(double time) override;
         void finalizeComplexStimulus(bool destruct) override;
 
     public:
@@ -25,6 +24,8 @@ namespace stim {
         ~BoundedStimulus() override {
             finalizeComplexStimulus(true);
         }
+
+        void update(double time) override;
     };
 
 }

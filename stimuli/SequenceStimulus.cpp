@@ -114,6 +114,7 @@ namespace stim{
             printProtocolLine();
         }
 
+        /*
         logging::enter();
         logging::debug("UPDATE t = " + std::to_string(time) + " TIME FROM START = " + std::to_string(timeFromRepeatStart) +
             " FRAME NUMBER = " + std::to_string(frameNumber) + " REPEAT START TIME = " + std::to_string(repeatStartTime) +
@@ -126,6 +127,7 @@ namespace stim{
         }
         logging::debug(ss.str());
         logging::exit();
+         */
 
         pstimulus->update(timeFromTrialStart);
         auto pix = output->begin();
@@ -149,10 +151,6 @@ namespace stim{
     void SequenceStimulus::finalizeComplexStimulus(bool destruct) {
         delete indices;
         indices = nullptr;
-
-        logging::enter();
-        logging::debug("FINALIZE");
-        logging::exit();
     }
 
 }

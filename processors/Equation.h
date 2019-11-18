@@ -16,7 +16,7 @@ namespace equ {
      */
     class Equation: public Processor {
     public:
-        Equation(mpi::Communicator& comm): Processor(comm) {};
+        explicit Equation(mpi::Communicator& comm): Processor(comm) {};
 
     };
 

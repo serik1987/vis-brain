@@ -3,6 +3,7 @@
 //
 
 #include "Processor.h"
+#include "../models/abstract/glm/GlmLayer.h"
 #include "../log/output.h"
 #include "../sys/auxiliary.h"
 
@@ -53,8 +54,10 @@ namespace equ{
         string mechanismClass = mechanism.substr(0, delimiter);
         string mechanismName = mechanism.substr(delimiter+1);
 
-        if (mechanismClass == "stimulus"){
+        if (mechanismClass == "stimulus") {
             processor = stim::Stimulus::createStimulus(comm, mechanismName);
+        } else if (mechanismClass == "glm") {
+            processor = net::GlmLayer::createGlmMechanism(comm, mechanismName);
         } else {
             throw param::UnknownMechanism(mechanism);
         }

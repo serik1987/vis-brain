@@ -5,14 +5,14 @@
 #ifndef MPI2_STIMULUS_H
 #define MPI2_STIMULUS_H
 
-#include "../processors/Equation.h"
+#include "../processors/Processor.h"
 
 namespace stim {
 
     /**
      * A base class for all visual stimuli
      */
-    class Stimulus: public equ::Equation {
+    class Stimulus: public equ::Processor {
     private:
         int gridX = 0, gridY = 0;
         double sizeX = 0.0, sizeY = 0.0, luminance = 0.0, contrast = 0.0;
@@ -52,7 +52,7 @@ namespace stim {
         virtual void initializeStimulus() = 0;
 
     public:
-        explicit Stimulus(mpi::Communicator& comm): Equation(comm) {};
+        explicit Stimulus(mpi::Communicator& comm): Processor(comm) {};
 
         class negative_stimulus_dimensions: public simulation_exception{
         public:

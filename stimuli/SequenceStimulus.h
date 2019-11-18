@@ -37,7 +37,6 @@ namespace stim {
         void broadcastComplexStimulusParameters() override;
         void setComplexStimulusParameter(const std::string& name, const void* pvalue) override;
         void initializeComplexStimulus() override;
-        void update(double time) override;
         void finalizeComplexStimulus(bool destruct) override;
 
     public:
@@ -100,6 +99,8 @@ namespace stim {
         void setName(const std::string& protocol_name) {
             name = protocol_name;
         }
+
+        void update(double time) override;
 
     };
 
