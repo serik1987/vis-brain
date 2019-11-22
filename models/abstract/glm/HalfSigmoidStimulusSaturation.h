@@ -19,7 +19,8 @@ namespace equ {
         double getSaturationOutput(double saturationInput) override;
 
     public:
-        explicit HalfSigmoidStimulusSaturation(mpi::Communicator& comm): StimulusSaturation(comm) {};
+        explicit HalfSigmoidStimulusSaturation(mpi::Communicator& comm): StimulusSaturation(comm),
+            Equation(comm), Processor(comm) {};
     };
 
 }

@@ -14,7 +14,7 @@ namespace equ {
      * characterises the dependency of the output matrix on the set of input matrices
      * that depends on time but doesn't depend on a certain state
      */
-    class Equation: public Processor {
+    class Equation: virtual public Processor {
     public:
         explicit Equation(mpi::Communicator& comm): Processor(comm) {};
 

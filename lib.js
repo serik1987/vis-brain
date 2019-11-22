@@ -478,6 +478,15 @@ let saturation_list = {
     half_sigmoid: half_sigmoid_saturation
 };
 
+let temporal_kernel_list = {
+    ode: {
+        type: "processor",
+        mechanism: "glm:temporal_kernel.ode",
+        tau: 10*ms,
+        initial_stimulus_value: 20.0
+    }
+};
+
 
 
 let world = {
@@ -492,7 +501,8 @@ let world = {
 
     stimulus: stimulus_list.stationary_gabor_grating,
 
-    test_field: saturation_list.half_sigmoid,
+    test_field: saturation_list.no,
+    test_field_2: temporal_kernel_list.ode,
 
     brain: brain_lgn_to_v1_connection_trial,
 

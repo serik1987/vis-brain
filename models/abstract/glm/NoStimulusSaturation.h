@@ -22,7 +22,8 @@ namespace equ {
         double getSaturationOutput(double saturationInput) override { return saturationInput; }
 
     public:
-        explicit NoStimulusSaturation(mpi::Communicator& comm): StimulusSaturation(comm) {};
+        explicit NoStimulusSaturation(mpi::Communicator& comm): StimulusSaturation(comm), Equation(comm),
+            Processor(comm) {};
     };
 
 }

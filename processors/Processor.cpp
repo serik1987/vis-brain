@@ -10,11 +10,11 @@
 namespace equ{
 
     void Processor::finalize(bool destruct) noexcept{
-        delete output;
-        output = nullptr;
         if (!destruct) {
             finalizeProcessor();
         }
+        delete output;
+        output = nullptr;
     }
 
     void Processor::addInputProcessor(Processor *pother) {
@@ -43,7 +43,8 @@ namespace equ{
         }
     }
 
-    Processor* Processor::createProcessor(mpi::Communicator& comm, const std::string& mechanism){
+    Processor* Processor::createProcessor(mpi::Communicator& comm, const std::string& mechanism,
+            equ::Ode::SolutionParameters parameters){
         using std::string;
         Processor* processor = nullptr;
 
@@ -57,7 +58,7 @@ namespace equ{
         if (mechanismClass == "stimulus") {
             processor = stim::Stimulus::createStimulus(comm, mechanismName);
         } else if (mechanismClass == "glm") {
-            processor = net::GlmLayer::createGlmMechanism(comm, mechanismName);
+            processor = net::GlmLayer::createGlmMechanism(comm, mechanismName, parameters);
         } else {
             throw param::UnknownMechanism(mechanism);
         }

@@ -67,11 +67,11 @@ namespace equ{
     }
 
     void StimulusSaturation::update(double time) {
-        auto pix = output->begin();
+        auto pix = getOutput().begin();
         auto* input = *inputProcessorBegin();
         auto pix0 = input->getOutput().cbegin();
 
-        for (; pix != output->end(); ++pix, ++pix0){
+        for (; pix != getOutput().end(); ++pix, ++pix0){
             double unsaturated = getDarkCurrent() + getStimulusAmplitifacation() * *pix0;
             *pix = getSaturationOutput(unsaturated);
         }

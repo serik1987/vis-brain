@@ -39,8 +39,12 @@ add_executable(vis-brain main.cpp mpi/App.h mpi/exceptions.h mpi/Communicator.h 
         stimuli/BoundedStimulus.cpp stimuli/BoundedStimulus.h stimuli/SequenceStimulus.cpp stimuli/SequenceStimulus.h
         models/abstract/glm/StimulusSaturation.cpp models/abstract/glm/NoStimulusSaturation.cpp
         models/abstract/glm/GlmLayer.cpp models/abstract/glm/BrokenLineStimulusSaturation.cpp
-        models/abstract/glm/BrokenLineStimulusSaturation.h models/abstract/glm/HalfSigmoidStimulusSaturation.cpp models/abstract/glm/HalfSigmoidStimulusSaturation.h)
-add_library(stimulus-test-library SHARED stimuli/test_library.cpp)
+        models/abstract/glm/BrokenLineStimulusSaturation.h models/abstract/glm/HalfSigmoidStimulusSaturation.cpp
+        models/abstract/glm/HalfSigmoidStimulusSaturation.h processors/Ode.h processors/SingleOde.cpp
+        processors/SingleOde.h models/abstract/glm/TemporalKernel.cpp models/abstract/glm/TemporalKernel.h
+        models/abstract/glm/OdeTemporalKernel.cpp models/abstract/glm/OdeTemporalKernel.h methods/ExplicitEuler.cpp
+        methods/ExplicitEuler.h methods/ExplicitRecountEuler.cpp methods/ExplicitRecountEuler.h methods/KhoinMethod.cpp methods/KhoinMethod.h methods/ExplicitRungeKutta.cpp methods/ExplicitRungeKutta.h)
+add_library(stimulus-test-library SHARED stimuli/test_library.cpp methods/Method.h)
 
 target_link_libraries(vis-brain pthread png /usr/local/lib/libv8_monolith.a dl)
 

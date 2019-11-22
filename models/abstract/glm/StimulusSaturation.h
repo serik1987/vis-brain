@@ -14,7 +14,7 @@ namespace equ {
      * Any visual stimulus that is introduced into GLM model shall be passed through the saturation
      * mechanism
      */
-    class StimulusSaturation: public Equation {
+    class StimulusSaturation: virtual public Equation {
     private:
         double darkCurrent = -1.0;
         double stimulusAmplification = -1.0;
