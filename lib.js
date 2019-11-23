@@ -483,9 +483,15 @@ let temporal_kernel_list = {
         type: "processor",
         mechanism: "glm:temporal_kernel.ode",
         tau: 10*ms,
-        initial_stimulus_value: 20.0
+        tau_late: 60*ms,
+        initial_stimulus_value: 20.0,
+        K: 1
     }
 };
+
+temporal_kernel_excitatory = Object.create(temporal_kernel_list.ode);
+temporal_kernel_inhibitory = Object.create(temporal_kernel_list.ode);
+temporal_kernel_inhibitory.tau = 20*ms;
 
 
 
@@ -502,7 +508,7 @@ let world = {
     stimulus: stimulus_list.stationary_gabor_grating,
 
     test_field: saturation_list.no,
-    test_field_2: temporal_kernel_list.ode,
+    test_field_2: temporal_kernel_excitatory,
 
     brain: brain_lgn_to_v1_connection_trial,
 

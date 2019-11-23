@@ -19,7 +19,15 @@ namespace equ {
     class OdeTemporalKernel: public SingleOde, public TemporalKernel {
     private:
         double timeConstant = -1.0;
+        double lateTimeConstant = -1.0;
+        double lateTimeConstantH = -1.0;
         double initialStimulusValue = -1.0;
+        double K = -1.0;
+
+        static constexpr int EQUATION_U = 0;
+        static constexpr int EQUATION_m = 1;
+        static constexpr int EQUATION_U_LATE = 2;
+        static constexpr int EQUATION_m_LATE = 3;
 
     protected:
         std::string getProcessorName() override { return "equ::OdeTemporalKernel"; }
@@ -34,7 +42,7 @@ namespace equ {
     public:
         OdeTemporalKernel(mpi::Communicator& comm, Ode::SolutionParameters parameters):
             SingleOde(comm, parameters), TemporalKernel(comm), Processor(comm) {
-            getSolutionParameters().setEquationNumber(2);
+            getSolutionParameters().setEquationNumber(4);
         };
 
         ~OdeTemporalKernel() {
@@ -45,6 +53,13 @@ namespace equ {
         public:
             [[nodiscard]] const char* what() const noexcept override{
                 return "Time constant is negative or zero";
+            }
+        };
+
+        class negative_K_error: public simulation_exception{
+        public:
+            [[nodiscard]] const char* what() const noexcept override{
+                return "K value can't be negative";
             }
         };
 
@@ -71,10 +86,26 @@ namespace equ {
 
         /**
          *
-         * @return the time constant in ms
+         * @return the time constant for an ascending process in ms
          */
         [[nodiscard]] double getTimeConstant() const {
             return timeConstant;
+        }
+
+        /**
+         *
+         * @return time constant for descending process in ms
+         */
+        [[nodiscard]] double getLateTimeConstant() const {
+            return lateTimeConstant;
+        }
+
+        /**
+         *
+         * @return ratio of ascending to descending value
+         */
+        [[nodiscard]] double getK() const {
+            return K;
         }
 
         /**
@@ -86,15 +117,40 @@ namespace equ {
         }
 
         /**
-         * Sets new value of the time contant.
+         * Sets new value of the ascending time constant
          *
          * @param value time constant in ms
          */
         void setTimeConstant(double value) {
+            if (value <=  0.0){
+                throw negative_time_constant();
+            }
             timeConstant = value;
             double tau = timeConstant;
             double h = getSolutionParameters().getIntegrationStep();
             getSolutionParameters().setTimeConstant(tau/h);
+        }
+
+        /**
+         * Sets new value of the descending time contant.
+         *
+         * @param value time constant in ms
+         */
+        void setLateTimeConstant(double value) {
+            if (value <= 0.0){
+                throw negative_time_constant();
+            }
+            lateTimeConstant = value;
+            double tau = lateTimeConstant;
+            double h = getSolutionParameters().getIntegrationStep();
+            lateTimeConstantH = tau/h;
+        }
+
+        void setK(double value) {
+            if (value < 0){
+                throw negative_K_error();
+            }
+            K = value;
         }
 
         /**

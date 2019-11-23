@@ -9,6 +9,11 @@
 #include "Processor.h"
 #include "../data/LocalMatrix.h"
 
+/* These macros will help to implement OdeTemporalKernel::calculateDerivative methods */
+#define SINGLE_ODE_DERIVATIVE(n)    getDerivative(n, derivativeIndex).begin()
+#define SINGLE_ODE_OUTPUT(n)        getOutput(n, equationIndex, equationBuffer).begin()
+#define SINGLE_ODE_DERIVATIVE_LAST_PIXEL(n) getDerivative(n, derivativeIndex).end()
+#define SINGLE_ODE_OUTPUT_LAST_PIXEL(n)     getOutput(n, equationIndex, equationBuffer).end()
 
 namespace equ {
 
