@@ -35,7 +35,9 @@ namespace equ{
         if (name == "tau") {
             setTimeConstant(*(double *) pvalue);
         } else if (name == "tau_late") {
-            setLateTimeConstant(*(double*)pvalue);
+            setLateTimeConstant(*(double *) pvalue);
+        } else if (name == "K") {
+            setK(*(double*)pvalue);
         } else if (name == "initial_stimulus_value"){
             setInitialStimulusValue(*(double*)pvalue);
         } else {

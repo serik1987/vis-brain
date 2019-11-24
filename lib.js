@@ -168,16 +168,16 @@ let simulation_job = {
 gabor_grating_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.gabor-grating",
-    grid_x: 51,
-    grid_y: 51,
-    size_x: 1.0*d,
-    size_y: 1.0*d,
+    grid_x: 111,
+    grid_y: 111,
+    size_x: 2.2*d,
+    size_y: 2.2*d,
     luminance: 0.5,
     contrast: 1.0,
-    spatial_frequency: 3.0*cpd,
+    spatial_frequency: 0.83*cpd,
     spatial_phase: 0,
     orientation: 45*deg,
-    prestimulus_epoch: 400*ms,
+    prestimulus_epoch: 50*ms,
     stimulus_duration: 400*ms,
     poststimulus_epoch: 400*ms
 };
@@ -191,7 +191,7 @@ moving_gabor_grating_stimulus = {
     size_y: 1.0*d,
     luminance: 0.5,
     contrast: 1.0,
-    spatial_frequency: 3.0*cpd,
+    spatial_frequency: 1.0*cpd,
     temporal_frequency: 10.0*Hz,
     spatial_phase: 0,
     orientation: 45*deg,
@@ -489,9 +489,29 @@ let temporal_kernel_list = {
     }
 };
 
+let spatial_kernel_list = {
+    gaussian: {
+        type: "processor",
+        mechanism: "glm:spatial_kernel.gaussian",
+        radius: 0.3*d
+    }
+};
+
 temporal_kernel_excitatory = Object.create(temporal_kernel_list.ode);
 temporal_kernel_inhibitory = Object.create(temporal_kernel_list.ode);
 temporal_kernel_inhibitory.tau = 20*ms;
+
+spatial_kernel_excitatory = Object.create(spatial_kernel_list.gaussian);
+spatial_kernel_inhibitory = Object.create(spatial_kernel_list.gaussian);
+spatial_kernel_inhibitory.radius = 0.6*d;
+
+let dog_filter = {
+    type: "processor",
+    mechanism: "glm:dog",
+    dark_rate: 10.0*Hz,
+    surround_weight: 1.0,
+    threshold: 0
+};
 
 
 
@@ -509,6 +529,10 @@ let world = {
 
     test_field: saturation_list.no,
     test_field_2: temporal_kernel_excitatory,
+    test_field_3: spatial_kernel_excitatory,
+    test_field_i2: temporal_kernel_inhibitory,
+    test_field_i3: spatial_kernel_inhibitory,
+    test_field_4: dog_filter,
 
     brain: brain_lgn_to_v1_connection_trial,
 

@@ -417,7 +417,7 @@ namespace data{
     }
 
 
-    Matrix& Matrix::convolve(const data::ContiguousMatrix &K, const data::ContiguousMatrix &A) {
+    Matrix& Matrix::convolve(const data::ContiguousMatrix &K, const data::ContiguousMatrix &A, bool normalize) {
         if (A.getWidth() != width || A.getHeight() != height){
             throw matrix_dimensions_mismatch();
         }
@@ -438,12 +438,16 @@ namespace data{
                         int j_loc = a.getColumn() + w;
                         if (j_loc >= 0 && j_loc < A.getHeight()){
                             *b += k.val(h, w) * a.val(h, w);
-                            local_sum += k.val(h, w);
+                            if (normalize) {
+                                local_sum += k.val(h, w);
+                            }
                         }
                     }
                 }
             }
-            *b /= local_sum;
+            if (normalize) {
+                *b /= local_sum;
+            }
         }
 
         return *this;

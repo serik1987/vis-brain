@@ -5,6 +5,7 @@
 #include "GlmLayer.h"
 #include "StimulusSaturation.h"
 #include "TemporalKernel.h"
+#include "SpatialKernel.h"
 #include "../../../log/output.h"
 
 namespace net{
@@ -25,6 +26,8 @@ namespace net{
             instance = equ::StimulusSaturation::createStimulusSaturation(comm, minor_name);
         } else if (major_name == "temporal_kernel") {
             instance = equ::TemporalKernel::createTemporalKernel(comm, minor_name, parameters);
+        } else if (major_name == "spatial_kernel") {
+            instance = equ::SpatialKernel::createSpatialKernel(comm, minor_name);
         } else {
             throw param::UnknownMechanism("glm:" + mechanism);
         }

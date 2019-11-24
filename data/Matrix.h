@@ -929,9 +929,12 @@ namespace data {
          * @param K the convolving (or so called "kernel" matrix
          * @param A source matrix. Please, note that dimensions of the source matrix shall be the same as dimensions
          * of the current matrix. Otherwise, this method will throw an exception
+         * @param normalize if true, this divides the convolution results to the sum of the kernel on all pixels
+         * taken into account when convolving the matrix. This parameter influence on the border effect only: when
+         * true, the border effect is high, when false the border effect is low
          * @return The convoution results will be put to the current matrix. Its alias will be returned
          */
-        Matrix& convolve(const ContiguousMatrix& K, const ContiguousMatrix& A);
+        Matrix& convolve(const ContiguousMatrix& K, const ContiguousMatrix& A, bool normalize = true);
 
         /**
          * Downsamples rhw source matrix and puts the results to the current matrix.

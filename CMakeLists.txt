@@ -43,7 +43,7 @@ add_executable(vis-brain main.cpp mpi/App.h mpi/exceptions.h mpi/Communicator.h 
         models/abstract/glm/HalfSigmoidStimulusSaturation.h processors/Ode.h processors/SingleOde.cpp
         processors/SingleOde.h models/abstract/glm/TemporalKernel.cpp models/abstract/glm/TemporalKernel.h
         models/abstract/glm/OdeTemporalKernel.cpp models/abstract/glm/OdeTemporalKernel.h methods/ExplicitEuler.cpp
-        methods/ExplicitEuler.h methods/ExplicitRecountEuler.cpp methods/ExplicitRecountEuler.h methods/KhoinMethod.cpp methods/KhoinMethod.h methods/ExplicitRungeKutta.cpp methods/ExplicitRungeKutta.h)
+        methods/ExplicitEuler.h methods/ExplicitRecountEuler.cpp methods/ExplicitRecountEuler.h methods/KhoinMethod.cpp methods/KhoinMethod.h methods/ExplicitRungeKutta.cpp methods/ExplicitRungeKutta.h models/abstract/glm/SpatialKernel.cpp models/abstract/glm/SpatialKernel.h models/abstract/glm/GaussianSpatialKernel.cpp models/abstract/glm/GaussianSpatialKernel.h)
 add_library(stimulus-test-library SHARED stimuli/test_library.cpp methods/Method.h)
 
 target_link_libraries(vis-brain pthread png /usr/local/lib/libv8_monolith.a dl)
