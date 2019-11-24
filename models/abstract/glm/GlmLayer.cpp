@@ -6,6 +6,7 @@
 #include "StimulusSaturation.h"
 #include "TemporalKernel.h"
 #include "SpatialKernel.h"
+#include "DogFilter.h"
 #include "../../../log/output.h"
 
 namespace net{
@@ -16,11 +17,15 @@ namespace net{
         equ::Processor* instance = nullptr;
 
         size_t delimiter = mechanism.find('.');
+        string major_name;
+        string minor_name;
         if (delimiter == string::npos){
-            throw param::UnknownMechanism("glm:" + mechanism);
+            major_name = mechanism;
+            minor_name = "";
+        } else {
+            major_name = mechanism.substr(0, delimiter);
+            minor_name = mechanism.substr(delimiter + 1);
         }
-        string major_name = mechanism.substr(0, delimiter);
-        string minor_name = mechanism.substr(delimiter+1);
 
         if (major_name == "stimulus_saturation") {
             instance = equ::StimulusSaturation::createStimulusSaturation(comm, minor_name);
@@ -28,6 +33,8 @@ namespace net{
             instance = equ::TemporalKernel::createTemporalKernel(comm, minor_name, parameters);
         } else if (major_name == "spatial_kernel") {
             instance = equ::SpatialKernel::createSpatialKernel(comm, minor_name);
+        } else if (major_name == "dog"){
+            instance = new equ::DogFilter(comm);
         } else {
             throw param::UnknownMechanism("glm:" + mechanism);
         }

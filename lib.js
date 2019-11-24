@@ -508,8 +508,9 @@ spatial_kernel_inhibitory.radius = 0.6*d;
 let dog_filter = {
     type: "processor",
     mechanism: "glm:dog",
-    dark_rate: 10.0*Hz,
-    surround_weight: 1.0,
+    dark_rate: 0.0*Hz,
+    excitatory_weight: 1.0,
+    inhibitory_weight: -1.0,
     threshold: 0
 };
 

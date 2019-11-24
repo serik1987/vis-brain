@@ -23,6 +23,8 @@ namespace equ {
         mpi::Communicator& comm;
         Processor* outputProcessor = nullptr;
         std::list<Processor*> inputProcessors;
+        static int idCounter;
+        int id;
 
     protected:
         const char* getObjectType() const noexcept override { return "processor"; }
@@ -50,7 +52,9 @@ namespace equ {
         virtual std::string getProcessorName() = 0;
 
     public:
-        explicit Processor(mpi::Communicator& c): comm(c) {};
+        explicit Processor(mpi::Communicator& c): comm(c) {
+            id = idCounter++;
+        };
 
         Processor(const Processor& other) = delete;
         Processor& operator=(const Processor& other) = delete;
@@ -104,6 +108,10 @@ namespace equ {
         virtual void update(double time) = 0;
 
         /**
+         * Returns the matrix where output from the processor at current timestamp is placed.
+         * WARNING. Please, remember that different output matrices may have different pointers/references
+         * at different timestamps, so, call this function each time after update() call and before the usage
+         * of the output results
          *
          * @return output results from the processor
          */
@@ -124,6 +132,7 @@ namespace equ {
             if (output != nullptr){
                 ss << "  [ INITIALIZED ]";
             }
+            ss << " # " << id;
             return ss.str();
         }
 

@@ -6,6 +6,7 @@
 #include "models/abstract/glm/StimulusSaturation.h"
 #include "models/abstract/glm/OdeTemporalKernel.h"
 #include "models/abstract/glm/GaussianSpatialKernel.h"
+#include "models/abstract/glm/DogFilter.h"
 #include "methods/ExplicitRecountEuler.h"
 #include "methods/ExplicitEuler.h"
 #include "methods/KhoinMethod.h"
@@ -67,7 +68,8 @@ void test_main(){
     spatial_kernel_inhibitory->setTemporalKernel(temporal_kernel_inhibitory);
 
     auto* dog_filter_processor = equ::Processor::createProcessor(comm, dog_filter_mechanism, parameters);
-
+    auto* dog_filter = dynamic_cast<equ::DogFilter*>(dog_filter_processor);
+    dog_filter->setSpatialKernels(spatial_kernel, spatial_kernel_inhibitory);
 
     if (comm.getRank() == 0){
         param::Object source = app.getParameterEngine().getRoot().getObjectField("test_field");
@@ -75,6 +77,7 @@ void test_main(){
         param::Object source3 = app.getParameterEngine().getRoot().getObjectField("test_field_3");
         param::Object source2i = app.getParameterEngine().getRoot().getObjectField("test_field_i2");
         param::Object source3i = app.getParameterEngine().getRoot().getObjectField("test_field_i3");
+        param::Object source4 = app.getParameterEngine().getRoot().getObjectField("test_field_4");
         saturation->loadParameters(source);
         logging::info("Excitation info");
         temporal_kernel->loadParameters(source2);
@@ -82,12 +85,14 @@ void test_main(){
         logging::info("Inhibition info");
         temporal_kernel_inhibitory->loadParameters(source2i);
         spatial_kernel_inhibitory->loadParameters(source3i);
+        dog_filter->loadParameters(source4);
     }
     saturation->broadcastParameters();
     temporal_kernel->broadcastParameters();
     spatial_kernel->broadcastParameters();
     temporal_kernel_inhibitory->broadcastParameters();
     spatial_kernel_inhibitory->broadcastParameters();
+    dog_filter->broadcastParameters();
 
     stimulus.initialize();
     saturation->initialize();
@@ -95,9 +100,10 @@ void test_main(){
     spatial_kernel->initialize();
     temporal_kernel_inhibitory->initialize();
     spatial_kernel_inhibitory->initialize();
+    dog_filter->initialize();
     method.initialize(*temporal_kernel);
     method.initialize(*temporal_kernel_inhibitory);
-    data::stream::BinStream stream(&spatial_kernel->getOutput(), "output.bin", data::stream::Stream::Write, srate);
+    data::stream::BinStream stream(&dog_filter->getOutput(), "output.bin", data::stream::Stream::Write, srate);
 
     logging::enter();
     logging::debug("Saturation mechanism selected: " + saturation_mechanism);
@@ -135,14 +141,18 @@ void test_main(){
     logging::debug("Kernel radius: " + to_string(spatial_kernel->getRadius()));
     logging::debug("");
     logging::debug("Final mechanism: " + dog_filter_mechanism);
+    logging::debug("Dark rate: " + std::to_string(dog_filter->getDarkRate()));
+    logging::debug("Excitatory weight: " + std::to_string(dog_filter->getExcitatoryWeight()));
+    logging::debug("Inhibitory weight: " + std::to_string(dog_filter->getInhibitoryWeight()));
+    logging::debug("Threshold: " + std::to_string(dog_filter->getThreshold()));
+    dog_filter->printAllProcessors(0, comm.getRank());
     logging::debug("");
     logging::exit();
 
     double start_time = MPI_Wtime();
 
-    /*
     double time = 0.0;
-    int N = (int)(stimulus.getRecordLength() / integration_step) / 10;
+    int N = (int)(stimulus.getRecordLength() / integration_step) / 1;
     if (N == 0) N = 1;
     for (int i=0; time < stimulus.getRecordLength(); ++i, time = integration_step*i){
         stimulus.update(time);
@@ -151,15 +161,14 @@ void test_main(){
         spatial_kernel->update(time);
         method.update(*temporal_kernel_inhibitory, i);
         spatial_kernel_inhibitory->update(time);
+        dog_filter->update(time);
 #if SAVE_OUTPUT == 1
-        stream.write(&spatial_kernel->getOutput());
-        if (i % 10 == 0){
-            logging::progress(i/10, N);
+        stream.write(&dog_filter->getOutput());
+        if (i % 1 == 0){
+            logging::progress(i/1, N);
         }
 #endif
     }
-
-     */
 
     double finish_time = MPI_Wtime();
 
@@ -173,6 +182,7 @@ void test_main(){
     spatial_kernel->finalize();
     temporal_kernel_inhibitory->finalize();
     spatial_kernel_inhibitory->finalize();
+    dog_filter->finalize();
 
 
     delete saturation;
@@ -180,6 +190,7 @@ void test_main(){
     delete spatial_kernel;
     delete temporal_kernel_inhibitory;
     delete spatial_kernel_inhibitory;
+    delete dog_filter;
 
     logging::progress(1, 1);
 }

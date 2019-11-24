@@ -9,6 +9,8 @@
 
 namespace equ{
 
+    int Processor::idCounter = 0;
+
     void Processor::finalize(bool destruct) noexcept{
         if (!destruct) {
             finalizeProcessor();
