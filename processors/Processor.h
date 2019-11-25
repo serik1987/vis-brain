@@ -25,6 +25,7 @@ namespace equ {
         std::list<Processor*> inputProcessors;
         static int idCounter;
         int id;
+        unsigned int flags;
 
     protected:
         const char* getObjectType() const noexcept override { return "processor"; }
@@ -52,7 +53,7 @@ namespace equ {
         virtual std::string getProcessorName() = 0;
 
     public:
-        explicit Processor(mpi::Communicator& c): comm(c) {
+        explicit Processor(mpi::Communicator& c): comm(c), flags(0) {
             id = idCounter++;
         };
 
@@ -100,7 +101,7 @@ namespace equ {
         /**
          * Runs at each iteration.
          * for stimuli: changes the stimulus state and prepares output matrix at a certain time
-         * for equations: just prepares the output matrix, without changing the state
+         * for equations: just prepar[[nodiscard]]es the output matrix, without changing the state
          * for ODEs: makes all routines after changing the main output matrix.
          *
          * @param time current timestamp in milliseconds
@@ -133,6 +134,16 @@ namespace equ {
                 ss << "  [ INITIALIZED ]";
             }
             ss << " # " << id;
+            ss << " ";
+            if (getFlag(AlreadyAdded)){
+                ss << "A";
+            }
+            if (getFlag(IsInDerivative)){
+                ss << "D";
+            }
+            if (getFlag(IsInUpdate)){
+                ss << "U";
+            }
             return ss.str();
         }
 
@@ -199,7 +210,8 @@ namespace equ {
         void printAllProcessors(int level = 0, int root = 0);
 
         /**
-         * Creates new processor
+         * Creates new processor.
+         * This is recommended to use state::createProcessor that in turn creates this processor
          *
          * @param comm communicator for which the processor has to be created
          * @param mechanism a mechanism
@@ -218,6 +230,30 @@ namespace equ {
          * @throws param::UnknownMechanism if the function is failed to find an appropriate .so file
          */
         static std::string lookExternalMechanism(const std::string& category, const std::string& external_name);
+
+        static const unsigned int AlreadyAdded = 0x01;
+        static const unsigned int IsInDerivative = 0x02;
+        static const unsigned int IsInUpdate = 0x04;
+
+        /**
+         * Returns a certain flag
+         *
+         * @param flag one of the following flag:
+         * AlreadyAdded the processor has been already added to the processor list
+         * IsInDerivative equ::Equation shall be update(double)'ed in order to calculate the other derivatives
+         * IsInUpdate equ::Equation shall be update(double)'ed in order to finish the update process for a given
+         * timestamp.
+         * @return true if the flag is set, false if it is cleared
+         */
+        [[nodiscard]] bool getFlag(unsigned int flag) { return flags & flag; }
+
+        void setFlag(unsigned int flag, bool value) {
+            if (value){
+                flags |= flag;
+            } else {
+                flags &= ~flag;
+            }
+        }
     };
 
 }

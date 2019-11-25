@@ -8,6 +8,7 @@
 #include "models/abstract/glm/GaussianSpatialKernel.h"
 #include "models/abstract/glm/DogFilter.h"
 #include "methods/ExplicitRecountEuler.h"
+#include "processors/State.h"
 #include "methods/ExplicitEuler.h"
 #include "methods/KhoinMethod.h"
 #include "methods/ExplicitRungeKutta.h"
@@ -46,28 +47,28 @@ void test_main(){
     constexpr double integration_step = 1.0;
     constexpr double srate = 1000.0 / integration_step;
     method::ExplicitRecountEuler method(integration_step);
-    auto parameters = method.getSolutionParameters();
+    equ::State state(comm, method.getSolutionParameters());
 
-    auto* saturation_processor = equ::Processor::createProcessor(comm, saturation_mechanism, parameters);
+    auto* saturation_processor = state.createProcessor(saturation_mechanism);
     auto* saturation = dynamic_cast<equ::StimulusSaturation*>(saturation_processor);
 
-    auto* temporal_kernel_processor = equ::Processor::createProcessor(comm, temporal_kernel_mechanism, parameters);
+    auto* temporal_kernel_processor = state.createProcessor(temporal_kernel_mechanism);
     auto* temporal_kernel = dynamic_cast<equ::OdeTemporalKernel*>(temporal_kernel_processor);
     temporal_kernel->setStimulusSaturation(saturation);
 
-    auto* temporal_kernel_inhibitory_processor = equ::Processor::createProcessor(comm, temporal_kernel_mechanism, parameters);
+    auto* temporal_kernel_inhibitory_processor = state.createProcessor(temporal_kernel_mechanism);
     auto* temporal_kernel_inhibitory = dynamic_cast<equ::OdeTemporalKernel*>(temporal_kernel_inhibitory_processor);
     temporal_kernel_inhibitory->setStimulusSaturation(saturation);
 
-    auto* spatial_kernel_processor = equ::Processor::createProcessor(comm, spatial_kernel_mechanism, parameters);
+    auto* spatial_kernel_processor = state.createProcessor(spatial_kernel_mechanism);
     auto* spatial_kernel = dynamic_cast<equ::GaussianSpatialKernel*>(spatial_kernel_processor);
     spatial_kernel->setTemporalKernel(temporal_kernel);
 
-    auto* spatial_kernel_inhibitory_processor = equ::Processor::createProcessor(comm, spatial_kernel_mechanism, parameters);
+    auto* spatial_kernel_inhibitory_processor = state.createProcessor(spatial_kernel_mechanism);
     auto* spatial_kernel_inhibitory = dynamic_cast<equ::GaussianSpatialKernel*>(spatial_kernel_inhibitory_processor);
     spatial_kernel_inhibitory->setTemporalKernel(temporal_kernel_inhibitory);
 
-    auto* dog_filter_processor = equ::Processor::createProcessor(comm, dog_filter_mechanism, parameters);
+    auto* dog_filter_processor = state.createProcessor(dog_filter_mechanism);
     auto* dog_filter = dynamic_cast<equ::DogFilter*>(dog_filter_processor);
     dog_filter->setSpatialKernels(spatial_kernel, spatial_kernel_inhibitory);
 
@@ -94,15 +95,15 @@ void test_main(){
     spatial_kernel_inhibitory->broadcastParameters();
     dog_filter->broadcastParameters();
 
+    state.addProcessor(dog_filter);
+    state.printProcessorList();
     stimulus.initialize();
-    saturation->initialize();
-    temporal_kernel->initialize();
-    spatial_kernel->initialize();
-    temporal_kernel_inhibitory->initialize();
-    spatial_kernel_inhibitory->initialize();
-    dog_filter->initialize();
-    method.initialize(*temporal_kernel);
+    state.initialize();
+    method.initialize(state);
+
+    /* method.initialize(*temporal_kernel);
     method.initialize(*temporal_kernel_inhibitory);
+     */
     data::stream::BinStream stream(&dog_filter->getOutput(), "output.bin", data::stream::Stream::Write, srate);
 
     logging::enter();
@@ -118,12 +119,12 @@ void test_main(){
     logging::debug("Number of input processors: " + std::to_string(saturation->getInputProcessorNumber()));
     logging::debug("");
     logging::debug("Initial solution parameters:");
-    logging::debug("Time constant, steps: " + to_string(parameters.getTimeConstant()));
-    logging::debug("Integration step, ms: " + to_string(parameters.getIntegrationStep()));
-    logging::debug("Equation order: " + to_string(parameters.getEquationOrder()));
-    logging::debug("Derivative order: " + to_string(parameters.getDerivativeOrder()));
-    logging::debug("Double buffer mode: " + to_string(parameters.isDoubleBuffer()));
-    logging::debug("Equation number: " + to_string(parameters.getEquationNumber()));
+    logging::debug("Time constant, steps: " + to_string(state.getSolutionParameters().getTimeConstant()));
+    logging::debug("Integration step, ms: " + to_string(state.getSolutionParameters().getIntegrationStep()));
+    logging::debug("Equation order: " + to_string(state.getSolutionParameters().getEquationOrder()));
+    logging::debug("Derivative order: " + to_string(state.getSolutionParameters().getDerivativeOrder()));
+    logging::debug("Double buffer mode: " + to_string(state.getSolutionParameters().isDoubleBuffer()));
+    logging::debug("Equation number: " + to_string(state.getSolutionParameters().getEquationNumber()));
     logging::debug("");
     logging::debug("Solution parameters within the temporal kernel: ");
     auto& p = temporal_kernel->getSolutionParameters();
@@ -156,12 +157,7 @@ void test_main(){
     if (N == 0) N = 1;
     for (int i=0; time < stimulus.getRecordLength(); ++i, time = integration_step*i){
         stimulus.update(time);
-        saturation->update(time);
-        method.update(*temporal_kernel, i);
-        spatial_kernel->update(time);
-        method.update(*temporal_kernel_inhibitory, i);
-        spatial_kernel_inhibitory->update(time);
-        dog_filter->update(time);
+        method.update(state, i);
 #if SAVE_OUTPUT == 1
         stream.write(&dog_filter->getOutput());
         if (i % 1 == 0){
@@ -176,21 +172,7 @@ void test_main(){
     logging::debug("Time spent for the integration processes: " + std::to_string(finish_time - start_time));
     logging::exit();
 
-    stimulus.finalize();
-    saturation->finalize();
-    temporal_kernel->finalize();
-    spatial_kernel->finalize();
-    temporal_kernel_inhibitory->finalize();
-    spatial_kernel_inhibitory->finalize();
-    dog_filter->finalize();
-
-
-    delete saturation;
-    delete temporal_kernel;
-    delete spatial_kernel;
-    delete temporal_kernel_inhibitory;
-    delete spatial_kernel_inhibitory;
-    delete dog_filter;
+    state.finalize();
 
     logging::progress(1, 1);
 }

@@ -77,6 +77,8 @@ namespace equ {
          */
         void setCurrentOutput(int index);
 
+        virtual void update(double time) = 0;
+
         typedef std::vector<data::LocalMatrix*> Line;
 
         typedef struct{
