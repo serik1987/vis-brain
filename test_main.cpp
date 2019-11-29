@@ -2,20 +2,112 @@
 // Created by serik1987 on 21.09.19.
 //
 
-#include "processors/Processor.h"
-#include "models/abstract/glm/StimulusSaturation.h"
-#include "models/abstract/glm/OdeTemporalKernel.h"
-#include "models/abstract/glm/GaussianSpatialKernel.h"
-#include "models/abstract/glm/DogFilter.h"
 #include "methods/ExplicitRecountEuler.h"
+#include "models/Brain.h"
+#include "methods/EqualDistributor.h"
 #include "processors/State.h"
-#include "methods/ExplicitEuler.h"
-#include "methods/KhoinMethod.h"
-#include "methods/ExplicitRungeKutta.h"
 #include "data/stream/BinStream.h"
 
 void test_main(){
     using namespace std;
+
+    /* First of all, we shall define communicator. This is an example of a single-job run where communicator is
+     * an application communicator and contains all processes */
+    Application& app = Application::getInstance();
+    mpi::Communicator& comm = app.getAppCommunicator();
+
+    /*
+     * Next, let's define the solution parameters. We need to tell two main parameters: certain solution method
+     * and the integration step
+     */
+    constexpr double integration_step = 1.0;
+    logging::progress(0, 1, "Defining integration method");
+    method::ExplicitRecountEuler method(integration_step);
+
+    /*
+     * At third stage we shall create an empty brain.
+     */
+    net::Brain brain;
+
+    /*
+     * Let's load and broadcast all brain parameters
+     */
+    if (comm.getRank() == 0){
+        auto brain_parameters = app.getParameterEngine().getRoot().getObjectField("brain");
+        brain.loadParameters(brain_parameters);
+    }
+    brain.broadcastParameters();
+    logging::info("General network configuration");
+    logging::info(brain.printNetworkConfiguration());
+
+    /*
+     * After we created all layers and set up all connections between the layers, that's time to create the distibutors
+     * for them
+     */
+    logging::progress(0, 1, "Application of the network distributor");
+    method::EqualDistributor distributor(comm, method);
+    distributor.apply(brain);
+
+    /*
+     * After all layers were distributed among the processes, the network parameters shall be loaded again
+     * createStimulus method will load all stimulus parameters
+     */
+    app.createStimulus(distributor.getStimulusCommunicator());
+    if (comm.getRank() == 0){
+        auto brain_parameters = app.getParameterEngine().getRoot().getObjectField("brain");
+        brain.loadParameters(brain_parameters);
+    }
+    brain.broadcastParameters();
+
+    /*
+     * Let's define the state and add all processors to the state
+     */
+    logging::progress(0, 1, "Adding all processors to the brain state");
+    equ::State state(comm, method.getSolutionParameters());
+    brain.addProcessorsToState(state);
+
+    /*
+     * Initialization
+     */
+    logging::progress(0, 1, "Initializing the state");
+    app.getStimulus().initialize();
+    state.initialize();
+    method.initialize(state);
+    auto& output = brain.getLayerByFullName("lgn")->getOutputData()->getOutput();
+    constexpr double srate = 1000.0 / integration_step;
+    data::stream::BinStream stream(&output, "output.bin", data::stream::Stream::Write, srate);
+    double start_time = MPI_Wtime();
+
+    /*
+     * Simulation
+     */
+    unsigned long timestamp = 0;
+    double time = 0;
+    auto& stimulus = app.getStimulus();
+    auto N = (unsigned long)(stimulus.getRecordLength() / integration_step);
+    logging::progress(0, N, "Single-run simulation");
+    for (; time < stimulus.getRecordLength(); ++timestamp, time = integration_step*timestamp){
+        stimulus.update(time);
+        method.update(state, timestamp);
+        auto& output = brain.getLayerByFullName("lgn")->getOutputData()->getOutput();
+        stream.write(&output);
+        logging::progress(timestamp, N);
+    }
+
+    /*
+     * Finalization
+     */
+    double finish_time = MPI_Wtime();
+    double total_time = finish_time - start_time;
+    logging::enter();
+    logging::debug("Elapsed time: " + std::to_string(total_time));
+    logging::exit();
+    logging::progress(0, 1, "Finalizing the state");
+    state.finalize();
+
+
+
+    /*
 
     Application& app = Application::getInstance();
     mpi::Communicator& comm = app.getAppCommunicator();
@@ -29,14 +121,14 @@ void test_main(){
     std::string spatial_kernel_mechanism;
     std::string dog_filter_mechanism;
     if (comm.getRank() == 0){
-        /* Dangerous and erroneous block of the code. This block is to remove after debugging will be completed */
+        // Dangerous and erroneous block of the code. This block is to remove after debugging will be completed
         const param::Object& root = app.getParameterEngine().getRoot();
         param::Object parameter = app.getParameterEngine().getRoot().getObjectField("test_field");
         saturation_mechanism = parameter.getStringField("mechanism");
         temporal_kernel_mechanism = root.getObjectField("test_field_2").getStringField("mechanism");
         spatial_kernel_mechanism = root.getObjectField("test_field_3").getStringField("mechanism");
         dog_filter_mechanism = root.getObjectField("test_field_4").getStringField("mechanism");
-        /* End of the dangerous block */
+        // End of the dangerous block
     }
     app.broadcastString(saturation_mechanism, 0);
     app.broadcastString(temporal_kernel_mechanism, 0);
@@ -101,9 +193,6 @@ void test_main(){
     state.initialize();
     method.initialize(state);
 
-    /* method.initialize(*temporal_kernel);
-    method.initialize(*temporal_kernel_inhibitory);
-     */
     data::stream::BinStream stream(&dog_filter->getOutput(), "output.bin", data::stream::Stream::Write, srate);
 
     logging::enter();
@@ -173,6 +262,8 @@ void test_main(){
     logging::exit();
 
     state.finalize();
+
+    */
 
     logging::progress(1, 1);
 }

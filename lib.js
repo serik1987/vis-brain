@@ -17,154 +17,6 @@ const kHz = 1000.0*Hz;
 const dps = 1.0;
 const nA = 1.0;
 
-
-let lgn_on = {
-    type: "layer",
-    stimulus_acceptable: true,
-    output: {
-        resolution_x: 0.05,
-        resolution_y: 0.05
-    },
-    mechanism: "abstract:glm.lgn",
-    saturation: {
-        type: "processor",
-        enabled: true,
-        mechanism: "abstract_saturation:half_of_sigmoid",
-        saturation_scale: 0.0
-    },
-    temporal_filter: {
-        tau_center: 10,
-        tau_surround: 20,
-        tau_late: 64,
-        K: 1,
-        saturation: 100
-    },
-    spatial_filter: {
-        sigma_center: 0.30,
-        sigma_surround: 1.50,
-        K: 1,
-        E0: 0
-    },
-    L_spont: 10,
-    rf_type: "on",
-    latency: 20
-};
-
-let lgn_off = Object.create(lgn_on);
-lgn_off.rf_type = "off";
-
-let lgn_on_lagged = Object.create(lgn_on);
-let lgn_off_lagged = Object.create(lgn_off);
-lgn_on_lagged.latency = lgn_off_lagged.latency = 80;
-
-
-
-let lgn = {
-    type: "network",
-    networks: {
-        on: lgn_on,
-        off: lgn_off
-    }
-};
-
-let lgn_directional = {
-    type: "network",
-    output: {
-        width: 6,
-        height: 6
-    },
-    networks: {
-        lagged_on: lgn_on_lagged,
-        lagged_off: lgn_off_lagged,
-        non_lagged_on: lgn_on,
-        non_lagged_off: lgn_off
-    }
-};
-
-let cbrd_layer = {
-    type: "layer",
-    mechanism: "cbrd"
-    // the rest parameters will be given further
-}
-
-let cbrd_exc_layer = Object.create(cbrd_layer);
-
-let cbrd_inh_layer = Object.create(cbrd_layer);
-
-let conn_standard_200 = {
-    mechanism: "connections:artificial.standard",
-    sigma: 200
-}
-
-
-let std_cbrd = {
-    networks: {
-        exc: cbrd_exc_layer,
-        inh: cbrd_inh_layer
-    },
-    input: ["exc", "inh"],
-    output: ["exc", "inh"],
-    connections: [{
-        source: "exc",
-        target: "inh",
-        weight: 1.0,
-        profile: conn_standard_200
-    }, {
-        source: "inh",
-        target: "exc",
-        weight: 1.0,
-        profile: conn_standard_200
-    }]
-};
-
-let std_l4_cbrd = Object.create(std_cbrd);
-
-let std_l23_cbrd = Object.create(std_cbrd);
-
-
-
-let v1_cbrd = {
-    parameters: {
-        map: {
-            purpose: "directional",
-            mechanism: "map:artificial.symmetric",
-            pinwheels: 4
-        }
-    },
-    output: {
-        width: 1400,
-        height: 900,
-    },
-    networks: {
-        l4: std_l4_cbrd,
-        l23: std_l23_cbrd
-    },
-    input: ["l4.exc", "l4.inh"],
-    output: ["l23.exc"],
-    connections: [
-        {
-            source: "l4",
-            target: "l23",
-            weight: 1.0,
-            profile: conn_standard_200
-        }
-    ]
-};
-
-let brain_lgn_to_v1_connection_trial = {
-    type: "brain",
-    networks: {
-        lgn: lgn_directional
-    }
-}
-
-
-let simulation_job = {
-    type: "job",
-    mechanism: "job:simulate",
-    output_folder: "default_folder"
-};
-
 gabor_grating_stimulus = {
     type: "processor",
     mechanism: "stimulus:stationary.gabor-grating",
@@ -497,14 +349,6 @@ let spatial_kernel_list = {
     }
 };
 
-temporal_kernel_excitatory = Object.create(temporal_kernel_list.ode);
-temporal_kernel_inhibitory = Object.create(temporal_kernel_list.ode);
-temporal_kernel_inhibitory.tau = 20*ms;
-
-spatial_kernel_excitatory = Object.create(spatial_kernel_list.gaussian);
-spatial_kernel_inhibitory = Object.create(spatial_kernel_list.gaussian);
-spatial_kernel_inhibitory.radius = 0.6*d;
-
 let dog_filter = {
     type: "processor",
     mechanism: "glm:dog",
@@ -512,6 +356,54 @@ let dog_filter = {
     excitatory_weight: 1.0,
     inhibitory_weight: -1.0,
     threshold: 0
+};
+
+var lgn_on_properties = {
+    excitatory_temporal_kernel: Object.create(temporal_kernel_list.ode),
+    inhibitory_temporal_kernel: Object.create(temporal_kernel_list.ode),
+    excitatory_spatial_kernel: Object.create(spatial_kernel_list.gaussian),
+    inhibitory_spatial_kernel: Object.create(spatial_kernel_list.gaussian)
+};
+
+let lgn_on = {
+    type: "layer",
+    mechanism: "abstract:glm",
+    stimulus_acceptable: true,
+    saturation: saturation_list.no,
+    excitation: {
+        temporal_kernel: Object.assign(lgn_on_properties.excitatory_temporal_kernel, {
+            tau: 10*ms
+        }),
+        spatial_kernel: Object.assign(lgn_on_properties.excitatory_spatial_kernel, {
+            radius: 0.3*d
+        })
+    },
+    inhibition: {
+        temporal_kernel: Object.assign(lgn_on_properties.inhibitory_temporal_kernel, {
+            tau: 20*ms
+        }),
+        spatial_kernel: Object.assign(lgn_on_properties.inhibitory_spatial_kernel, {
+            radius: 0.6*d
+        })
+    },
+    dog_filter: dog_filter
+};
+
+let lgn_off = Object.create(lgn_on);
+with (lgn_off){
+    saturation = Object.create(saturation);
+    saturation.amplification = -saturation.amplification;
+    dog_filter.dark_rate = 20*Hz;
+}
+
+let use_cases = {
+    single_lgn_layer: {
+        type: "network",
+        content: {
+            lgn: lgn_on
+        },
+        connections: []
+    }
 };
 
 
@@ -528,19 +420,10 @@ let world = {
 
     stimulus: stimulus_list.stationary_gabor_grating,
 
-    test_field: saturation_list.no,
-    test_field_2: temporal_kernel_excitatory,
-    test_field_3: spatial_kernel_excitatory,
-    test_field_i2: temporal_kernel_inhibitory,
-    test_field_i3: spatial_kernel_inhibitory,
-    test_field_4: dog_filter,
+    brain: use_cases.single_lgn_layer,
 
-    brain: brain_lgn_to_v1_connection_trial,
+    analysis: {},
 
-    analysis: {
-
-    },
-
-    job: simulation_job
+    job: {}
 
 };

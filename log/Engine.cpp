@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "exceptions.h"
 #include "../Application.h"
+#include "output.h"
 
 namespace logging{
 
@@ -145,8 +146,8 @@ namespace logging{
     }
 
     void Engine::fail(const std::exception &e) {
-        UserLogger failLogger(Application::getInstance().getOutputFolder() + FAIL_LOG_FILE);
         if (Application::getInstance().getAppCommunicator().getRank() == 0){
+            std::ofstream fail_log(Application::getInstance().getOutputFolder() + FAIL_LOG_FILE);
             hideNotification();
             std::cerr << notice_message << "..." << red << "FAILED\n";
             std::cerr << "FATAL ERROR: " << reset << e.what() << std::endl;
@@ -154,7 +155,8 @@ namespace logging{
             infoLogger->writeLog(e.what(), Logger::Failed, true, false);
             warningLogger->writeLog(e.what(), Logger::Failed, true, false);
             systemLogger->writeLog(e.what(), Logger::Failed, true, false);
-            failLogger.writeLog(e.what(), Logger::Failed, false, false);
+            fail_log << e.what();
+            fail_log.close();
         }
     }
 

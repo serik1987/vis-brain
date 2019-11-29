@@ -121,7 +121,7 @@ void Application::setOutputFolder(const std::string &folder_prefix) {
     output_folder_stream << name_start << std::setw(3) << std::setfill('0') << folder_number << "_" << getDate();
     output_folder = output_folder_stream.str();
     sys::create_empty_dir(output_folder);
-    std::cerr << "Output folder: " << output_folder << std::endl;
+    std::cout << "Output folder: " << output_folder << std::endl;
 }
 
 std::string Application::getDate(){

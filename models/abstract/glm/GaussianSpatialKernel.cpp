@@ -9,6 +9,7 @@ namespace equ{
 
     void GaussianSpatialKernel::loadParameterList(const param::Object &source) {
         logging::info("Spatial kernel parameters");
+        logging::info("Spatial kernel type: gaussian");
         setRadius(source.getFloatField("radius"));
         logging::info("Spatial kernel radius: " + std::to_string(getRadius()));
     }

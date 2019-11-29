@@ -134,7 +134,6 @@ param::Object::FieldType param::Object::getFieldType(const std::string &name) co
     HandleScope handle_scope(isolate);
     Persistent<Context>& persistent_context = Engine::getInstance().getContext();
     Local<Context> context = Local<Context>::New(isolate, persistent_context);
-    // Local<Context> context = isolate->GetCurrentContext();
     Local<v8::Object> local_source = Local<v8::Object>::New(isolate, source);
     Local<Value> data = local_source->Get(context, String::NewFromUtf8(isolate, name.c_str()).ToLocalChecked())
             .ToLocalChecked();

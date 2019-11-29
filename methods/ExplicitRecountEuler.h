@@ -16,7 +16,7 @@ namespace method {
          *
          * @param dt integration step in ms
          */
-        explicit ExplicitRecountEuler(double dt): Method(dt) {};
+        explicit ExplicitRecountEuler(const double dt): Method(dt) {};
 
         [[nodiscard]] equ::Ode::SolutionParameters getSolutionParameters() override;
         void initialize(equ::Ode& ode) override;

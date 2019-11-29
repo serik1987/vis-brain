@@ -15,7 +15,7 @@ namespace equ {
     class NoStimulusSaturation: public StimulusSaturation {
     protected:
         [[nodiscard]] std::string getProcessorName() override { return "equ::NoStimulusSaturation"; }
-        void loadSaturationParameterList(const param::Object& source) override {};
+        void loadSaturationParameterList(const param::Object& source) override;
         void broadcastSaturationParameterList() override {};
         void setSaturationParameter(const std::string& name, const void* pvalue) override;
         void initializeStimulusSaturation() override {};

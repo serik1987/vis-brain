@@ -8,14 +8,20 @@
 namespace param{
 
     void Loadable::loadParameters(const param::Object &source){
+        static bool params = false;
+
         try {
+            params = false;
             if (source.getStringField("type") != getObjectType()) {
                 throw WrongObjectType();
             }
             loadParameterList(source);
         } catch (std::exception& e){
-            int error_code = -1;
-            Application::getInstance().broadcastInteger(error_code, 0);
+            if (!params) {
+                int error_code = -1;
+                Application::getInstance().broadcastInteger(error_code, 0);
+                params = true;
+            }
             throw;
         }
     }

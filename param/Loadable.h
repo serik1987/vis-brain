@@ -38,7 +38,7 @@ namespace param{
         virtual const char* getObjectType() const noexcept=0;
 
     public:
-        virtual ~Loadable(){};
+        virtual ~Loadable() {};
 
         /**
          * Loads the parameters from the Object

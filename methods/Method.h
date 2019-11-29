@@ -23,7 +23,7 @@ namespace method{
          *
          * @param h integration step in ms
          */
-        explicit Method(double h = 1.0): integrationTime(h) {};
+        explicit Method(const double h = 1.0): integrationTime(h) {};
 
         /**
          *

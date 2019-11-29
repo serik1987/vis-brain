@@ -86,6 +86,7 @@ namespace equ{
         }
     }
 
+#if DEBUG==1
     void State::printProcessorList() {
         logging::enter();
         logging::debug("Main processor list");
@@ -98,6 +99,7 @@ namespace equ{
         }
         logging::exit();
     }
+#endif
 
     void State::addProcessor(Processor *proc) {
         std::stack<ProcessorStackItem> stack;
@@ -159,9 +161,12 @@ namespace equ{
     };
 
     State::~State(){
+        /* This is a bad idea because all processors will be stored to the model and not all
+         * processors will be included to the state belonging to this certain process
         for (auto proc: *this){
             delete proc;
         }
+         */
     }
 
 
