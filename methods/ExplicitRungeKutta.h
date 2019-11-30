@@ -88,6 +88,12 @@ namespace method {
         void update(equ::Ode& ode, unsigned long long timestamp) override;
     };
 
+    template<int N> void GET_EXPLICIT_RUNGE_KUTTA(int n, double dt, Method** pmethod){
+        if (n == N){
+            *pmethod = new ExplicitRungeKutta<N>(dt);
+        }
+    }
+
 }
 
 

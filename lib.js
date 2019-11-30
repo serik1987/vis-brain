@@ -47,7 +47,7 @@ moving_gabor_grating_stimulus = {
     temporal_frequency: 10.0*Hz,
     spatial_phase: 0,
     orientation: 45*deg,
-    prestimulus_epoch: 400*ms,
+    prestimulus_epoch: 50*ms,
     stimulus_duration: 400*ms,
     poststimulus_epoch: 400*ms
 };
@@ -423,7 +423,10 @@ let world = {
         parent: "mpirun",
         configuration_mode: "simple",
         process_number: 4,
-        output_folder_prefix: "test"
+        output_folder_prefix: "test",
+        integration_method: "explicit-recount-euler",
+        integration_step: 1.0*ms,
+        distributor: "equal"
     },
 
     stimulus: stimulus_list.stationary_gabor_grating,

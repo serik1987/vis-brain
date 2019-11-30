@@ -1,6 +1,13 @@
-//
-// Created by serik1987 on 28.08.19.
-//
+/************************************************************************************************/
+/*                                                                                              */
+/* (C) Sergei Kozhukhov, a scientist in the Physiology of Sensory Systems Lab.,                 */
+/*     the Institute of Higher Nervous Activity, Russian Academy of Sciences                    */
+/* (C) the Institute of Higher Nervous Activity, Russian Academy of Sciences                    */
+/* Correspondence address: 5A Butlerova str., 117485 Moscow, Russia                             */
+/* E-mail: serik1987@gmail.com                                                                  */
+/* Phone/What's App: +7 916 492 11 21                                                           */
+/*                                                                                              */
+/************************************************************************************************/
 
 #include <sstream>
 #include <iomanip>
@@ -15,9 +22,12 @@
 #include "sys/Folder.h"
 #include "sys/auxiliary.h"
 #include "stimuli/StimulusBuilder.h"
+#include "methods/MethodBuilder.h"
 
 #if DEBUG==1
 #include "test_main.cpp"
+#include "jobs/JobBuilder.h"
+
 #endif
 
 Application* Application::instance = nullptr;
@@ -42,8 +52,15 @@ void Application::deleteV8Engine() {
 
 void Application::clearEngines(){
     delete stimulus;
+    stimulus = nullptr;
     delete gen;
+    gen = nullptr;
     delete log;
+    log = nullptr;
+    delete method;
+    method = nullptr;
+    delete brain;
+    brain = nullptr;
     deleteV8Engine();
 }
 
@@ -198,8 +215,15 @@ void Application::setParameter(const std::string &name, const void *pvalue) {
 
 void Application::simulate() {
     try {
-#if DEBUG==1
+#if TEST_MODE==1
         test_main();
+#else
+        createMethod();
+        createBrain();
+        job::Job* mainJob = getMainJob();
+        mainJob->start();
+        delete mainJob;
+        logging::progress(1, 1);
 #endif
     } catch (std::exception& e){
         log->fail(e);
@@ -207,6 +231,8 @@ void Application::simulate() {
 }
 
 void Application::createStimulus(mpi::Communicator& comm){
+    logging::info("");
+    logging::info("Stimulus information");
     stim::StimulusBuilder builder(comm);
     if (getAppCommunicator().getRank() == 0){
         auto source = engine->getRoot().getObjectField("stimulus");
@@ -214,4 +240,44 @@ void Application::createStimulus(mpi::Communicator& comm){
     }
     builder.broadcastParameters();
     stimulus = builder.getStimulus();
+}
+
+void Application::createMethod() {
+    logging::progress(0, 1, "Defining integration method");
+    method::MethodBuilder builder;
+    if (getAppCommunicator().getRank() == 0){
+        auto source = engine->getRoot().getObjectField("application");
+        builder.loadParameters(source);
+    }
+    builder.broadcastParameters();
+    method = builder.build();
+    logging::info("");
+}
+
+void Application::createBrain() {
+    brain = new net::Brain();
+    if (getAppCommunicator().getRank() == 0){
+        auto brain_parameters = getParameterEngine().getRoot().getObjectField("brain");
+        brain->loadParameters(brain_parameters);
+    }
+    brain->broadcastParameters();
+    logging::info("General network configuration");
+    logging::info(brain->printNetworkConfiguration());
+}
+
+job::Job* Application::getMainJob() {
+    job::Job* mainJob;
+    logging::info("Job information");
+    logging::progress(0, 1, "Loading job info");
+
+    job::JobBuilder builder(getAppCommunicator());
+    if (getAppCommunicator().getRank() == 0){
+        auto job_parameters = getParameterEngine().getRoot().getObjectField("job");
+        builder.loadParameters(job_parameters);
+    }
+    builder.broadcastParameters();
+    mainJob = builder.getJob();
+
+    return mainJob;
+
 }

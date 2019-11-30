@@ -78,6 +78,10 @@ namespace method{
     template class ExplicitRungeKutta<3>;
 
     /*
+     * The last step is to look to MethodBuilder.cpp, function MethodBuilder::build to add the corresponding line
+     */
+
+    /*
      * Also, if you are not sure whether you changed the ALPHA, BETA and GAMMA constants correctly, uncomment the
      * following line to ensure which coefficients are actually applied
      */

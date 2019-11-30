@@ -62,6 +62,5 @@ namespace job{
         logging::exit();
         logging::progress(0, 1, "Finalizing the state");
         state.finalize();
-        logging::progress(1, 1);
     }
 }

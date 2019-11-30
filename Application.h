@@ -1,6 +1,13 @@
-//
-// Created by serik1987 on 28.08.19.
-//
+/************************************************************************************************/
+/*                                                                                              */
+/* (C) Sergei Kozhukhov, a scientist in the Physiology of Sensory Systems Lab.,                 */
+/*     the Institute of Higher Nervous Activity, Russian Academy of Sciences                    */
+/* (C) the Institute of Higher Nervous Activity, Russian Academy of Sciences                    */
+/* Correspondence address: 5A Butlerova str., 117485 Moscow, Russia                             */
+/* E-mail: serik1987@gmail.com                                                                  */
+/* Phone/What's App: +7 916 492 11 21                                                           */
+/*                                                                                              */
+/************************************************************************************************/
 
 #ifndef MPI2_APPLICATION_H
 #define MPI2_APPLICATION_H
@@ -16,6 +23,7 @@
 #include "stimuli/Stimulus.h"
 #include "methods/Method.h"
 #include "models/Brain.h"
+#include "jobs/Job.h"
 
 
 /**
@@ -176,6 +184,21 @@ public:
     void createStimulus(mpi::Communicator& comm);
 
     /**
+     * Creates new integration method
+     */
+    void createMethod();
+
+    /**
+     * Creates new neural network to simulate and loads all its parameters
+     */
+    void createBrain();
+
+    /**
+     * Loads the main job parameters
+     */
+    job::Job*  getMainJob();
+
+    /**
      *
      * @return pointer to the stimulus
      */
@@ -197,8 +220,6 @@ public:
      * @return the integration method
      */
     method::Method& getMethod() { return *method; }
-
-    void setMethod(method::Method* meth) { method = meth; };
 
     void setBrain(net::Brain* br) { brain = br; }
 

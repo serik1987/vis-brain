@@ -13,6 +13,11 @@
 #define MPI2_COMPILE_OPTIONS_H
 
 /**
+ * If this variable equals to 1 the application will fail any simulation job
+ */
+#define TEST_MODE 0
+
+/**
  * Folder where the default model and standard libraries are located
  */
 #define APP_FOLDER "/usr/local/lib/vis-brain/"

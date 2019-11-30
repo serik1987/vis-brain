@@ -78,7 +78,6 @@ namespace equ{
     }
 
     void StimulusSaturation::finalizeProcessor(bool destruct) noexcept {
-        auto& stimulus = Application::getInstance().getStimulus();
-        removeInputProcessor(&stimulus);
+
     }
 }

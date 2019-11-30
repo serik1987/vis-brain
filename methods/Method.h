@@ -25,6 +25,8 @@ namespace method{
          */
         explicit Method(const double h = 1.0): integrationTime(h) {};
 
+        virtual ~Method() {};
+
         /**
          *
          * @return integration step in ms
