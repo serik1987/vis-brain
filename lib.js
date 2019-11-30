@@ -406,6 +406,14 @@ let use_cases = {
     }
 };
 
+let job_list = {
+    single_run_job: {
+        type: "job",
+        mechanism: "single-run",
+        output_file_prefix: "sf-test"
+    }
+};
+
 
 
 let world = {
@@ -422,8 +430,6 @@ let world = {
 
     brain: use_cases.single_lgn_layer,
 
-    analysis: {},
-
-    job: {}
+    job: job_list.single_run_job
 
 };

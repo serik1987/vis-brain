@@ -14,6 +14,7 @@
 #include "param/exceptions.h"
 #include "sys/Folder.h"
 #include "sys/auxiliary.h"
+#include "stimuli/StimulusBuilder.h"
 
 #if DEBUG==1
 #include "test_main.cpp"
@@ -206,38 +207,11 @@ void Application::simulate() {
 }
 
 void Application::createStimulus(mpi::Communicator& comm){
-    mpi::Communicator& appComm = getAppCommunicator();
-    std::string mechanism;
-    int errcode = 0;
-    logging::progress(0, 1, "Loading stimulus");
-
-    if (appComm.getRank() == 0){
-        try {
-            auto &world = engine->getRoot();
-            param::Object par_stimulus = world.getObjectField("stimulus");
-            mechanism = par_stimulus.getStringField("mechanism");
-        } catch (std::exception& exc){
-            int local_errcode = -1;
-            broadcastInteger(local_errcode, 0);
-            throw;
-        }
+    stim::StimulusBuilder builder(comm);
+    if (getAppCommunicator().getRank() == 0){
+        auto source = engine->getRoot().getObjectField("stimulus");
+        builder.loadParameters(source);
     }
-    broadcastInteger(errcode, 0);
-    if (errcode != 0){
-        throw param::root_error();
-    }
-    broadcastString(mechanism, 0);
-    logging::info("The following application stimulus was created");
-    equ::Processor* proc = equ::Processor::createProcessor(comm, mechanism);
-    stimulus = dynamic_cast<stim::Stimulus*>(proc);
-    if (stimulus == nullptr){
-        throw WrongStimulus();
-    }
-
-    if (appComm.getRank() == 0){
-        auto &world = engine->getRoot();
-        param::Object par_stimulus = world.getObjectField("stimulus");
-        stimulus->loadParameters(par_stimulus);
-    }
-    stimulus->broadcastParameters();
+    builder.broadcastParameters();
+    stimulus = builder.getStimulus();
 }

@@ -9,7 +9,6 @@
 #include "../processors/Processor.h"
 #include "../processors/State.h"
 #include "../param/Loadable.h"
-#include "../log/output.h"
 
 namespace net {
 

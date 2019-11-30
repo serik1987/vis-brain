@@ -14,6 +14,8 @@
 #include "data/noise/NoiseEngine.h"
 #include "exceptions.h"
 #include "stimuli/Stimulus.h"
+#include "methods/Method.h"
+#include "models/Brain.h"
 
 
 /**
@@ -181,6 +183,25 @@ public:
         return *stimulus;
     }
 
+    /**
+     * Retuns the general neural network that will be simulated
+     *
+     * @return the brain
+     */
+    net::Brain& getBrain(){
+        return *brain;
+    }
+
+    /**
+     *
+     * @return the integration method
+     */
+    method::Method& getMethod() { return *method; }
+
+    void setMethod(method::Method* meth) { method = meth; };
+
+    void setBrain(net::Brain* br) { brain = br; }
+
 private:
     static Application* instance;
     bool application_ready = false;
@@ -206,6 +227,8 @@ private:
     logging::Engine* log = nullptr;
     data::noise::NoiseEngine* gen = nullptr;
     stim::Stimulus* stimulus = nullptr;
+    method::Method* method = nullptr;
+    net::Brain* brain = nullptr;
 
 
     void setOutputFolder(const std::string& folder_prefix);
