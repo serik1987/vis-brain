@@ -5,9 +5,11 @@
 #include <iostream>
 #include <fstream>
 #include <pwd.h>
+#include <signal.h>
 #include "auxiliary.h"
 #include "exceptions.h"
 #include "FileInfo.h"
+#include "../Application.h"
 
 namespace sys {
 
@@ -54,6 +56,28 @@ namespace sys {
         if (mkdir(pathname.c_str(), 0755) != 0){
             create_exception();
         }
+    }
+
+    void set_signal_processors(){
+        set_signal_processor(SIGTERM, &interrupt);
+        set_signal_processor(SIGINT, &interrupt);
+        set_signal_processor(SIGHUP, SIG_IGN);
+        set_signal_processor(SIGQUIT, &interrupt);
+        set_signal_processor(SIGABRT, &interrupt);
+    }
+
+    void set_signal_processor(int signal, void (*handler)(int)) {
+        struct sigaction action = {nullptr};
+        action.sa_handler = handler;
+        action.sa_flags = 0;
+        sigemptyset(&action.sa_mask);
+        if (sigaction(signal, &action, NULL) != 0){
+            create_exception();
+        }
+    }
+
+    void interrupt(int) {
+        Application::getInstance().setInterrupted();
     }
 
 }

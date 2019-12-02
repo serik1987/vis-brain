@@ -102,6 +102,12 @@ namespace sys{
         }
     };
 
+    class application_interrupted: public exception{
+        const char* what() const noexcept override{
+            return "The application was interrupted by the operator or the system administrator";
+        }
+    };
+
     void create_exception();
 
 }

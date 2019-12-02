@@ -11,8 +11,8 @@
 
 #include <sstream>
 #include <iomanip>
-#include "compile_options.h"
 #include <unistd.h>
+#include "compile_options.h"
 #include "Application.h"
 #include "log/output.h"
 #include "compile_options.h"
@@ -23,11 +23,11 @@
 #include "sys/auxiliary.h"
 #include "stimuli/StimulusBuilder.h"
 #include "methods/MethodBuilder.h"
+#include "jobs/JobBuilder.h"
+#include "methods/DistributorBuilder.h"
 
 #if DEBUG==1
 #include "test_main.cpp"
-#include "jobs/JobBuilder.h"
-#include "methods/DistributorBuilder.h"
 
 #endif
 
@@ -223,6 +223,7 @@ void Application::simulate() {
 #if TEST_MODE==1
         test_main();
 #else
+        sys::set_signal_processors();
         createMethod();
         createBrain();
         job::Job* mainJob = getMainJob();

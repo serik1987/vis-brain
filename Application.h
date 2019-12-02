@@ -252,6 +252,23 @@ public:
      */
     void createState(mpi::Communicator& comm);
 
+    /**
+     * Returns the value of the INTERRUPTED flag. If the value of this flag is true
+     * this means that the application shall be immediately interrupted
+     *
+     * @return the flag value
+     */
+    bool getInterrupted() { return interrupted; }
+
+    /**
+     * Sets the application INTERRUPTED flag. Setting this flag to TRUE
+     * will throw sys::application_interrupted exception on the next
+     * iteration
+     *
+     * @param value value of the INTERRUPTED flag
+     */
+    void setInterrupted(bool value = true) { interrupted = value; }
+
 private:
     static Application* instance;
     bool application_ready = false;
@@ -281,6 +298,7 @@ private:
     net::Brain* brain = nullptr;
     method::Distributor* distributor = nullptr;
     equ::State* state = nullptr;
+    bool interrupted = false;
 
 
     void setOutputFolder(const std::string& folder_prefix);

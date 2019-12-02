@@ -11,6 +11,7 @@ namespace job{
 
     void SingleRunJob::start() {
         auto& app = Application::getInstance();
+        int rank = app.getAppCommunicator().getRank();
         auto& brain = app.getBrain();
         auto& method = app.getMethod();
         double integration_step = method.getIntegrationTime();
@@ -53,6 +54,10 @@ namespace job{
             auto& output = brain.getLayerByFullName("lgn")->getOutputData()->getOutput();
             stream.write(&output);
             logging::progress(timestamp, N);
+            getJobCommunicator().barrier();
+            if (app.getInterrupted()){
+                throw sys::application_interrupted();
+            }
         }
 
         double finish_time = MPI_Wtime();

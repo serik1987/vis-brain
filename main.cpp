@@ -12,12 +12,15 @@
 
 #include <unistd.h>
 #include <exception>
+#include <signal.h>
+#include "sys/auxiliary.h"
 #include "Application.h"
 
 #include "log/Engine.h"
 
 int main(int argc, char* argv[]) {
 
+    signal(SIGHUP, SIG_IGN);
 
     Application application(&argc, &argv);
     try {

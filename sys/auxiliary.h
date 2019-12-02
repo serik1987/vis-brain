@@ -73,6 +73,24 @@ namespace sys{
         }
         return dirname;
     }
+
+    /**
+     * Defines the processors of the SIGTERM AND SIGHUP
+     */
+    void set_signal_processors();
+
+    /**
+     * Defines the processors for a certain signal
+     *
+     * @param signal signal number
+     * @param action action to be executed
+     */
+    void set_signal_processor(int signal, void (*action)(int));
+
+    /**
+     * Interrupts the application safely
+     */
+    void interrupt(int);
 }
 
 
