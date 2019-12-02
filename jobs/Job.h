@@ -5,6 +5,7 @@
 #ifndef MPI2_JOB_H
 #define MPI2_JOB_H
 
+#include <map>
 #include "../param/Loadable.h"
 #include "../mpi/Communicator.h"
 

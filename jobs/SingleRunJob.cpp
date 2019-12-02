@@ -4,34 +4,34 @@
 
 #include "SingleRunJob.h"
 #include "../log/output.h"
-#include "../methods/EqualDistributor.h"
 #include "../data/stream/BinStream.h"
+#include "../analyzers/AnalysisBuilder.h"
 
 namespace job{
 
     void SingleRunJob::start() {
-        Application& app = Application::getInstance();
-        mpi::Communicator& comm = getJobCommunicator();
-        method::Method& method = app.getMethod();
-        net::Brain& brain = app.getBrain();
+        auto& app = Application::getInstance();
+        auto& brain = app.getBrain();
+        auto& method = app.getMethod();
         double integration_step = method.getIntegrationTime();
 
-        logging::progress(0, 1, "Application of the network distributor");
-        method::EqualDistributor distributor(comm, method);
-        distributor.apply(brain);
+        app.createDistributor(getJobCommunicator(), app.getMethod());
+        app.createStimulus(app.getDistributor().getStimulusCommunicator());
+        app.getBrain().createProcessors();
 
-
-        app.createStimulus(distributor.getStimulusCommunicator());
-        if (comm.getRank() == 0){
-            auto brain_parameters = app.getParameterEngine().getRoot().getObjectField("brain");
-            brain.loadParameters(brain_parameters);
+        /* Start of the bad code */
+        analysis::AnalysisBuilder builder(getJobCommunicator());
+        if (app.getAppCommunicator().getRank() == 0){
+            auto source = app.getParameterEngine().getRoot().getObjectField("job").getObjectField("analysis").getObjectField("vsd");
+            builder.loadParameters(source);
         }
-        brain.broadcastParameters();
+        builder.broadcastParameters();
+        auto* primary_analyzer = builder.getAnalyzer();
+        /* Finish of the bad code */
 
+        app.createState(getJobCommunicator());
 
-        logging::progress(0, 1, "Adding all processors to the brain state");
-        equ::State state(comm, method.getSolutionParameters());
-        brain.addProcessorsToState(state);
+        auto& state = app.getState();
 
         logging::progress(0, 1, "Initializing the state");
         app.getStimulus().initialize();
@@ -62,5 +62,7 @@ namespace job{
         logging::exit();
         logging::progress(0, 1, "Finalizing the state");
         state.finalize();
+
+        delete primary_analyzer;
     }
 }

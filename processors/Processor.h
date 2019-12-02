@@ -47,6 +47,8 @@ namespace equ {
         virtual void finalizeProcessor(bool destruct = false) noexcept = 0;
 
         /**
+         * C++ doesn't have reflection API that allows to receive a class the is owned by the object
+         * This method is a small compensation, it shall return name of the class
          *
          * @return immediate name of the processor
          */

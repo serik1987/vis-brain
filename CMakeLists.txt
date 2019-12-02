@@ -28,7 +28,9 @@ add_executable(vis-brain main.cpp  mpi/Group.cpp mpi/Communicator.cpp mpi/Cartes
         methods/KhoinMethod.cpp methods/ExplicitRungeKutta.cpp models/abstract/glm/SpatialKernel.cpp
         models/abstract/glm/GaussianSpatialKernel.cpp models/abstract/glm/DogFilter.cpp processors/State.cpp
         models/AbstractNetwork.cpp models/Layer.cpp models/Brain.cpp models/Network.cpp
-        models/abstract/AbstractModel.cpp methods/EqualDistributor.cpp stimuli/StimulusBuilder.cpp jobs/Job.cpp jobs/JobBuilder.cpp jobs/JobBuilder.h jobs/SingleRunJob.cpp jobs/SingleRunJob.h methods/MethodBuilder.cpp methods/MethodBuilder.h)
+        models/abstract/AbstractModel.cpp methods/EqualDistributor.cpp stimuli/StimulusBuilder.cpp jobs/Job.cpp
+        jobs/JobBuilder.cpp jobs/SingleRunJob.cpp methods/MethodBuilder.cpp methods/DistributorBuilder.cpp
+        analyzers/Analyzer.cpp analyzers/VsdAnalyzer.cpp analyzers/AnalysisBuilder.cpp analyzers/PrimaryAnalyzer.cpp analyzers/PrimaryAnalyzer.h analyzers/PrimaryVsdAnalyzer.cpp analyzers/PrimaryVsdAnalyzer.h)
 add_library(stimulus-test-library SHARED stimuli/test_library.cpp)
 
 target_link_libraries(vis-brain pthread png /usr/local/lib/libv8_monolith.a dl)

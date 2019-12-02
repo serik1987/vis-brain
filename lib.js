@@ -406,11 +406,27 @@ let use_cases = {
     }
 };
 
+let analysis_list = {
+    primary: {
+        vsd: {
+            type: "processor",
+            mechanism: "analysis:primary.vsd",
+            source: "brain.lgn",
+            imaging_area_size_x: 1.0*d,
+            imaging_area_size_y: 1.0*d,
+            acquisition_step: 2.0*ms
+        }
+    }
+}
+
 let job_list = {
     single_run_job: {
         type: "job",
         mechanism: "single-run",
-        output_file_prefix: "sf-test"
+        output_file_prefix: "sf-test",
+        analysis: {
+            vsd: analysis_list.primary.vsd
+        }
     }
 };
 

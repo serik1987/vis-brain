@@ -13,6 +13,12 @@ namespace net {
     public:
         Brain(): Network("brain") {};
 
+        /**
+         * Creates processors for the brain after the distributor will be applied.
+         * If the distributor is not applied, the behaviour of the method is unpredictable
+         */
+        void createProcessors();
+
     };
 
 }

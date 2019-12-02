@@ -27,6 +27,7 @@
 #if DEBUG==1
 #include "test_main.cpp"
 #include "jobs/JobBuilder.h"
+#include "methods/DistributorBuilder.h"
 
 #endif
 
@@ -61,6 +62,10 @@ void Application::clearEngines(){
     method = nullptr;
     delete brain;
     brain = nullptr;
+    delete distributor;
+    distributor = nullptr;
+    delete state;
+    state = nullptr;
     deleteV8Engine();
 }
 
@@ -280,4 +285,23 @@ job::Job* Application::getMainJob() {
 
     return mainJob;
 
+}
+
+void Application::createDistributor(mpi::Communicator& comm, method::Method& method, bool apply) {
+    method::DistributorBuilder builder(comm, method);
+    if (getAppCommunicator().getRank() == 0){
+        auto parameters = engine->getRoot().getObjectField("application");
+        builder.loadParameters(parameters);
+    }
+    builder.broadcastParameters();
+    distributor = builder.build();
+    if (apply){
+        distributor->apply(*brain);
+    }
+}
+
+void Application::createState(mpi::Communicator& comm) {
+    logging::progress(0, 1, "Adding all processors to the brain state");
+    state = new equ::State(comm, getMethod().getSolutionParameters());
+    brain->addProcessorsToState(*state);
 }

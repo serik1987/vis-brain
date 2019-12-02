@@ -4,6 +4,7 @@
 
 #include "Processor.h"
 #include "../models/abstract/glm/GlmLayer.h"
+#include "../analyzers/Analyzer.h"
 #include "../log/output.h"
 #include "../sys/auxiliary.h"
 
@@ -61,6 +62,8 @@ namespace equ{
             processor = stim::Stimulus::createStimulus(comm, mechanismName);
         } else if (mechanismClass == "glm") {
             processor = net::GlmLayer::createGlmMechanism(comm, mechanismName, parameters);
+        } else if (mechanismClass == "analysis"){
+            processor = analysis::Analyzer::createAnalyzer(comm, mechanismName);
         } else {
             throw param::UnknownMechanism(mechanism);
         }

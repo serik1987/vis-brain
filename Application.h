@@ -24,6 +24,8 @@
 #include "methods/Method.h"
 #include "models/Brain.h"
 #include "jobs/Job.h"
+#include "methods/Distributor.h"
+#include "processors/State.h"
 
 
 /**
@@ -217,11 +219,38 @@ public:
 
     /**
      *
+     * @return reference to the current state
+     */
+    equ::State& getState() { return *state; }
+
+    /**
+     *
      * @return the integration method
      */
     method::Method& getMethod() { return *method; }
 
-    void setBrain(net::Brain* br) { brain = br; }
+    /**
+     *
+     * @return returns the distributor that has been recently created
+     */
+    method::Distributor& getDistributor() { return *distributor; }
+
+    /**
+     * Creates new distributor and applies the distributor to the current brain
+     *
+     * @param comm reference to the communicator that will be used for creating the distributor
+     * @param method reference to the selected integration method
+     * @param apply if true the distributor will be applied to the current brain after creating
+     * if false, the distributor shall be applied manually
+     */
+    void createDistributor(mpi::Communicator& comm, method::Method& method, bool apply = true);
+
+    /**
+     * Creates new state
+     *
+     * @param comm communicator that will be based on the state create
+     */
+    void createState(mpi::Communicator& comm);
 
 private:
     static Application* instance;
@@ -250,6 +279,8 @@ private:
     stim::Stimulus* stimulus = nullptr;
     method::Method* method = nullptr;
     net::Brain* brain = nullptr;
+    method::Distributor* distributor = nullptr;
+    equ::State* state = nullptr;
 
 
     void setOutputFolder(const std::string& folder_prefix);

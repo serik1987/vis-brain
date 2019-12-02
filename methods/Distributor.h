@@ -34,6 +34,8 @@ namespace method{
          */
         Distributor(mpi::Communicator& comm, Method& method): comm(comm), method(method) {};
 
+        virtual ~Distributor() = default;
+
         /**
          *
          * @return the parent communicator to all layer communicators
