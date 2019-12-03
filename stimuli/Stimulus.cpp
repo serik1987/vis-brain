@@ -9,6 +9,8 @@
 #include "ComplexStimulus.h"
 #include "../data/LocalMatrix.h"
 #include "../log/output.h"
+#include "../sys/security.h"
+#include "../compile_options.h"
 
 namespace stim{
 
@@ -82,6 +84,9 @@ namespace stim{
         } else if (major_name == "moving") {
             stimulus = MovingStimulus::createMovingStimulus(comm, minor_name);
         } else if (major_name == "external") {
+#if SERVER_BUILD==1
+            sys::security_check("mechanism", minor_name);
+#endif
             std::string lib_name = Processor::lookExternalMechanism("stimuli", minor_name);
             logging::info("External stimulus was selected. Mechanism name: " + minor_name);
             stimulus = new ExternalStimulus(comm, lib_name);

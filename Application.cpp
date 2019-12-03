@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <unistd.h>
 #include "compile_options.h"
+#include "sys/security.h"
 #include "Application.h"
 #include "log/output.h"
 #include "compile_options.h"
@@ -124,6 +125,9 @@ void Application::loadParameterList(const param::Object &source) {
 void Application::setOutputFolder(const std::string &folder_prefix) {
     using std::string;
     output_folder = folder_prefix;
+#if SERVER_BUILD==1
+    sys::security_check("output_folder_prefix", folder_prefix);
+#endif
     int folder_number = 0;
     string name_start = folder_prefix + "_";
     for (auto info: sys::Folder(".")){

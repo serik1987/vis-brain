@@ -18,6 +18,13 @@
 #define TEST_MODE 0
 
 /**
+ * If this variable is 1, file paths are not allowed to be used parameters to vis-brain, while
+ * filenames can use only letters, digits and '-' symbols. Such restriction will be cleared
+ * if SECURITY_BUILD is 0.
+ */
+#define SERVER_BUILD 1
+
+/**
  * Folder where the default model and standard libraries are located
  */
 #define APP_FOLDER "/usr/local/lib/vis-brain/"

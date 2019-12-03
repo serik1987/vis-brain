@@ -5,9 +5,10 @@
 #ifndef MPI2_JOB_H
 #define MPI2_JOB_H
 
-#include <map>
+#include <unordered_map>
 #include "../param/Loadable.h"
 #include "../mpi/Communicator.h"
+#include "../analyzers/Analyzer.h"
 
 namespace job {
 
@@ -26,6 +27,14 @@ namespace job {
     private:
         mpi::Communicator& comm;
         std::string output_file_prefix;
+
+        void createAnalyzers(const param::Object& source);
+        void broadcastAnalyzers();
+
+        std::list<analysis::Analyzer*> analysis_list;
+        std::list<std::string> analysis_names;
+        std::unordered_map<std::string, analysis::Analyzer*> analysis_map;
+        std::list<std::string> analysis_mechanisms;
 
     protected:
         [[nodiscard]] const char* getObjectType() const noexcept override {return "job"; };
@@ -47,8 +56,16 @@ namespace job {
          */
         virtual void broadcastJobParameters() = 0;
 
+        void initializeAnalyzers();
+
+        void updateAnalyzers(double time);
+
+        void finalizeAnalyzers();
+
     public:
         explicit Job(mpi::Communicator& c): comm(c) {};
+
+        ~Job() override;
 
         /**
          *

@@ -7,6 +7,8 @@
 
 #include "MovingStimulus.h"
 #include "../data/stream/BinStream.h"
+#include "../sys/security.h"
+#include "../compile_options.h"
 
 namespace stim {
 
@@ -70,7 +72,12 @@ namespace stim {
          *
          * @param filename name of a valid file. The file will seek in the current folder
          */
-        void setFilename(const std::string& fname) { filename = fname; }
+        void setFilename(const std::string& fname) {
+#if SERVER_BUILD==1
+            sys::security_check("filename", fname);
+#endif
+            filename = fname;
+        }
     };
 
 }
