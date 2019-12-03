@@ -9,6 +9,9 @@
 
 namespace analysis {
 
+    /**
+     * A base class for all analyzers that record and process the simulation VSD data
+     */
     class VsdAnalyzer: virtual public Analyzer {
     protected:
 
@@ -28,6 +31,30 @@ namespace analysis {
          * Intiializes the processor
          */
         void initialize() override;
+
+        /**
+         *
+         * @return the matrix width in pixels
+         */
+        virtual int getMatrixWidth() = 0;
+
+        /**
+         *
+         * @return the matrix height in pixels
+         */
+        virtual int getMatrixHeight() = 0;
+
+        /**
+         *
+         * @return matrix width in um or any other pixels
+         */
+        virtual double getMatrixWidthUm() = 0;
+
+        /**
+         *
+         * @return matrix height in um or any other pixels
+         */
+        virtual double getMatrixHeightUm() = 0;
     };
 
 }

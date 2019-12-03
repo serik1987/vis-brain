@@ -9,6 +9,9 @@
 
 namespace analysis {
 
+    /**
+     * A base class for all analyzers
+     */
     class Analyzer: public equ::Processor {
     private:
         std::string source_name;
@@ -37,6 +40,21 @@ namespace analysis {
          */
         virtual void setAnalyzerParameters(const std::string& name, const void* pvalue) = 0;
 
+        /**
+         * Looks for an appropriate source of the analyzers and sets one of its private fields to
+         * the source of this analyzer.
+         *
+         * The method doesn't look for a source matrix. This just looks for a source analyzer or
+         * source layer. The output matrix of the layer may be changed at each iteration.
+         */
+        virtual void loadSource() = 0;
+
+        /**
+         *
+         * @return reference to the communicator that shall be used for creating output matrices
+         */
+        virtual mpi::Communicator& getInputCommunicator() = 0;
+
     public:
         explicit Analyzer(mpi::Communicator& comm): Processor(comm) {};
 
@@ -49,6 +67,41 @@ namespace analysis {
          * @param pvalue pointer to the parameter value
          */
         void setParameter(const std::string& name, const void* pvalue) override;
+
+        /**
+         *
+         * @return full address of the source
+         */
+        [[nodiscard]] const std::string& getSourceName() const { return source_name; }
+
+        /**
+         * Sets the source name, but doesn't set the source. This parameter can't be adjusted through
+         * the job
+         *
+         * @param name the source name
+         */
+        void setSourceName(const std::string& name) { source_name = name; }
+
+        class invalid_analyzer_source: public std::exception{
+        public:
+            [[nodiscard]] const char* what() const noexcept override{
+                return "Layer or analyzer pointed out as a source is incorrect or not found";
+            }
+        };
+
+        /**
+         *
+         * @return the source data to analyze
+         */
+        virtual data::Matrix& getSource() = 0;
+
+        /**
+         *
+         * @param time iteration time at a current timestamp
+         * @return true if the analyzer is ready for update at this iteration, false
+         * if the update shall be skipped
+         */
+        virtual bool isReady(double time)  = 0;
 
     };
 

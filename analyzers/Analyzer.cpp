@@ -32,13 +32,18 @@ namespace analysis {
     }
 
     void Analyzer::loadParameterList(const param::Object &source) {
-        std::cerr << "TO-DO: LOAD ANALYSIS PARAMETERS\n";
+        setSourceName(source.getStringField("source"));
+        loadSource();
+        loadAnalysisParameters(source);
     }
 
     void Analyzer::broadcastParameterList() {
-        logging::enter();
-        logging::debug("BROADCAST ANALYSIS PARAMETERS");
-        logging::exit();
+        Application& app = Application::getInstance();
+        app.broadcastString(source_name, 0);
+        if (app.getAppCommunicator().getRank() != 0){
+            loadSource();
+        }
+        broadcastAnalysisParameters();
     }
 
     void Analyzer::setParameter(const std::string &name, const void *pvalue) {

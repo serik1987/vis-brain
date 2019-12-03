@@ -38,9 +38,10 @@ namespace job{
         app.getStimulus().initialize();
         state.initialize();
         method.initialize(state);
-        auto& output = brain.getLayerByFullName("lgn")->getOutputData()->getOutput();
+        primary_analyzer->initialize();
+        auto& output = primary_analyzer->getOutput();
         double srate = 1000.0 / method.getIntegrationTime();
-        data::stream::BinStream stream(&output, getOutputFilePrefix() + ".bin", data::stream::Stream::Write, srate);
+        data::stream::BinStream stream(&output, getOutputFilePrefix() + ".bin", data::stream::Stream::Write, srate / 2);
         double start_time = MPI_Wtime();
 
         unsigned long long timestamp = 0;
@@ -51,8 +52,11 @@ namespace job{
         for (; time < stimulus.getRecordLength(); ++timestamp, time = integration_step*timestamp){
             stimulus.update(time);
             method.update(state, timestamp);
-            auto& output = brain.getLayerByFullName("lgn")->getOutputData()->getOutput();
-            stream.write(&output);
+            if (primary_analyzer->isReady(time)){
+                primary_analyzer->update(time);
+                auto& output = primary_analyzer->getOutput();
+                stream.write(&output);
+            }
             logging::progress(timestamp, N);
             getJobCommunicator().barrier();
             if (app.getInterrupted()){
@@ -67,6 +71,7 @@ namespace job{
         logging::exit();
         logging::progress(0, 1, "Finalizing the state");
         state.finalize();
+        primary_analyzer->finalize();
 
         delete primary_analyzer;
     }

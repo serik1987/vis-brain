@@ -8,8 +8,13 @@
 namespace analysis{
 
     void VsdAnalyzer::initialize() {
-        logging::enter();
-        logging::debug("INITIALZIATION OF THE VSD ANALYZER");
-        logging::exit();
+        mpi::Communicator& comm = getInputCommunicator();
+        int width = getMatrixWidth();
+        int height = getMatrixHeight();
+        double widthUm = getMatrixWidthUm();
+        double heightUm = getMatrixHeightUm();
+        output = new data::LocalMatrix(comm, width, height, widthUm, heightUm, 0.0);
+
+        initializeVsd();
     }
 }
