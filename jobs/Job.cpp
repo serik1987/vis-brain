@@ -36,6 +36,7 @@ namespace job{
     void Job::createAnalyzers(const param::Object& source) {
         param::Object analyzers = source.getObjectField("analysis");
         for (auto it = analyzers.begin(); it != analyzers.end(); ++it){
+            logging::progress(0, 1, "Loading analyzer '" + *it + "'");
             auto analyzer_parameters = analyzers.getObjectField(*it);
             auto mechanism = analyzer_parameters.getStringField("mechanism");
             analysis_mechanisms.push_back(mechanism);
@@ -44,6 +45,7 @@ namespace job{
             if (analyzer == nullptr){
                 throw analysis::AnalysisBuilder::incorrect_analyzer();
             }
+            analyzer->setJob(this);
             analysis_list.push_back(analyzer);
             analysis_names.push_back(*it);
             analysis_map[*it] = analyzer;
@@ -71,12 +73,14 @@ namespace job{
             }
             app.broadcastString(mechanism, 0);
             app.broadcastString(name, 0);
+            logging::progress(0, 1, "Broadcasting the analyzer '" + name + "'");
             analysis::Analyzer* analyzer;
             if (need_to_create){
                 analysis_mechanisms.push_back(mechanism);
                 analysis_names.push_back(name);
                 equ::Processor* proc = equ::Processor::createProcessor(getJobCommunicator(), mechanism);
                 analyzer = dynamic_cast<analysis::Analyzer*>(proc);
+                analyzer->setJob(this);
             } else {
                 analyzer = *analyzer_it;
                 ++analyzer_it;
@@ -97,7 +101,9 @@ namespace job{
 
     void Job::updateAnalyzers(double time) {
         for (auto panalyzer: analysis_list){
-            panalyzer->update(time);
+            if (panalyzer->isReady(time)) {
+                panalyzer->update(time);
+            }
         }
     }
 
@@ -111,5 +117,9 @@ namespace job{
         for (auto panalyzer: analysis_list){
             delete panalyzer;
         }
+    }
+
+    analysis::Analyzer *Job::getAnalyzer(const std::string &name) {
+        return analysis_map.at(name);
     }
 }

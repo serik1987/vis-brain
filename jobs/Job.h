@@ -9,6 +9,12 @@
 #include "../param/Loadable.h"
 #include "../mpi/Communicator.h"
 #include "../analyzers/Analyzer.h"
+#include "../compile_options.h"
+#include "../sys/security.h"
+
+namespace analysis{
+    class Analyzer;
+}
 
 namespace job {
 
@@ -93,12 +99,25 @@ namespace job {
          *
          * @param prefix new prefix
          */
-        void setOutputFilePrefix(const std::string& prefix) { output_file_prefix = prefix; }
+        void setOutputFilePrefix(const std::string& prefix) {
+#if SERVER_BUILD==1
+            sys::security_check("output_file_prefix", prefix);
+#endif
+            output_file_prefix = prefix;
+        }
 
         /**
          * Starts the job
          */
         virtual void start() = 0;
+
+        /**
+         * Looks for analysis by the full name
+         *
+         * @param name analyzer name
+         * @return pointer to the analyzer
+         */
+        virtual analysis::Analyzer* getAnalyzer(const std::string& name);
     };
 
 }
