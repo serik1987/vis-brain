@@ -66,7 +66,7 @@ namespace analysis {
          *
          * @return acquisition step in ms
          */
-        [[nodiscard]] double getAcquisitionStep() const { return acquisition_step; }
+        [[nodiscard]] double getAcquisitionStep() const override { return acquisition_step; }
 
         class negative_imaging_area_size_x: public simulation_exception{
         public:
@@ -148,7 +148,7 @@ namespace analysis {
         * @return true if the analyzer is ready for update at this iteration, false
         * if the update shall be skipped
         */
-        virtual bool isReady(double time) override;
+        bool isReady(double time) override;
     };
 
 }

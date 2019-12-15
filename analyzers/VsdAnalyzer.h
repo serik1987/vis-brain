@@ -20,17 +20,14 @@ namespace analysis {
          */
         virtual void initializeVsd() = 0;
 
+        void initializeAnalyzer() override;
+
     public:
         /**
          *
          * @param comm communicator that is responsible for information processing for a certain analyser
          */
         explicit VsdAnalyzer(mpi::Communicator& comm): Analyzer(comm) {};
-
-        /**
-         * Intiializes the processor
-         */
-        void initialize() override;
 
         /**
          *
@@ -55,6 +52,12 @@ namespace analysis {
          * @return matrix height in um or any other pixels
          */
         virtual double getMatrixHeightUm() = 0;
+
+        /**
+         *
+         * @return acquisition step in ms
+         */
+        virtual double getAcquisitionStep() const = 0;
     };
 
 }

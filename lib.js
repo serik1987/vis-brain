@@ -416,8 +416,16 @@ let analysis_list = {
             imaging_area_size_y: 1.0*d,
             acquisition_step: 2.0*ms
         }
+    },
+    secondary: {
+        vsd_writer: {
+            type: "processor",
+            mechanism: "analysis:secondary.vsd-writer",
+            source: "analysis.vsd",
+            filename: "output"
+        }
     }
-}
+};
 
 let job_list = {
     single_run_job: {
@@ -425,7 +433,8 @@ let job_list = {
         mechanism: "single-run",
         output_file_prefix: "sf-test",
         analysis: {
-            vsd: analysis_list.primary.vsd
+            vsd: analysis_list.primary.vsd,
+            write: analysis_list.secondary.vsd_writer
         }
     }
 };

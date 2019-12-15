@@ -30,6 +30,8 @@ namespace analysis {
         static PrimaryAnalyzer* createPrimaryAnalyzer(mpi::Communicator& comm, const std::string& mechanism);
 
         data::Matrix& getSource() override { return source->getOutputData()->getOutput(); }
+
+        bool isInputAcceptable() override { return true; }
     };
 
 }

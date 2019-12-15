@@ -6,6 +6,11 @@
 #define MPI2_ANALYZER_H
 
 #include "../processors/Processor.h"
+#include "../jobs/Job.h"
+
+namespace job{
+    class Job;
+}
 
 namespace analysis {
 
@@ -15,6 +20,8 @@ namespace analysis {
     class Analyzer: public equ::Processor {
     private:
         std::string source_name;
+        mpi::Communicator* c = nullptr;
+        job::Job* parent_job = nullptr;
 
     protected:
         void loadParameterList(const param::Object& source) override;
@@ -54,6 +61,8 @@ namespace analysis {
          * @return reference to the communicator that shall be used for creating output matrices
          */
         virtual mpi::Communicator& getInputCommunicator() = 0;
+
+        virtual void initializeAnalyzer() = 0;
 
     public:
         explicit Analyzer(mpi::Communicator& comm): Processor(comm) {};
@@ -102,6 +111,36 @@ namespace analysis {
          * if the update shall be skipped
          */
         virtual bool isReady(double time)  = 0;
+
+        /**
+         *
+         * @return true if secondary analyzer can be attached to this analyzer
+         */
+        virtual bool isInputAcceptable() = 0;
+
+        /**
+         *
+         * @return reference to the main communicator
+         */
+        mpi::Communicator& getMainCommunicator() { return *c;}
+
+        /**
+         * Intiializes the processor
+         */
+        void initialize() override;
+
+        /**
+         *
+         * @return the job that created this analyzer
+         */
+        job::Job* getCurrentJob() { return parent_job; }
+
+        /**
+         * To be launched by the job's createAnalyzers
+         *
+         * @param value analyzer values
+         */
+        void setJob(job::Job* value) { parent_job = value;}
 
     };
 
