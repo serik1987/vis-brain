@@ -7,7 +7,7 @@
 
 namespace analysis{
 
-    void VsdAnalyzer::initialize() {
+    void VsdAnalyzer::initializeAnalyzer() {
         mpi::Communicator& comm = getInputCommunicator();
         int width = getMatrixWidth();
         int height = getMatrixHeight();

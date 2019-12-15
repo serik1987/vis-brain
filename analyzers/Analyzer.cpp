@@ -4,6 +4,7 @@
 
 #include "Analyzer.h"
 #include "PrimaryAnalyzer.h"
+#include "SecondaryAnalyzer.h"
 #include "../log/output.h"
 
 namespace analysis {
@@ -22,8 +23,10 @@ namespace analysis {
             minor_name = mechanism.substr(dot+1);
         }
 
-        if (major_name == "primary"){
+        if (major_name == "primary") {
             analyzer = PrimaryAnalyzer::createPrimaryAnalyzer(comm, minor_name);
+        } else if (major_name == "secondary"){
+            analyzer = SecondaryAnalyzer::createSecondaryAnalyzer(comm, minor_name);
         } else {
             throw param::UnknownMechanism("analysis:" + mechanism);
         }
@@ -52,5 +55,10 @@ namespace analysis {
         } else {
             setAnalyzerParameters(name, pvalue);
         }
+    }
+
+    void Analyzer::initialize() {
+        c = &getInputCommunicator();
+        initializeAnalyzer();
     }
 }
